@@ -2,6 +2,7 @@
 
 ## 0.2.0-dev — 2026-09-22
 
+- Add Browse with a native folder picker; validates the selected PTR folder and preserves the saved selection on cancellation.
 - Add working PTR download/install/check/recovery engine and browser-based local launcher.
 - Add Windows executable build and Windows/Linux CI packaging workflow.
 - Verify component/file hashes, reject unsafe ZIP entries, retain backups, and recover partial installs.

@@ -1,7 +1,7 @@
 """Local-only browser shell for the Bear Cave PTR updater."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-import json, os, secrets, shutil, subprocess, threading, webbrowser
+import json, os, secrets, shutil, subprocess, sys, threading, webbrowser
 from . import updater
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -21,8 +21,8 @@ class Application:
 
     def report(self,text): self.message=text
 
-    def select(self,value):
-        if self.busy: raise ValueError('Wait for the current operation')
+    def select(self,value,internal=False):
+        if self.busy and not internal: raise ValueError('Wait for the current operation')
         root=updater.client_root(value)
         marker=root/'.bear-cave-launcher/channel.json'
         if marker.exists() and updater.read_json(marker).get('channel')!='ptr':
@@ -34,12 +34,23 @@ class Application:
     def start(self,action):
         with self.mutex:
             if self.busy: raise ValueError('An operation is already running')
-            if action not in ('check','update','recover','play'): raise ValueError('Unknown action')
-            root=updater.client_root(self.client)
+            if action not in ('browse','check','update','recover','play'): raise ValueError('Unknown action')
+            root=updater.client_root(self.client) if action!='browse' else None
             self.busy=True;self.error='';self.message='Working…'
         def worker():
             try:
-                if action=='check':
+                if action=='browse':
+                    self.message='Choose your PTR folder in the folder selection window…'
+                    command=[sys.executable]
+                    if not getattr(sys,'frozen',False):command.append(str(ROOT/'Launch.py'))
+                    command+=['--pick-folder',self.client]
+                    options={'creationflags':subprocess.CREATE_NO_WINDOW} if os.name=='nt' else {}
+                    result=subprocess.run(command,capture_output=True,text=True,timeout=600,**options)
+                    if result.returncode:raise RuntimeError('Folder picker could not open. You can still paste the folder path. On Linux, install python3-tk for the picker.')
+                    chosen=json.loads(result.stdout)['path']
+                    if chosen:self.select(chosen,internal=True)
+                    else:self.message='Folder selection cancelled. Your saved folder is unchanged.'
+                elif action=='check':
                     self.manifest=None;self.changes=[];self.message='Checking the published PTR channel…'
                     manifest=updater.latest();parts=updater.changed(root,manifest)
                     self.manifest=manifest;self.changes=[dict(id=c['id'],bytes=c['bytes']) for c in parts]
@@ -93,7 +104,7 @@ def create_server(app,port=0):
             self.respond(200,body,ctype)
         def do_POST(self):
             route=self.route()
-            if route not in ('api/select','api/check','api/update','api/recover','api/play'):
+            if route not in ('api/browse','api/select','api/check','api/update','api/recover','api/play'):
                 return self.respond(403,dict(error='Invalid launcher action'))
             try:
                 size=int(self.headers.get('Content-Length','0'))

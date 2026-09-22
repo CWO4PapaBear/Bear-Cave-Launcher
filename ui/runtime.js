@@ -7,6 +7,9 @@ document.querySelector('[data-channel="ptr"]').click();
 const panels=document.querySelectorAll('.panel');
 panels[0].innerHTML='<h3>PTR updates</h3><p id="runtime-status" role="status">Choose your PTR client folder.</p><p id="runtime-error" style="color:#ffbc98" role="alert"></p>';
 panels[1].innerHTML='<h3>PTR client folder</h3><p id="folder">Use a dedicated PTR client copy.</p><form id="client-form"><label for="client-path">Full path to the folder containing Wow.exe</label><input id="client-path" required placeholder="D:\\Games\\Bear Cave PTR" style="width:100%;padding:9px;margin:10px 0;background:#040e19;color:#eee5d3;border:1px solid #786035"><button class="action" type="submit">Save Folder</button></form>';
+const browse=document.createElement('button');browse.type='button';browse.className='action';browse.id='client-browse';browse.textContent='Browse…';browse.style.marginRight='8px';
+document.querySelector('#client-form button').before(browse);
+browse.addEventListener('click',()=>send('browse'));
 document.querySelector('.side-note').textContent='Use a dedicated PTR client copy. Do not select your Main Server client. The updater preserves your settings and unrelated addons.';
 document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your PTR client. Recover restores an interrupted update. Account requests are not connected yet.';
 const footer=document.querySelector('footer');
@@ -25,7 +28,7 @@ function render(state){
  document.querySelectorAll('[data-action]').forEach(b=>{
   b.disabled=state.busy||!state.client||(b.dataset.action==='update'&&(!state.version||!state.changes.length));
  });
- document.querySelector('#client-form button').disabled=state.busy;
+ document.querySelectorAll('#client-form button').forEach(button=>button.disabled=state.busy);
 }
 async function send(action,payload={}){
  try{
