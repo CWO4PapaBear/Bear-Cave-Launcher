@@ -1,0 +1,14 @@
+{
+  "channel": "ptr",
+  "version": "0.1.0-test.1",
+  "repository": "CWO4PapaBear/Bear-Cave-Launcher",
+  "server_build": "REPLACE_WITH_APPROVED_SERVER_IMAGE",
+  "realm_address": null,
+  "components": [
+    {"id": "client-patches", "paths": ["Data/patch-Z.MPQ", "Data/enUS/patch-enUS-Z.MPQ"]},
+    {"id": "hero-free-pick", "paths": ["Interface/AddOns/HeroFreePick"]},
+    {"id": "hero-commit", "paths": ["Interface/AddOns/HeroClassPlusCommitTest"]},
+    {"id": "hybrid-spellbook", "paths": ["Interface/AddOns/HeroHybridSpellbook"]},
+    {"id": "more-minions", "paths": ["Interface/AddOns/MoreMinionsDemon"]}
+  ]
+}

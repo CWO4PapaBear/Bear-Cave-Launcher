@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+dist/
+local/
+*.MPQ
+*.mpq
+*.exe
+*.zip
+.env*
+!*.example

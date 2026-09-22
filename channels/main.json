@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "channel": "main",
+  "name": "The Bear Cave",
+  "enabled": false,
+  "manifest_url": null,
+  "manifest_sha256": null,
+  "message": "Main Server updates have not been published."
+}

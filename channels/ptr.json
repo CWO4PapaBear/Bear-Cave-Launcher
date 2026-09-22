@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "channel": "ptr",
+  "name": "The Bear Cave — PTR",
+  "enabled": false,
+  "manifest_url": null,
+  "manifest_sha256": null,
+  "message": "PTR launcher setup is in progress. No update is published."
+}
