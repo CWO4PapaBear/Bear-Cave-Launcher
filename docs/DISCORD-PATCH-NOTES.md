@@ -13,3 +13,5 @@ python tools/announce_ptr.py --dry-run
 ```
 
 This webhook is only for public patch announcements. Account requests remain disconnected and require a separate private backend/channel.
+
+Patch announcements use the public launcher bear-paw PNG as their webhook avatar. No webhook secret change or launcher update is required. This applies to new posts; old posts are not reposted by this change.

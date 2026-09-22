@@ -21,6 +21,7 @@ def payload(manifest, notes):
         description = description[:3300].rsplit('\n', 1)[0] + '\n\nRead the full patch notes at the release link.'
     return {
         'username': 'The Bear Cave - PTR Updates',
+        'avatar_url': 'https://raw.githubusercontent.com/CWO4PapaBear/Bear-Cave-Launcher/main/ui/assets/bear-cave-app-icon.png',
         'allowed_mentions': {'parse': []},
         'content': '\U0001f43e **PTR update available**',
         'embeds': [{
