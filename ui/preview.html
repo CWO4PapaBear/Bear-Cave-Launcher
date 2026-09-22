@@ -36,28 +36,15 @@ header{position:relative;justify-content:center;padding:16px 28px 22px;border-bo
 <p>Request access to <strong id="account-realm">The Bear Cave — PTR</strong>.</p>
 <form id="account-form">
 <label for="account-name">Preferred account name</label><input id="account-name" name="accountName" autocomplete="off" required maxlength="32" placeholder="Your preferred login name">
-<label for="account-contact">Discord username</label><input id="account-contact" name="contact" autocomplete="off" required maxlength="80" placeholder="Where we can contact you privately">
+<label for="account-contact">Email or Discord username</label><input id="account-contact" name="contact" autocomplete="off" required maxlength="80" placeholder="Where we can contact you privately">
 <p>No password is needed for an account request.</p>
-<p class="account-note">Prepare your request, then copy and post it in our Discord channel. You must have access to that channel. Do not include a password or email address.</p>
-<div class="dialog-actions"><button class="action" type="button" id="account-close">Close</button><button class="action primary" type="submit">Prepare Request</button></div>
-</form><section id="account-result" hidden><label for="account-message">Your request</label><textarea id="account-message" readonly rows="6" style="width:100%;background:#040e19;color:#eee5d3;border:1px solid #786035;padding:10px"></textarea><div class="dialog-actions"><button class="action" id="account-copy" type="button">Copy Request</button><a class="action primary" href="https://discordapp.com/channels/1312920749866090628/1551338409358790877" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open Discord</a></div><p id="account-status" role="status">Nothing has been sent. Paste the request into Discord and send it there.</p></section></dialog>
+<p class="account-note">Direct account requests are coming soon. You will be able to submit here without joining Discord. Submission is not available yet; nothing entered here is saved or sent.</p>
+<div class="dialog-actions"><button class="action" type="button" id="account-close">Close</button><button class="action primary" type="submit" disabled aria-describedby="account-status">Send Request</button></div>
+</form><p id="account-status" role="status">Account requests are not connected yet.</p></dialog>
 <script>
 const accountDialog=document.getElementById('account-dialog');
 document.getElementById('account-open').addEventListener('click',()=>{const ptr=document.querySelector('.realm.selected').dataset.channel==='ptr';document.getElementById('account-realm').textContent=ptr?'The Bear Cave — PTR':'The Bear Cave — Main Server';accountDialog.showModal()});
 document.getElementById('account-close').addEventListener('click',()=>accountDialog.close());
-accountDialog.addEventListener('close',()=>{document.getElementById('account-form').reset();document.getElementById('account-result').hidden=true;document.getElementById('account-message').value='';document.getElementById('account-open').focus()});
-document.getElementById('account-form').addEventListener('submit',e=>{
- e.preventDefault();
- const clean=id=>document.getElementById(id).value.trim().replace(/[\r\n|`]/g,' ').replace(/@/g,'＠');
- const name=clean('account-name'),contact=clean('account-contact');
- if(!name||!contact)return;
- document.getElementById('account-message').value=['Bear Cave account request','Realm: '+document.getElementById('account-realm').textContent,'Preferred account name: '+name,'Discord username: '+contact].join('\n');
- document.getElementById('account-result').hidden=false;
- document.getElementById('account-status').textContent='Nothing has been sent. Copy this request, open Discord, and post it in the channel.';
-});
-document.getElementById('account-copy').addEventListener('click',async()=>{
- const message=document.getElementById('account-message');
- try{await navigator.clipboard.writeText(message.value);document.getElementById('account-status').textContent='Copied. Open Discord and paste your request. It has not been sent yet.'}
- catch(error){message.focus();message.select();document.getElementById('account-status').textContent='Press Ctrl+C (or Command+C) to copy the selected request, then paste it into Discord.'}
-});
+accountDialog.addEventListener('close',()=>{document.getElementById('account-form').reset();document.getElementById('account-open').focus()});
+document.getElementById('account-form').addEventListener('submit',e=>{e.preventDefault();document.getElementById('account-status').textContent='Account requests are not connected yet. Nothing has been sent.'});
 document.querySelectorAll('[data-channel]').forEach(b=>b.addEventListener('click',()=>{const ptr=b.dataset.channel==='ptr';document.querySelectorAll('[data-channel]').forEach(x=>x.classList.toggle('selected',x===b));document.getElementById('badge').textContent=ptr?'PUBLIC TEST REALM':'MAIN SERVER';document.getElementById('title').textContent=ptr?'Help shape the next adventure.':'Welcome home, adventurer.';document.getElementById('description').textContent=ptr?'Explore new abilities, companions and character builds. Test changes here before they arrive on the Main Server.':'Your home for approved releases and ongoing adventures in The Bear Cave.';document.getElementById('folder').textContent=ptr?'Choose a separate PTR client during launcher setup.':'Choose your Main Server client during launcher setup.'}));</script></html>
