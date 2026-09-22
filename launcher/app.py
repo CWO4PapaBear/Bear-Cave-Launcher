@@ -1,7 +1,7 @@
 """Local-only browser shell for the Bear Cave PTR updater."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-import json, os, secrets, shutil, subprocess, sys, threading, webbrowser
+import json, os, secrets, shutil, subprocess, sys, threading
 from . import updater
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -14,6 +14,7 @@ class Application:
         self.client=updater.read_json(self.config).get('ptr_client','') if self.config.exists() else ''
         self.manifest=None;self.busy=False;self.message='Select your dedicated PTR client folder.'
         self.error='';self.changes=[];self.mutex=threading.Lock()
+        self.folder_picker=None
 
     def status(self):
         return dict(client=self.client,busy=self.busy,message=self.message,error=self.error,
@@ -41,13 +42,8 @@ class Application:
             try:
                 if action=='browse':
                     self.message='Choose your PTR folder in the folder selection window…'
-                    command=[sys.executable]
-                    if not getattr(sys,'frozen',False):command.append(str(ROOT/'Launch.py'))
-                    command+=['--pick-folder',self.client]
-                    options={'creationflags':subprocess.CREATE_NO_WINDOW} if os.name=='nt' else {}
-                    result=subprocess.run(command,capture_output=True,text=True,timeout=600,**options)
-                    if result.returncode:raise RuntimeError('Folder picker could not open. You can still paste the folder path. On Linux, install python3-tk for the picker.')
-                    chosen=json.loads(result.stdout)['path']
+                    if not self.folder_picker:raise RuntimeError('Folder picker unavailable. You can still paste the folder path.')
+                    chosen=self.folder_picker()
                     if chosen:self.select(chosen,internal=True)
                     else:self.message='Folder selection cancelled. Your saved folder is unchanged.'
                 elif action=='check':
@@ -118,12 +114,38 @@ def create_server(app,port=0):
     server=ThreadingHTTPServer(('127.0.0.1',port),Handler)
     return server,f'http://127.0.0.1:{server.server_port}/{token}/'
 
-def main():
-    app=Application();server,url=create_server(app)
-    webbrowser.open(url)
-    print('Bear Cave PTR launcher is running locally. Keep this window open; Ctrl+C closes it.')
-    try: server.serve_forever()
-    except KeyboardInterrupt: pass
-    finally:server.server_close()
+def main(smoke_dir=None):
+    import webview
+    app=Application(smoke_dir);server,url=create_server(app)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    try:
+        window=webview.create_window('The Bear Cave — PTR Launcher',url,width=1120,height=900,
+                                     min_size=(800,680),background_color='#071422',hidden=bool(smoke_dir))
+        ready=threading.Event();failed=threading.Event();closed=threading.Event()
+        window.events.loaded+=lambda:ready.set()
+        window.events.closed+=lambda:closed.set()
+        def startup_watch():
+            if not ready.wait(30) and not closed.is_set():
+                failed.set();window.destroy()
+        def pick():
+            selected=window.create_file_dialog(webview.FileDialog.FOLDER,directory=app.client or str(Path.home()))
+            return selected[0] if selected else None
+        app.folder_picker=pick
+        def closing():
+            if app.busy:
+                app.message='Please wait for the current operation to finish before closing the launcher.'
+                return False
+        window.events.closing+=closing
+        if smoke_dir:
+            def loaded():
+                result=window.evaluate_js("({title:document.title,browse:!!document.getElementById('client-browse'),update:!!document.querySelector('[data-action=update]')})")
+                updater.save_json(smoke_dir/'desktop-smoke.json',result)
+                window.destroy()
+            window.events.loaded+=loaded
+        webview.start(startup_watch,gui='edgechromium' if os.name=='nt' else None,debug=False,
+                      storage_path=str(app.directory/'webview'),private_mode=True)
+        if failed.is_set():raise RuntimeError('The desktop rendering engine did not initialize. Install or repair Microsoft Edge WebView2 Runtime on Windows, then retry.')
+    finally:
+        server.shutdown();server.server_close();thread.join(timeout=5)
 
 if __name__=='__main__':main()

@@ -2,9 +2,9 @@
 
 ## Windows
 
-Extract `BearCaveLauncher-win32.zip` into a launcher folder. Keep `BearCaveLauncher.exe` together with its `_internal` directory; do not distribute the EXE by itself. Run the EXE. It opens the Bear Cave interface in your normal browser, backed by a local-only service. Keep its console window open while using the launcher; Ctrl+C or closing that window stops it. No Python installation is needed for the Windows bundle.
+Extract `BearCaveLauncher-win32.zip` into a launcher folder. Keep `BearCaveLauncher.exe` together with its `_internal` directory; do not distribute the EXE by itself. Run the EXE. It opens an independent Bear Cave desktop window with no browser tab or console. Windows requires Microsoft Edge WebView2 Runtime. Closing the window stops its local service; closing is blocked while an operation is running. The desktop renderer still needs user acceptance testing: the agent session could compile/import it but returned a WebView2 initialization error during its hidden render test.
 
-Enter the full path of a **dedicated PTR client copy** containing `Wow.exe`, and Save Folder. A saved folder triggers an update check on subsequent launches. A new selection triggers a check immediately. Check / Repair rechecks all managed file hashes; Update PTR downloads and installs changed components. Updates require a button click in this first version. Main is disabled.
+Click **Browse…** and select a dedicated PTR client folder containing `Wow.exe`, or paste its full path and click Save Folder. A saved folder triggers an update check on subsequent launches. A new selection triggers a check immediately. Check / Repair rechecks all managed file hashes; Update PTR downloads and installs changed components. Updates require a button click in this first version. Main is disabled.
 
 Until the first PTR package and channel pointer are published, a check reports that updates are unavailable. That is expected; it does not modify the client. Play uses the client's existing realmlist; this version does not change realm addresses.
 
@@ -14,7 +14,7 @@ Backup filenames are shortened hashes to support long Windows addon paths. Each 
 
 ## Linux/Wine
 
-Run `python3 Launch.py` from the source checkout (Python 3.12+), or use the Linux bundle after the GitHub build workflow has completed. Select the Linux path to the PTR client. Play uses `wine` from PATH and the existing Wine environment. A custom Wine prefix can be set with `WINEPREFIX` when launching. The Windows build has been packaged locally; the Linux binary and live Wine launch have not been verified here.
+Install `requirements.txt` and a supported Linux WebView backend (for example `pip install PySide6`), then run `python3 Launch.py` from the source checkout (Python 3.12+), or use the Linux bundle after the GitHub build workflow has completed. Select the Linux path to the PTR client. Play uses `wine` from PATH and the existing Wine environment. A custom Wine prefix can be set with `WINEPREFIX` when launching. The Windows build has been packaged locally; the Linux binary and live Wine launch have not been verified here.
 
 ## First-release limitations
 

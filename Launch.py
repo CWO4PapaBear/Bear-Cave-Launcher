@@ -2,11 +2,11 @@ from launcher.app import main
 
 if __name__ == '__main__':
     import sys
-    if '--pick-folder' in sys.argv:
-        from launcher.folder_picker import main as pick_folder
-        index=sys.argv.index('--pick-folder')
-        pick_folder(sys.argv[index+1] if len(sys.argv)>index+1 else '')
+    if '--desktop-smoke-test' in sys.argv:
+        from pathlib import Path
+        main(Path(sys.argv[sys.argv.index('--desktop-smoke-test')+1]).resolve())
     elif '--self-test' in sys.argv:
+        import webview
         from launcher.app import ROOT
         from launcher.updater import REPOSITORY
         assert (ROOT/'ui/preview.html').is_file()
@@ -14,4 +14,10 @@ if __name__ == '__main__':
         assert (ROOT/'ui/assets/bear-cave-logo.png').is_file()
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
-        main()
+        try:
+            main()
+        except Exception as error:
+            if sys.platform=='win32':
+                import ctypes
+                ctypes.windll.user32.MessageBoxW(None,'The launcher could not start. Microsoft Edge WebView2 Runtime is required.\n\n'+str(error),'The Bear Cave Launcher',0x10)
+            raise

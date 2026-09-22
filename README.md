@@ -22,7 +22,7 @@ The two channels are disabled until an approved package is published. They must 
 
 ## Working PTR updater
 
-`launcher/updater.py` verifies the GitHub PTR pointer and release hashes, downloads changed components, verifies archive contents, checks that WoW is closed, backs up originals, and journals each update for rollback/recovery. `Launch.py` serves the themed UI on a random localhost port with a per-session capability; no public web service is started. Main remains disabled. See [run instructions](docs/RUN-PTR-LAUNCHER.md).
+`launcher/updater.py` verifies the GitHub PTR pointer and release hashes, downloads changed components, verifies archive contents, checks that WoW is closed, backs up originals, and journals each update for rollback/recovery. `Launch.py` displays the themed UI in an independent desktop window with an internal, session-protected localhost service; no browser tab or public web service is opened. Main remains disabled. See [run instructions](docs/RUN-PTR-LAUNCHER.md).
 
 The initial release does not remove obsolete files, self-update, change realmlist or provide independently signed manifests. It does not implement account submission. The Linux binary/Wine launch still needs testing. Never reuse your Main client as the PTR folder; the current UI asks you to supply a separate copy.
 

@@ -2,6 +2,7 @@
 
 ## 0.2.0-dev — 2026-09-22
 
+- Switch to a standalone desktop window with native folder selection and no browser tab/console. Windows requires WebView2. Build and non-visual checks passed; desktop rendering failed to initialize in the agent session and needs user verification.
 - Add Browse with a native folder picker; validates the selected PTR folder and preserves the saved selection on cancellation.
 - Add working PTR download/install/check/recovery engine and browser-based local launcher.
 - Add Windows executable build and Windows/Linux CI packaging workflow.
