@@ -2,6 +2,7 @@
 
 ## 0.1.0-dev — 2026-09-22
 
+- Apply the supplied Bear Cave logo and its gold/blue visual theme to the launcher preview.
 - Establish Main and PTR channels with disabled initial pointers.
 - Add Bear Cave launcher visual preview with separate realm selection.
 - Add allowlisted component packaging, file/archive checksums, read-only update planning and GitHub draft/publish tooling.
