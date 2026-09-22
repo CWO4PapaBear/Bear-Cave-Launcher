@@ -8,6 +8,7 @@
 - Keep Main disabled and account delivery disconnected; Play uses existing realmlist.
 - Replace selected-realm text glyph with a CSS diamond.
 - Add a source push helper that verifies the remote commit; milestone pushes are part of the standard workflow.
+- Validation: 14 local tests passed, one symlink test skipped; full seven-component candidate installed and verified in a disposable fixture. Windows bundle self-test passed. GitHub publication and live-client acceptance remain separate.
 
 
 ## 0.1.0-dev — 2026-09-22

@@ -10,6 +10,8 @@ Until the first PTR package and channel pointer are published, a check reports t
 
 Close every running WoW process before updating. Original files remain in `.bear-cave-launcher/transactions/<id>/backup` inside the PTR client. Interrupted installs retain a journal; Recover restores original files. Do not delete that folder while recovery is pending. Backups are not automatically pruned yet.
 
+Backup filenames are shortened hashes to support long Windows addon paths. Each transaction's `files.json` records the original paths. Use Recover for interrupted updates rather than copying hashed backup filenames into the game folder.
+
 ## Linux/Wine
 
 Run `python3 Launch.py` from the source checkout (Python 3.12+), or use the Linux bundle after the GitHub build workflow has completed. Select the Linux path to the PTR client. Play uses `wine` from PATH and the existing Wine environment. A custom Wine prefix can be set with `WINEPREFIX` when launching. The Windows build has been packaged locally; the Linux binary and live Wine launch have not been verified here.

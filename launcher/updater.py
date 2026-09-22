@@ -163,6 +163,11 @@ def changed(root,m):
                 result.append(c);break
     return result
 
+def stored_file(base,relative):
+    managed_path(relative)
+    # Flat internal names avoid duplicating long addon paths under backups/stage.
+    return base/hashlib.sha256(relative.encode('utf-8')).hexdigest()[:32]
+
 def unpack(asset,component,stage):
     if asset.stat().st_size!=component['bytes'] or sha(asset)!=component['sha256']:
         raise ValueError('Archive checksum mismatch')
@@ -175,7 +180,7 @@ def unpack(asset,component,stage):
             record=expected[member.filename]
             if member.is_dir() or stat.S_ISLNK(member.external_attr>>16) or member.file_size!=record['bytes']:
                 raise ValueError('Invalid archive member')
-            target=safe_file(stage,member.filename);target.parent.mkdir(parents=True,exist_ok=True)
+            target=stored_file(stage,member.filename);target.parent.mkdir(parents=True,exist_ok=True)
             with archive.open(member) as source,target.open('wb') as out:
                 count=0
                 while block:=source.read(1024*1024):
@@ -198,7 +203,7 @@ def recover(root,guard=ensure_closed,report=lambda message:None):
             if f['before'] is None:
                 target.unlink()
             else:
-                backup=safe_file(base/'backup',f['path'])
+                backup=stored_file(base/'backup',f['path'])
                 if sha(backup)!=f['before']: raise ValueError('Backup checksum mismatch')
                 temp=base/'restore.tmp';shutil.copy2(backup,temp);os.replace(temp,target)
             report('Restored '+f['path'])
@@ -229,19 +234,20 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
                     if before==record['sha256']: continue
                     if target.exists() and not target.is_file(): raise ValueError('File destination is a directory')
                     if before:
-                        backup=safe_file(base/'backup',record['path']);backup.parent.mkdir(parents=True,exist_ok=True)
+                        backup=stored_file(base/'backup',record['path']);backup.parent.mkdir(parents=True,exist_ok=True)
                         shutil.copy2(target,backup)
                         if sha(backup)!=before: raise ValueError('Source changed during backup')
                     files.append(dict(path=record['path'],before=before,after=record['sha256']))
             guard()
             previous=read_json(state/'installed.json') if (state/'installed.json').exists() else None
+            save_json(base/'files.json',files)
             save_json(state/'pending.json',dict(transaction=tx,files=files,previous_install=previous))
             for f in files:
                 guard();target=safe_file(root,f['path'])
                 if (sha(target) if target.is_file() else None)!=f['before']:
                     raise RuntimeError('Client changed during update: '+f['path'])
                 target.parent.mkdir(parents=True,exist_ok=True)
-                report('Installing '+f['path']);os.replace(safe_file(stage,f['path']),target)
+                report('Installing '+f['path']);os.replace(stored_file(stage,f['path']),target)
                 if sha(target)!=f['after']: raise RuntimeError('Installed file verification failed')
             # The pending journal is retained until the full install commits.
             save_json(state/'channel.json',dict(channel='ptr'))

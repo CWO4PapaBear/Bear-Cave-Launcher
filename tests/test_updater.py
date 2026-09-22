@@ -25,7 +25,7 @@ class Updater(unittest.TestCase):
         self.install()
         self.assertEqual((self.client/'WTF/private.txt').read_text(),'private')
         self.assertEqual(updater.changed(self.client,self.manifest),[])
-        backups=list((self.client/'.bear-cave-launcher/transactions').glob('*/backup/Interface/AddOns/HeroFreePick/HeroFreePick.lua'))
+        backups=list((self.client/'.bear-cave-launcher/transactions').glob('*/backup/*'))
         self.assertEqual(backups[0].read_bytes(),original)
         self.assertIn('up to date',self.install())
     def test_active_game_blocks_all_installation(self):
