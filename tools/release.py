@@ -73,7 +73,12 @@ def main():
             '--title', 'The Bear Cave '+tag, '--notes-file', str(args.package/'PATCH-NOTES.md'), *options)
         print('DRAFT uploaded. Review files and test the exact package before publishing.')
     else:
-        remote = json.loads(run(gh, 'api', f'repos/{args.repo}/releases/tags/{tag}'))
+        # Draft tags may not resolve through the by-tag REST endpoint.
+        pages = json.loads(run(gh, 'api', '--paginate', '--slurp', f'repos/{args.repo}/releases'))
+        matches = [release for page in pages for release in page if release['tag_name'] == tag]
+        if len(matches) != 1:
+            raise ValueError('Expected exactly one release for '+tag)
+        remote = matches[0]
         remote_assets = {a['name']: a for a in remote['assets']}
         import tempfile
         with tempfile.TemporaryDirectory(prefix='bear-release-review-') as td:
