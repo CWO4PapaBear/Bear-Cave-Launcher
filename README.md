@@ -1,6 +1,6 @@
 # The Bear Cave Launcher
 
-Initial foundation for a Windows and Linux/Wine tester launcher. **No launcher binary or automatic client installer has been released.** The visual preview is not a connected application.
+First working PTR updater for Windows and Linux/Wine. A Windows bundle is built locally; GitHub source publication and the first client release are separate steps. Run `Launch.py` or the packaged executable for the connected interface. Opening `ui/preview.html` directly remains a visual preview.
 
 ## Realm channels
 
@@ -20,11 +20,12 @@ The two channels are disabled until an approved package is published. They must 
 - `channels/main.json` and `channels/ptr.json`: independently promoted release pointers. Never use GitHub's global `/latest` release for realm discovery.
 - Python tests plus Windows/Linux GitHub Actions checks.
 
-## Next implementation milestone
+## Working PTR updater
 
-Build the actual desktop app and install engine: persisted separate client roots, Windows and Linux/Wine process checks, staged downloads, checksum verification, safe archive extraction, atomic per-file replacement with a persistent recovery journal, failed-install rollback, owned-file removal, realm configuration, and play integration. Hashes protect file integrity; launcher/manifest signing and trust-key handling remain to be designed before unattended installation. Do not treat this foundation as an operational updater.
+`launcher/updater.py` verifies the GitHub PTR pointer and release hashes, downloads changed components, verifies archive contents, checks that WoW is closed, backs up originals, and journals each update for rollback/recovery. `Launch.py` serves the themed UI on a random localhost port with a per-session capability; no public web service is started. Main remains disabled. See [run instructions](docs/RUN-PTR-LAUNCHER.md).
 
-Main and PTR must reject reuse of the same or nested client paths, including aliases and symlinks. Never overwrite WTF, SavedVariables, screenshots, accounts, unrelated addons or the game executable. Do not clear user caches wholesale. Deletions must be restricted to files recorded in a prior successful launcher install.
+The initial release does not remove obsolete files, self-update, change realmlist or provide independently signed manifests. It does not implement account submission. The Linux binary/Wine launch still needs testing. Never reuse your Main client as the PTR folder; the current UI asks you to supply a separate copy.
+
 
 HeroFreePick and More Minions retain independent source repositories. This repository combines reviewed client artifacts for a realm; it does not absorb their source history. Auto-Attack-Forever stays optional and PTR-specific; it is absent from the example package until its dependencies are separately reviewed. No proprietary client archives or personal configuration are committed here.
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0-dev — 2026-09-22
+
+- Add working PTR download/install/check/recovery engine and browser-based local launcher.
+- Add Windows executable build and Windows/Linux CI packaging workflow.
+- Verify component/file hashes, reject unsafe ZIP entries, retain backups, and recover partial installs.
+- Keep Main disabled and account delivery disconnected; Play uses existing realmlist.
+- Replace selected-realm text glyph with a CSS diamond.
+- Add a source push helper that verifies the remote commit; milestone pushes are part of the standard workflow.
+
+
 ## 0.1.0-dev — 2026-09-22
 
 - Add a realm-aware account-request form for planned backend-to-Discord webhook delivery; submission remains disabled until configured. No Discord membership will be required.
