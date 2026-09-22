@@ -25,3 +25,9 @@ Install `requirements.txt` and a supported Linux WebView backend (for example `p
 - Release trust is HTTPS plus hashes pinned in the GitHub channel; independent signed manifests are not implemented.
 - Account request UI is present but disconnected; no webhook secret is in the launcher.
 - No updates have been published solely by building the launcher.
+
+## Wide desktop window and app icon
+
+The launcher opens at 1280 by 720 with a custom gold edge and no operating-system title bar. Drag the top Bear Cave strip to move it; use the top-right minimize and close buttons. Closing is blocked while an operation is running. The main content pane can scroll on smaller windows or for long error messages; the overall window does not scroll.
+
+The circular bear-paw medallion is embedded as the Windows executable icon and window icon. Close the previous launcher and extract the complete new ZIP to use this version. Existing client folder preferences are retained.

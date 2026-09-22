@@ -50,3 +50,12 @@ async function poll(){
  }
 }
 poll();setInterval(poll,1000);
+
+function connectWindowControls(){
+ for(const [id,method] of [['window-minimize','minimize'],['window-close','close']]){
+  const button=document.getElementById(id);button.disabled=false;
+  button.onclick=()=>window.pywebview.api[method]();
+ }
+}
+window.addEventListener('pywebviewready',connectWindowControls);
+if(window.pywebview&&window.pywebview.api)connectWindowControls();

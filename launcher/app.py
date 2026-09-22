@@ -119,8 +119,17 @@ def main(smoke_dir=None):
     app=Application(smoke_dir);server,url=create_server(app)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
-        window=webview.create_window('The Bear Cave — PTR Launcher',url,width=1120,height=900,
-                                     min_size=(800,680),background_color='#071422',hidden=bool(smoke_dir))
+        class WindowControls:
+            def minimize(self): window.minimize()
+            def close(self):
+                if app.busy:
+                    app.message='Please wait for the current operation to finish before closing the launcher.'
+                    return False
+                window.destroy()
+                return True
+        window=webview.create_window('The Bear Cave - PTR Launcher',url,width=1280,height=720,
+                                     min_size=(1000,640),background_color='#071422',hidden=bool(smoke_dir),
+                                     frameless=True,easy_drag=False,shadow=True,js_api=WindowControls())
         ready=threading.Event();failed=threading.Event();closed=threading.Event()
         window.events.loaded+=lambda:ready.set()
         window.events.closed+=lambda:closed.set()
@@ -143,7 +152,8 @@ def main(smoke_dir=None):
                 window.destroy()
             window.events.loaded+=loaded
         webview.start(startup_watch,gui='edgechromium' if os.name=='nt' else None,debug=False,
-                      storage_path=str(app.directory/'webview'),private_mode=True)
+                      storage_path=str(app.directory/'webview'),private_mode=True,
+                      icon=str(ROOT/'ui/assets'/('bear-cave-app-icon.ico' if os.name=='nt' else 'bear-cave-app-icon.png')))
         if failed.is_set():raise RuntimeError('The desktop rendering engine did not initialize. Install or repair Microsoft Edge WebView2 Runtime on Windows, then retry.')
     finally:
         server.shutdown();server.server_close();thread.join(timeout=5)
