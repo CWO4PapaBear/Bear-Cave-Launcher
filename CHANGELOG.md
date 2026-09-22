@@ -2,7 +2,7 @@
 
 ## 0.1.0-dev — 2026-09-22
 
-- Add a realm-aware account-request preview; delivery remains disabled pending a private request destination.
+- Add realm-aware account requests with copyable text and the owner-selected Discord channel link; users post requests themselves.
 - Apply the supplied Bear Cave logo and its gold/blue visual theme to the launcher preview.
 - Establish Main and PTR channels with disabled initial pointers.
 - Add Bear Cave launcher visual preview with separate realm selection.
