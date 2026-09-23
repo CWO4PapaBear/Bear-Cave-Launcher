@@ -28,3 +28,6 @@ Publish the reviewed current PTR managed client: portrait/pet controls, tap-Shif
 - Local Windows validation: six tests passed; real symlink test skipped because symlink creation permission was unavailable. GitHub Actions, remote publication and automatic client installation have not run.
 
 This is a development foundation, not a released desktop updater.
+# PTR 0.2.3-test.1
+
+Publish the tested More Minions stable bridge with the original classic controls, family-specific stable icons, and Beast-only happiness displays. Undead and Demon stabling confirmed by the owner. Cumulative package contains 916 managed files matching the tested owner client; no Main or launcher executable changes. Prior-release upgrade, repeat-install and private-file preservation checks passed. See docs/PTR-0.2.3-test.1.md for tester instructions and remaining validation.
