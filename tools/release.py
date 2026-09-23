@@ -10,7 +10,7 @@ from package import sha, managed_path
 ROOT = Path(__file__).resolve().parents[1]
 
 def run(*args):
-    return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+    return subprocess.run(args, check=True, capture_output=True, text=True, encoding='utf-8').stdout
 
 def validate(folder, repo):
     manifest = json.loads((folder/'manifest.json').read_text(encoding='utf-8'))
@@ -80,14 +80,18 @@ def main():
             raise ValueError('Expected exactly one release for '+tag)
         remote = matches[0]
         remote_assets = {a['name']: a for a in remote['assets']}
-        import tempfile
-        with tempfile.TemporaryDirectory(prefix='bear-release-review-') as td:
+        # Keep verified downloads in the ignored local workspace. Some Windows
+        # runtimes create inaccessible ACLs for TemporaryDirectory(mode=0700).
+        import uuid
+        from contextlib import nullcontext
+        with nullcontext(ROOT/'local'/('release-review-'+uuid.uuid4().hex)) as td:
+            td.mkdir(parents=True)
             for name in assets:
                 item = remote_assets.get(name)
                 if not item or item['state'] != 'uploaded':
                     raise ValueError('Remote asset missing/incomplete: '+name)
                 # Do not rely on API digest availability. Verify downloaded bytes.
-                run(gh, 'release', 'download', tag, '--repo', args.repo, '--pattern', name, '--dir', td)
+                run(gh, 'release', 'download', tag, '--repo', args.repo, '--pattern', name, '--dir', str(td))
                 if sha(Path(td)/name) != sha(args.package/name):
                     raise ValueError('Remote asset differs: '+name)
         run(gh, 'release', 'edit', tag, '--repo', args.repo, '--draft=false', '--latest=false',

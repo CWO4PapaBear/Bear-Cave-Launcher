@@ -6,6 +6,9 @@ from release import validate
 from inspect_update import plan
 
 class Packages(unittest.TestCase):
+    def test_publisher_reads_utf8_release_notes(self):
+        from release import run
+        self.assertEqual(run(sys.executable, '-c', 'import sys; sys.stdout.buffer.write(bytes([240,159,144,190]))'), '\U0001f43e')
     def setUp(self):
         base=Path(__file__).resolve().parents[1]/'local/test-runs';base.mkdir(parents=True,exist_ok=True)
         self.root=base/uuid.uuid4().hex;self.root.mkdir()

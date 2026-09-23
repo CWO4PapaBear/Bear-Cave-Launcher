@@ -48,6 +48,8 @@ python tools/release.py publish --package dist/ptr-0.1.0-test.1
 
 This verifies downloaded GitHub assets against local checksums, publishes the release and updates **only** the local PTR pointer. Then review, commit and push:
 
+Verified downloads are retained under ignored `local/release-review-*` folders for inspection. Publisher output is decoded as UTF-8 so emoji patch notes work on Windows.
+
 ```powershell
 git add channels/ptr.json
 git commit -m "Promote reviewed PTR client release"
