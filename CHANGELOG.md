@@ -1,3 +1,7 @@
+## PTR 0.2.6-test.1
+
+Combat-preserved Hero Advancement drafts, tested Auto-Attack Forever melee fallback/form/indicator fixes, ranged preference and minimap settings, and cumulative healing-tooltip corrections. Broader bear animation testing remains open.
+
 ## PTR client 0.2.2-test.1
 
 Publish the reviewed current PTR managed client: portrait/pet controls, tap-Shift and resolved blue-value tooltips, Hybrid equipment tooltip correction, and updated Patch-Z archives. Record current activated server image including equipment access, Auto Attack and repeated-login fixes. Exclude personal layouts and provenance JSON. See docs/PTR-0.2.2-test.1.md.
