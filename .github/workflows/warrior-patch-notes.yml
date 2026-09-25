@@ -1,0 +1,20 @@
+name: Warrior PTR patch notes
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ptr-discord-patch-notes
+  cancel-in-progress: false
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Announce Warrior server status
+        env:
+          DISCORD_PATCH_NOTES_WEBHOOK: ${{ secrets.DISCORD_PATCH_NOTES_WEBHOOK }}
+        run: python tools/announce_warrior_notes.py
