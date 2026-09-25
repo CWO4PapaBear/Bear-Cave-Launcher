@@ -125,6 +125,13 @@ def create_server(app,port=0):
 
 def main(smoke_dir=None):
     import webview
+    if os.name == 'nt':
+        from webview.guilib import initialize
+        engine = initialize('edgechromium')
+        if engine.renderer != 'edgechromium':
+            raise RuntimeError('WebView2 is unavailable. The legacy browser cannot run this launcher. '
+                               'For Wine/Proton/Lutris, start BearCaveLauncher.exe with --compatibility '
+                               'to use native controls (experimental). On Windows, install WebView2.')
     app=Application(smoke_dir);server,url=create_server(app)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:

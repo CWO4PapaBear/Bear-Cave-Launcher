@@ -7,6 +7,12 @@ if __name__ == '__main__':
         main(Path(sys.argv[sys.argv.index('--desktop-smoke-test')+1]).resolve())
     elif '--self-test' in sys.argv:
         import webview
+        import tkinter as tk
+        # Validate bundled Tcl/Tk, not merely that Python can import its wrapper.
+        native = tk.Tk()
+        native.withdraw()
+        native.update_idletasks()
+        native.destroy()
         from launcher.app import ROOT
         from launcher.updater import REPOSITORY
         assert (ROOT/'ui/preview.html').is_file()
@@ -20,7 +26,11 @@ if __name__ == '__main__':
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:
-            main()
+            if '--compatibility' in sys.argv:
+                from launcher.compatibility import main as compatibility_main
+                compatibility_main()
+            else:
+                main()
         except Exception as error:
             if sys.platform=='win32':
                 import ctypes

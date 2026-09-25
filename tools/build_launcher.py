@@ -18,5 +18,7 @@ subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--one
 folder=root/'dist/launcher/BearCaveLauncher'
 exe=folder/('BearCaveLauncher.exe'if sys.platform=='win32'else'BearCaveLauncher')
 subprocess.run([str(exe),'--self-test'],check=True)
+if sys.platform=='win32':
+    (folder/'Start Compatibility Mode.cmd').write_text('@echo off\nstart "" "%~dp0BearCaveLauncher.exe" --compatibility\n',encoding='ascii')
 archive=shutil.make_archive(str(root/'dist'/('BearCaveLauncher-'+sys.platform)),'zip',root_dir=folder.parent,base_dir=folder.name)
 print('Built launcher bundle:',archive)
