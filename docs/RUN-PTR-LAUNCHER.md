@@ -6,7 +6,7 @@ Extract `BearCaveLauncher-win32.zip` into a launcher folder. Keep `BearCaveLaunc
 
 Click **Browse…** and select a dedicated PTR client folder containing `Wow.exe`, or paste its full path and click Save Folder. A saved folder triggers an update check on subsequent launches. A new selection triggers a check immediately. Check / Repair rechecks all managed file hashes; Update PTR downloads and installs changed components. Updates require a button click in this first version. Main is disabled.
 
-Until the first PTR package and channel pointer are published, a check reports that updates are unavailable. That is expected; it does not modify the client. Play uses the client's existing realmlist; this version does not change realm addresses.
+Until the first PTR package and channel pointer are published, a check reports that updates are unavailable. That is expected; it does not modify the client. Configured builds set the PTR realmlist automatically on Update and Play; see PTR-CONNECTION.md.
 
 Close every running WoW process before updating. Original files remain in `.bear-cave-launcher/transactions/<id>/backup` inside the PTR client. Interrupted installs retain a journal; Recover restores original files. Do not delete that folder while recovery is pending. Backups are not automatically pruned yet.
 
@@ -20,7 +20,7 @@ Install `requirements.txt` and a supported Linux WebView backend (for example `p
 
 - Pulls updates from the configured GitHub PTR pointer on launch/check; it is not a remote push daemon.
 - Downloads complete changed components, not binary MPQ deltas.
-- Does not delete retired addon files, migrate a full client, change realmlist, clear caches or self-update the launcher.
+- Does not delete retired addon files, migrate a full client, clear caches or self-update the launcher.
 - Does not authenticate private GitHub downloads. The tester channel must be public or backed by a future authenticated download service.
 - Release trust is HTTPS plus hashes pinned in the GitHub channel; independent signed manifests are not implemented.
 - Account request UI is present but disconnected; no webhook secret is in the launcher.

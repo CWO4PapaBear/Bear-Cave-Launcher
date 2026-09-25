@@ -2,7 +2,7 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json, os, secrets, shutil, subprocess, sys, threading
-from . import updater
+from . import updater, connection
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -53,16 +53,21 @@ class Application:
                     self.message=f'{len(parts)} component(s) need updating.' if parts else 'Your PTR files match the published version.'
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')
+                    realm=connection.load(ROOT)
                     self.message=updater.install(root,self.manifest,report=self.report);self.changes=[]
+                    with updater.locked(root) as state:
+                        connection.configure(root,state,realm,updater.ensure_closed)
+                    self.message+=' PTR connection configured.'
                 elif action=='recover': self.message=updater.recover(root,report=self.report)
                 else:
                     with updater.locked(root) as state:
                         if (state/'pending.json').exists(): raise ValueError('Recover interrupted changes before playing')
                         updater.ensure_closed()
+                        connection.configure(root,state,connection.load(ROOT),updater.ensure_closed)
                         exe=root/'Wow.exe'
                         command=[str(exe)] if os.name=='nt' else [shutil.which('wine') or 'wine',str(exe)]
                         subprocess.Popen(command,cwd=root)
-                        self.message='WoW launched using this client’s existing realm configuration.'
+                        self.message='WoW launched with the PTR connection configured.'
             except Exception as error:
                 self.error=str(error);self.message='Operation stopped. See the message below.'
             finally: self.busy=False

@@ -24,7 +24,7 @@ The two channels are disabled until an approved package is published. They must 
 
 `launcher/updater.py` verifies the GitHub PTR pointer and release hashes, downloads changed components, verifies archive contents, checks that WoW is closed, backs up originals, and journals each update for rollback/recovery. `Launch.py` displays the themed UI in an independent desktop window with an internal, session-protected localhost service; no browser tab or public web service is opened. Main remains disabled. See [run instructions](docs/RUN-PTR-LAUNCHER.md).
 
-The initial release does not remove obsolete files, self-update, change realmlist or provide independently signed manifests. It does not implement account submission. The Linux binary/Wine launch still needs testing. Never reuse your Main client as the PTR folder; the current UI asks you to supply a separate copy.
+The initial release does not remove obsolete files, self-update or provide independently signed manifests. It does not implement account submission. The Linux binary/Wine launch still needs testing. Never reuse your Main client as the PTR folder; the current UI asks you to supply a separate copy.
 
 
 HeroFreePick and More Minions retain independent source repositories. This repository combines reviewed client artifacts for a realm; it does not absorb their source history. Auto-Attack-Forever stays optional and PTR-specific; it is absent from the example package until its dependencies are separately reviewed. No proprietary client archives or personal configuration are committed here.
@@ -38,3 +38,5 @@ python -m unittest discover -s tests -v
 ```
 
 Open `ui/preview.html` in a browser for the design preview.
+
+Automatic PTR realm configuration is applied by configured launcher builds; see [connection setup](docs/PTR-CONNECTION.md). Older launcher executables must be replaced once.

@@ -12,6 +12,9 @@ if __name__ == '__main__':
         assert (ROOT/'ui/preview.html').is_file()
         assert (ROOT/'ui/runtime.js').is_file()
         assert (ROOT/'ui/assets/bear-cave-logo.png').is_file()
+        if (ROOT/'connection.json').exists():
+            from launcher.connection import load
+            load(ROOT)
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:

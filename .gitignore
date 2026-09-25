@@ -7,4 +7,5 @@ local/
 *.exe
 *.zip
 .env*
+connection.json
 !*.example

@@ -1,3 +1,10 @@
+## Pending release — automatic PTR connection
+
+- Configure realm files and saved realm overrides automatically after Update and before Play.
+- Back up originals and preserve unrelated settings.
+- Supply the deployment address outside Git history; configured package still exposes it to recipients.
+- Requires a new launcher download; client-only updates cannot update old launcher executables.
+
 ## PTR 0.2.6-test.1
 
 Combat-preserved Hero Advancement drafts, tested Auto-Attack Forever melee fallback/form/indicator fixes, ranged preference and minimap settings, and cumulative healing-tooltip corrections. Broader bear animation testing remains open.
