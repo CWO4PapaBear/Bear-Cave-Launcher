@@ -48,9 +48,13 @@ class Application:
                     else:self.message='Folder selection cancelled. Your saved folder is unchanged.'
                 elif action=='check':
                     self.manifest=None;self.changes=[];self.message='Checking the published PTR channel…'
+                    # Repair the connection even when no patch components need updating.
+                    with updater.locked(root) as state:
+                        connection.configure(root,state,connection.load(ROOT),updater.ensure_closed)
                     manifest=updater.latest();parts=updater.changed(root,manifest)
                     self.manifest=manifest;self.changes=[dict(id=c['id'],bytes=c['bytes']) for c in parts]
                     self.message=f'{len(parts)} component(s) need updating.' if parts else 'Your PTR files match the published version.'
+                    self.message+=' PTR connection configured.'
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')
                     realm=connection.load(ROOT)

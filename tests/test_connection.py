@@ -1,6 +1,7 @@
 from pathlib import Path
 import unittest,sys,uuid,shutil
 from contextlib import contextmanager
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from launcher import connection
 
@@ -14,6 +15,22 @@ def test_directory():
         shutil.rmtree(root)
 
 class ConnectionTests(unittest.TestCase):
+    def test_check_repairs_connection_when_no_update_is_needed(self):
+        from launcher import app
+        class ImmediateThread:
+            def __init__(self,target,**kwargs):self.target=target
+            def start(self):self.target()
+        with test_directory() as folder:
+            client=folder/'client';(client/'Data/enUS').mkdir(parents=True)
+            (client/'Wow.exe').write_bytes(b'fixture only')
+            realm=client/'Data/enUS/realmlist.wtf';realm.write_text('set realmlist old.example\n')
+            application=app.Application(folder/'settings');application.select(str(client))
+            with patch.object(app.threading,'Thread',ImmediateThread),patch.object(app.connection,'load',return_value='ptr.example.com'),patch.object(app.updater,'ensure_closed'),patch.object(app.updater,'latest',return_value={'version':'test'}),patch.object(app.updater,'changed',return_value=[]):
+                application.start('check')
+            self.assertEqual(application.error,'')
+            self.assertEqual(application.changes,[])
+            self.assertIn('ptr.example.com',realm.read_text())
+            self.assertIn('PTR connection configured',application.message)
     def test_stock_and_existing_settings(self):
         with test_directory() as folder:
             root=Path(folder);(root/'Data/enUS').mkdir(parents=True);(root/'WTF').mkdir()
