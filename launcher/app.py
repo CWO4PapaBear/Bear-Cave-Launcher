@@ -125,13 +125,6 @@ def create_server(app,port=0):
 
 def main(smoke_dir=None):
     import webview
-    if os.name == 'nt':
-        from webview.guilib import initialize
-        engine = initialize('edgechromium')
-        if engine.renderer != 'edgechromium':
-            raise RuntimeError('WebView2 is unavailable. The legacy browser cannot run this launcher. '
-                               'For Wine/Proton/Lutris, start BearCaveLauncher.exe with --compatibility '
-                               'to use native controls (experimental). On Windows, install WebView2.')
     app=Application(smoke_dir);server,url=create_server(app)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
@@ -150,6 +143,9 @@ def main(smoke_dir=None):
         window.events.loaded+=lambda:ready.set()
         window.events.closed+=lambda:closed.set()
         def startup_watch():
+            if os.name == 'nt' and webview.renderer != 'edgechromium':
+                failed.set();window.destroy()
+                return
             if not ready.wait(30) and not closed.is_set():
                 failed.set();window.destroy()
         def pick():
@@ -170,7 +166,7 @@ def main(smoke_dir=None):
         webview.start(startup_watch,gui='edgechromium' if os.name=='nt' else None,debug=False,
                       storage_path=str(app.directory/'webview'),private_mode=True,
                       icon=str(ROOT/'ui/assets'/('bear-cave-app-icon.ico' if os.name=='nt' else 'bear-cave-app-icon.png')))
-        if failed.is_set():raise RuntimeError('The desktop rendering engine did not initialize. Install or repair Microsoft Edge WebView2 Runtime on Windows, then retry.')
+        if failed.is_set():raise RuntimeError('The required WebView2 engine did not initialize. Install or repair Microsoft Edge WebView2 on Windows. For Wine/Proton/Lutris, start BearCaveLauncher.exe with --compatibility to use native controls (experimental).')
     finally:
         server.shutdown();server.server_close();thread.join(timeout=5)
 

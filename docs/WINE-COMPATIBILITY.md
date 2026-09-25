@@ -26,6 +26,9 @@ Check / Repair when already current. Check an interrupted-update recovery on a
 disposable client copy. Report the Wine/Proton version and any error text.
 
 Windows local tests and package checks do not establish Linux compatibility.
+The native window and bundled Tcl/Tk checks passed locally. A separate WebView2
+smoke check crashed in msedgewebview2.exe on the build machine, so that regression
+check is not reported as passing; the compatibility window avoids that engine.
 Real Wine/Proton testing is still required. No client patch channel or Discord
 patch notes promotion is needed for this launcher-only package change. The
 configured ZIP remains private; source publication does not distribute it.
