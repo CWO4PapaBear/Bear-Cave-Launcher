@@ -5,6 +5,8 @@ description: Inspect supplied BLP artwork and build, validate, install, or roll 
 
 # Login artwork integration
 
+**Observed compatibility failure, September 26:** The local client rejected this GlueXML candidate with `Logs/GlueXML.log: GlueXML is modified or corrupt`. The original locale Z archive was restored and hash-verified. The Lua-overlay implementation below is retained for diagnosis and reproducibility, not as a working solution for this executable. Do not reinstall it on this client. Investigate an asset-only logo/model replacement that leaves signed GlueXML unchanged. BLP backgrounds alone do not replace the stock 3D login scene; that route needs a compatible model/scene asset. Do not claim this first pass works or distribute it through the launcher.
+
 Use the actual client as the baseline. Login UI is GlueXML, before addons load; an ordinary addon cannot replace it. Preserve authentication and realm configuration. Keep extracted Blizzard sources, BLPs, MPQs, executable files and personal client data out of source history. Publish original scripts and this guide only. Local installation does not publish a launcher release.
 
 ## 1. Set exact paths and inspect

@@ -49,6 +49,7 @@ def main():
  m=json.loads(record.read_text())
  assert subprocess.run(['powershell.exe','-NoProfile','-Command','if(Get-Process Wow -ErrorAction SilentlyContinue){exit 1}'],capture_output=True).returncode==0,'Close WoW first'
  if a.action=='install':
+  raise RuntimeError('Installation blocked: this GlueXML candidate was rejected by the tested client. Use the asset-only redesign; rollback remains available.')
   assert sha(target)==m['before'] and sha(candidate)==m['after'],'Archive drift'
   assert not backup.exists(),'Backup exists; review previous install'
   shutil.copy2(target,backup);source=candidate
