@@ -9,6 +9,28 @@ description: Inspect supplied BLP artwork and build, validate, install, or roll 
 
 Use the actual client as the baseline. Login UI is GlueXML, before addons load; an ordinary addon cannot replace it. Preserve authentication and realm configuration. Keep extracted Blizzard sources, BLPs, MPQs, executable files and personal client data out of source history. Publish original scripts and this guide only. Local installation does not publish a launcher release.
 
+## Current route: asset-only scene (local test)
+
+Use `asset_patch.py` for the successor, not the blocked GlueXML installer described in the historical procedure below. It writes an original MD20 version 264 textured quad with one camera, bone and Stand sequence plus matching external SKIN geometry. This replaces both native login model paths and the WotLK logo texture. No script or executable changes are made. Geometry is unlit/unfogged and two-sided; background UVs trim the prepared edge padding. Model framing is static and still requires in-client aspect/camera review; unlike the rejected Lua layout, it does not dynamically recalculate crop on resize.
+
+After setting `$py` and `$argsList` as in step 1:
+
+```powershell
+$assetScript='outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/asset_patch.py'
+$assetArgs=$argsList.Clone()
+$assetArgs[5]='outputs/Bear_Cave_Login_Art/asset-only'
+& $py outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/build_scene.py
+& $py $assetScript build @assetArgs
+Get-Process Wow -ErrorAction SilentlyContinue
+& $py $assetScript install @assetArgs
+# Roll back this asset-only revision, with WoW closed:
+& $py $assetScript rollback @assetArgs
+```
+
+Do not run install and rollback together; rollback is the recovery command. Build checks array strides/bounds and skin indices, confirms no signed AccountLogin.lua entry, and reads back every old and new MPQ entry. Installation verifies hashes and saves `asset-only/original.MPQ`. The `asset-only/payload/Interface` hierarchy is ready for Ladik's MPQ Editor: add this hierarchy preserving its internal paths into a **copy** of the existing managed locale Z archive, not a blank replacement that discards other patches. Do not import the payload parent directory itself as part of the virtual path. Inspect the resulting six asset entries and verify all previous records. Preserve the loose source-art folder.
+
+Format references used: [wowdev/pywowlib M2 definitions](https://github.com/wowdev/pywowlib/blob/master/file_formats/m2_format.py) and [SKIN definitions](https://github.com/wowdev/pywowlib/blob/master/file_formats/skin_format.py). These informed the original writer; no third-party model files are committed. A successful binary validator does not establish renderer compatibility. Check the actual login screen before distributing; retain the previous patch for recovery.
+
 ## 1. Set exact paths and inspect
 
 The following PowerShell commands were used for the September 26, 2026 Bear Cave client. Set the working directory first. For another installation, change these values deliberately.
