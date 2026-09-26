@@ -13,7 +13,7 @@ Use the actual client as the baseline. Login UI is GlueXML, before addons load; 
 
 ### Original animation route (September 26 local test)
 
-`animated_scene.py` generates original geometry and bone translation tracks from the working static scene. It uses no stock animation arrays or particles: 28 soft textured snow quads loop over 12 seconds. The optional banner uses a 6-by-5 cloth grid with the upper slanted attachment line pinned and a separate fixed wood/rope layer. Each section has its own bone palette, capped at 53 entries. The original soft snow sprite is a generated 16x16 TGA; the supplied BLP cloth/frame remain local.
+`animated_scene.py` generates original geometry and bone translation tracks from the working static scene. It uses no stock animation arrays or particles: 56 soft textured snow quads in two 28-bone sections loop over 12 seconds. The optional banner uses a 6-by-5 cloth grid with the upper slanted attachment line pinned and a separate fixed wood/rope layer. Each section has its own bone palette, capped at 53 entries. The original soft snow sprite is a generated 16x16 TGA; the supplied BLP cloth/frame remain local.
 
 Exact build commands, after defining `$py` and `$argsList` in step 1:
 
@@ -40,6 +40,21 @@ $bannerArgs[5]='outputs/Bear_Cave_Login_Art/custom-banner-after-snow'
 ```
 
 Validate track array bounds, timestamp ordering, vertex weights, skin indices, section palettes and every archive entry. Installation additionally regenerates the original animated model and requires exact model/skin equality. This does not establish renderer compatibility: test opening login, snow motion, looping, aspect/framing, control usability, then cloth alignment and waving. The previous donor-snow route remains blocked. Keep local art testing separate from launcher Update/Repair, which restores the published archive.
+
+### Banner and doubled snowfall test
+
+The owner accepted the initial snow in-game. The next locally installed candidate doubles the count from 28 to 56 while preserving flake size and speed. Two independent snow sections keep each bone palette below the renderer limit. It also enables the fixed stick/rope frame and waving cloth. Exact commands used, with the step-1 variables:
+
+```powershell
+$bannerArgs=$argsList.Clone()
+$bannerArgs[5]='outputs/Bear_Cave_Login_Art/banner-double-snow'
+& $py $assetScript build @bannerArgs --previous-build outputs/Bear_Cave_Login_Art/custom-snow/manifest.json --animation banner
+& $py $assetScript install @bannerArgs
+# Recovery only, with WoW closed:
+& $py $assetScript rollback @bannerArgs
+```
+
+Model validation and complete MPQ read-back passed; installation preserved the accepted snow archive as `banner-double-snow/original.MPQ`. Banner framing, attachments and motion await in-game review. No tester release was published. After banner acceptance, the requested final layer is localized warm flickering light on the cave wall, suggesting a fire inside the cave. Keep this localized rather than changing the whole background brightness; preserve the validated snow and banner. This firelight layer is not implemented yet.
 
 ### Camera correction and original snowfall revision
 

@@ -48,7 +48,7 @@ def scene(banner=False):
   sv,si=len(vertices),len(indices);quad(1,3.2,6.2,3.7,-2.3);section(sv,si,3)
  # Snow starts above and finishes below the viewport; wrap happens offscreen.
  rng=random.Random(20260926);sv,si=len(vertices),len(indices)
- for i in range(28):
+ for i in range(56):
   phase=rng.randrange(DURATION);y=rng.uniform(-8,8);size=rng.uniform(.017,.035);drift=rng.uniform(.08,.22)
   wrap=DURATION-phase;times=sorted(set([0,DURATION]+list(range(0,DURATION+1,500))+([wrap-1,wrap]if 0<wrap<DURATION else [])))
   keys=[]
@@ -56,7 +56,8 @@ def scene(banner=False):
    elapsed=(t+phase)%DURATION
    keys.append((t,(0,drift*math.sin(2*math.pi*(t+phase)/DURATION),6-12*elapsed/DURATION)))
   b=bone(keys);quad(2,y-size,y+size,size,-size,b=b)
- section(sv,si,1)
+  if (i+1)%28==0:
+   section(sv,si,1);sv,si=len(vertices),len(indices)
  assert len(bones)<256 and len(vertices)<65536
  arr(44,len(bones),b''.join(bones));arr(60,len(vertices),b''.join(vertices))
  palettes=[sorted({vertices[j][16] for j in range(sv,sv+nv)}) for sv,nv,si,ni,tex in sections]
