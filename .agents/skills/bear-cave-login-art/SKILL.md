@@ -13,6 +13,8 @@ Use the actual client as the baseline. Login UI is GlueXML, before addons load; 
 
 ### Camera correction and original snowfall revision
 
+**Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.
+
 The first static scene was reported severely zoomed in. Its ten-unit camera distance was replaced with a diagonal-FOV-derived fit for the owner's 1920x1080 viewport. The subsequent snowfall request uses `snow_scene.py`: retain the stock camera, bone/sequence animation and the single skin batch referencing SNOWFLAKE01B.BLP; append a static textured background plane sized for that camera. Only two batches render (background and snow). Dragon/scenery batches, particle emitters, sound events, lights and attachments are disabled. Original model bytes remain local and are not committed. In-game snow and framing acceptance remains required.
 
 Revision commands, after defining `$py` and `$argsList` below:

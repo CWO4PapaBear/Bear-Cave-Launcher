@@ -9,6 +9,7 @@ def main():
  p.add_argument('--previous-build',type=Path)
  p.add_argument('--original-snow',action='store_true')
  a=p.parse_args();sys.path.insert(0,str(a.mpq_tools));from lib.mpq import MPQArchive,write_archive
+ if a.original_snow:raise RuntimeError('Original-snow prototype caused client error 132; disabled pending model validation.')
  a.work.mkdir(parents=True,exist_ok=True);target=a.client/'Data/enUS/patch-enUS-Z.MPQ';candidate=a.work/target.name;backup=a.work/'original.MPQ';record=a.work/'manifest.json'
  if a.action=='build':
   assert not backup.exists(),'Use a fresh work folder for another revision'
@@ -43,6 +44,9 @@ def main():
  info=json.loads(record.read_text())
  assert subprocess.run(['powershell.exe','-NoProfile','-Command','if(Get-Process Wow -ErrorAction SilentlyContinue){exit 1}'],capture_output=True).returncode==0,'Close WoW first'
  if a.action=='install':
+  with MPQArchive(candidate)as ar:
+   model=ar.read_file('Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend.m2')
+   assert struct.unpack_from('<I',model,60)[0]==4,'Donor-snow prototype is blocked after client error 132'
   assert sha(target)==info['before'] and sha(candidate)==info['after'] and not backup.exists(),'Archive/backup drift'
   shutil.copy2(target,backup);source=candidate
  else:
