@@ -4,6 +4,11 @@ No executable or GlueXML changes. In-client rendering still requires acceptance.
 """
 import struct,math
 P=lambda fmt,*v:struct.pack('<'+fmt,*v)
+# WotLK's camera FOV is diagonal, not vertical. Fit the useful artwork width
+# at the reviewed 1920x1080 viewport; retain a small cover margin.
+ASPECT=16/9
+FOV=.7
+CAMERA_DISTANCE=(8/ASPECT)/math.tan((FOV/math.sqrt(1+ASPECT*ASPECT))/2)*.99
 def scene():
  m=bytearray(304);m[:8]=P('4sI',b'MD20',264)
  def append(data):
@@ -32,7 +37,7 @@ def scene():
  for at,value in [(120,0),(128,0),(136,0),(144,0)]:array(at,1,P('H',value))
  array(152,1,P('h',-1))
  m[160:188]=bounds;m[188:216]=bounds
- camera=P('ifff',0,.7,1000,.1)+track+P('3f',10,0,0)+track+P('3f',0,0,0)+track
+ camera=P('ifff',0,FOV,1000,.1)+track+P('3f',CAMERA_DISTANCE,0,0)+track+P('3f',0,0,0)+track
  assert len(camera)==100;array(272,1,camera);array(280,1,P('H',0))
  s=bytearray(48);s[:4]=b'SKIN'
  def skin_array(at,count,data):

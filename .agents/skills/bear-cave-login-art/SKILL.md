@@ -11,6 +11,24 @@ Use the actual client as the baseline. Login UI is GlueXML, before addons load; 
 
 ## Current route: asset-only scene (local test)
 
+### Camera correction and original snowfall revision
+
+The first static scene was reported severely zoomed in. Its ten-unit camera distance was replaced with a diagonal-FOV-derived fit for the owner's 1920x1080 viewport. The subsequent snowfall request uses `snow_scene.py`: retain the stock camera, bone/sequence animation and the single skin batch referencing SNOWFLAKE01B.BLP; append a static textured background plane sized for that camera. Only two batches render (background and snow). Dragon/scenery batches, particle emitters, sound events, lights and attachments are disabled. Original model bytes remain local and are not committed. In-game snow and framing acceptance remains required.
+
+Revision commands, after defining `$py` and `$argsList` below:
+
+```powershell
+$assetScript='outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/asset_patch.py'
+$snowArgs=$argsList.Clone()
+$snowArgs[5]='outputs/Bear_Cave_Login_Art/original-snow'
+& $py $assetScript build @snowArgs --previous-build outputs/Bear_Cave_Login_Art/camera-fit/manifest.json --original-snow
+& $py $assetScript install @snowArgs
+# Restore the preceding camera-fit revision (only when recovery is needed):
+& $py $assetScript rollback @snowArgs
+```
+
+`--previous-build` must identify the manifest whose `after` hash matches the currently installed archive, not merely the newest folder name. The recorded sequence was asset-only -> camera-fit -> original-snow; each revision has its own original.MPQ. After a rollback, reassess installed hashes before proceeding. For a clean baseline without existing Bear Cave assets, omit `--previous-build`. The snowfall donor is the local patch-enUS-2.MPQ Northrend model/skin. If its layout or snow batch differs, reconcile rather than weakening the assertions.
+
 Use `asset_patch.py` for the successor, not the blocked GlueXML installer described in the historical procedure below. It writes an original MD20 version 264 textured quad with one camera, bone and Stand sequence plus matching external SKIN geometry. This replaces both native login model paths and the WotLK logo texture. No script or executable changes are made. Geometry is unlit/unfogged and two-sided; background UVs trim the prepared edge padding. Model framing is static and still requires in-client aspect/camera review; unlike the rejected Lua layout, it does not dynamically recalculate crop on resize.
 
 After setting `$py` and `$argsList` as in step 1:
