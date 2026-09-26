@@ -87,6 +87,21 @@ $bankArgs[5]='outputs/Bear_Cave_Login_Art/buried-post'
 & $py $assetScript rollback @bankArgs
 ```
 
+### 224 flakes and snowbank horizontal alignment
+
+The next screenshot shows the bank crest to the right of the post. Shift its canvas left 1.6 model units, preserving height/depth. Double snow to 224 visible quads in eight 28-flake sections. The extra 112 flakes share existing motion tracks at different horizontal positions, keeping total model bones below the byte-index limit. The original varied fall speeds and swirls remain. Binary validation and complete MPQ read-back passed; candidate is staged pending client closure and installation.
+
+```powershell
+$denseArgs=$argsList.Clone()
+$denseArgs[5]='outputs/Bear_Cave_Login_Art/snow-224-bank-left'
+& $py $assetScript build @denseArgs --previous-build outputs/Bear_Cave_Login_Art/buried-post/manifest.json --animation banner
+& $py $assetScript install @denseArgs
+# Recovery only:
+& $py $assetScript rollback @denseArgs
+```
+
+The requested snow in front of login buttons is not implemented: the current model is rendered beneath the login UI. Model depth changes do not raise it above those controls. The earlier GlueXML route was rejected by this client; do not silently reintroduce it or claim that this asset-only candidate provides above-button snow. Firelight remains pending and no tester release is published.
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.

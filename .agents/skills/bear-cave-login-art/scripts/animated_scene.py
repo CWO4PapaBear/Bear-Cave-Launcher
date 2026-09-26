@@ -46,10 +46,11 @@ def scene(banner=False):
    for col in range(cols):
     i=sv+row*(cols+1)+col;indices.extend([i,i+1,i+cols+2,i,i+cols+2,i+cols+1])
   section(sv,si,2)
-  sv,si=len(vertices),len(indices);quad(1.6,2.6,7.6,-1.9,-4.4);section(sv,si,4)
+  sv,si=len(vertices),len(indices);quad(1.6,1.0,6.0,-1.9,-4.4);section(sv,si,4)
  # Snow starts above and finishes below the viewport; wrap happens offscreen.
  rng=random.Random(20260926);sv,si=len(vertices),len(indices)
- for i in range(112):
+ snow_bones=[]
+ for i in range(224):
   period=[12000,6000,4000][i%3];phase=rng.randrange(period);y=rng.uniform(-8,8);size=rng.uniform(.017,.035)
   swirl=i%4==0;drift=rng.uniform(.35,.85) if swirl else rng.uniform(.12,.3)
   wraps=range(period-phase,DURATION+1,period)
@@ -58,7 +59,11 @@ def scene(banner=False):
   for t in times:
    elapsed=(t+phase)%period;angle=4*math.pi*(t+phase)/period
    keys.append((t,(0,drift*math.sin(angle),6-12*elapsed/period+(.35*math.sin(angle) if swirl else 0))))
-  b=bone(keys);quad(2,y-size,y+size,size,-size,b=b)
+  # Pair separated flakes on shared tracks to stay within byte bone indices.
+  if i<112:
+   b=bone(keys);snow_bones.append(b)
+  else:b=snow_bones[i-112]
+  quad(2,y-size,y+size,size,-size,b=b)
   if (i+1)%28==0:
    section(sv,si,1);sv,si=len(vertices),len(indices)
  assert len(bones)<256 and len(vertices)<65536
