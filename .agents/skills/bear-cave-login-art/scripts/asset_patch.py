@@ -7,6 +7,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('action',choices=['build','install','rollback'])
  for key in ['client','art','work','mpq-tools']:p.add_argument('--'+key,type=Path,required=True)
  p.add_argument('--previous-build',type=Path)
+ p.add_argument('--animation',choices=['snow','banner'])
  p.add_argument('--original-snow',action='store_true')
  a=p.parse_args();sys.path.insert(0,str(a.mpq_tools));from lib.mpq import MPQArchive,write_archive
  if a.original_snow:raise RuntimeError('Original-snow prototype caused client error 132; disabled pending model validation.')
@@ -20,18 +21,22 @@ def main():
    files={n:ar.read_file(n)for n in names}
    assert not any(n.lower().startswith('interface\\gluexml\\')for n in files),'Unexpected signed UI override; reconcile'
   original=files.copy();m,s=scene();validate(m,s)
-  if a.original_snow:
-   from snow_scene import snow_scene
-   base='Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend'
-   with MPQArchive(a.client/'Data/enUS/patch-enUS-2.MPQ')as ar:m,s=snow_scene(ar.read_file(base+'.m2'),ar.read_file(base+'00.skin'))
+  if a.animation:
+   from animated_scene import scene as animated_scene
+   m,s=animated_scene(banner=a.animation=='banner')
   assets={'Interface\\Glues\\BearCave\\Background.blp':(a.art/'background_full_2048x1024.blp').read_bytes(),'Interface\\Glues\\Common\\Glues-WoW-WotLKLogo.blp':(a.art/'logo_SEPARATE_1024x512.blp').read_bytes()}
+  if a.animation:
+   from animated_scene import snow_texture
+   assets['Interface\\Glues\\BearCave\\Snow.tga']=snow_texture()
+   if a.animation=='banner':
+    for dest,src in [('Cloth','animated_cloth_banner_512x1024'),('Frame','fixed_stick_frame_512x1024')]:assets['Interface\\Glues\\BearCave\\'+dest+'.blp']=(a.art/(src+'.blp')).read_bytes()
   for name in ['UI_MainMenu_Northrend','UI_MainMenu']:
    base='Interface\\Glues\\Models\\'+name+'\\'+name;assets[base+'.m2']=m;assets[base+'00.skin']=s
   overlap={n.lower()for n in assets}&{n.lower()for n in files}
   if overlap:
    assert a.previous_build,'Existing art override requires --previous-build manifest'
    previous=json.loads(a.previous_build.read_text());assert sha(target)==previous['after'],'Previous archive drift'
-   assert overlap=={n.lower()for n in assets}=={n.lower()for n in previous['assets']}
+   assert overlap=={n.lower()for n in previous['assets']},'Unreviewed asset overlap'
    for n,digest in previous['assets'].items():assert hashlib.sha256(files[n]).hexdigest()==digest,n
   for name,data in assets.items():
    out=a.work/'payload'/Path(name.replace('\\','/'));out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data)
@@ -39,14 +44,18 @@ def main():
   with MPQArchive(candidate)as ar:
    for n,v in files.items():assert ar.read_file(n)==v,n
    assert not ar.has_file('Interface/GlueXML/AccountLogin.lua')
-  record.write_text(json.dumps(dict(before=sha(target),after=sha(candidate),preserved=len(original),assets={n:hashlib.sha256(v).hexdigest()for n,v in assets.items()}),indent=2))
+  record.write_text(json.dumps(dict(animation=a.animation,before=sha(target),after=sha(candidate),preserved=len(original),assets={n:hashlib.sha256(v).hexdigest()for n,v in assets.items()}),indent=2))
   print('BUILT AND READ-BACK VERIFIED: asset-only, no GlueXML; Ladik-ready payload exported.');return
  info=json.loads(record.read_text())
  assert subprocess.run(['powershell.exe','-NoProfile','-Command','if(Get-Process Wow -ErrorAction SilentlyContinue){exit 1}'],capture_output=True).returncode==0,'Close WoW first'
  if a.action=='install':
   with MPQArchive(candidate)as ar:
    model=ar.read_file('Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend.m2')
-   assert struct.unpack_from('<I',model,60)[0]==4,'Donor-snow prototype is blocked after client error 132'
+   if info.get('animation'):
+    from animated_scene import scene as animated_scene
+    expected,skin=animated_scene(banner=info['animation']=='banner')
+    assert model==expected and ar.read_file('Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend00.skin')==skin,'Original animation differs from reviewed generator'
+   else:assert struct.unpack_from('<I',model,60)[0]==4,'Donor-snow prototype is blocked after client error 132'
   assert sha(target)==info['before'] and sha(candidate)==info['after'] and not backup.exists(),'Archive/backup drift'
   shutil.copy2(target,backup);source=candidate
  else:

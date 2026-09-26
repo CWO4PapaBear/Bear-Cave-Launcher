@@ -11,6 +11,36 @@ Use the actual client as the baseline. Login UI is GlueXML, before addons load; 
 
 ## Current route: asset-only scene (local test)
 
+### Original animation route (September 26 local test)
+
+`animated_scene.py` generates original geometry and bone translation tracks from the working static scene. It uses no stock animation arrays or particles: 28 soft textured snow quads loop over 12 seconds. The optional banner uses a 6-by-5 cloth grid with the upper slanted attachment line pinned and a separate fixed wood/rope layer. Each section has its own bone palette, capped at 53 entries. The original soft snow sprite is a generated 16x16 TGA; the supplied BLP cloth/frame remain local.
+
+Exact build commands, after defining `$py` and `$argsList` in step 1:
+
+```powershell
+$assetScript='outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/asset_patch.py'
+$customArgs=$argsList.Clone()
+$customArgs[5]='outputs/Bear_Cave_Login_Art/custom-snow'
+& $py outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/animated_scene.py
+& $py $assetScript build @customArgs --previous-build outputs/Bear_Cave_Login_Art/camera-fit/manifest.json --animation snow
+Get-Process Wow -ErrorAction SilentlyContinue
+& $py $assetScript install @customArgs
+# Recovery only, with WoW closed:
+& $py $assetScript rollback @customArgs
+```
+
+The snow candidate was installed locally with a verified backup. In-client animation acceptance is pending. No launcher channel was promoted. A separate `custom-banner` candidate was built against camera-fit using `--animation banner` before snow installation; it is NOT installed. After snow acceptance, build a fresh banner work directory against the actually installed `custom-snow/manifest.json`; do not install the older candidate over changed archive bytes. Example:
+
+```powershell
+$bannerArgs=$argsList.Clone()
+$bannerArgs[5]='outputs/Bear_Cave_Login_Art/custom-banner-after-snow'
+& $py $assetScript build @bannerArgs --previous-build outputs/Bear_Cave_Login_Art/custom-snow/manifest.json --animation banner
+# Only after snow acceptance and client closure:
+& $py $assetScript install @bannerArgs
+```
+
+Validate track array bounds, timestamp ordering, vertex weights, skin indices, section palettes and every archive entry. Installation additionally regenerates the original animated model and requires exact model/skin equality. This does not establish renderer compatibility: test opening login, snow motion, looping, aspect/framing, control usability, then cloth alignment and waving. The previous donor-snow route remains blocked. Keep local art testing separate from launcher Update/Repair, which restores the published archive.
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.
