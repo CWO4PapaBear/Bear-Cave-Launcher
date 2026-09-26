@@ -102,6 +102,19 @@ $denseArgs[5]='outputs/Bear_Cave_Login_Art/snow-224-bank-left'
 
 The requested snow in front of login buttons is not implemented: the current model is rendered beneath the login UI. Model depth changes do not raise it above those controls. The earlier GlueXML route was rejected by this client; do not silently reintroduce it or claim that this asset-only candidate provides above-button snow. Firelight remains pending and no tester release is published.
 
+### Cloth alignment along crossbar
+
+After inspecting both transparent source layers, shift cloth's canvas offset from (40,80) to (105,110) in frame-image coordinates. This moves it right and slightly down along the sloped crossbar, roughly matching five cloth holes to the rope clusters; the artwork spacing is not identical, so exact alignment remains a visual review. Cloth stays in front of the post, its pinned edge and animation unchanged. Installed locally with backup and model/archive validation; not distributed.
+
+```powershell
+$ropeArgs=$argsList.Clone()
+$ropeArgs[5]='outputs/Bear_Cave_Login_Art/banner-rope-alignment'
+& $py $assetScript build @ropeArgs --previous-build outputs/Bear_Cave_Login_Art/snow-224-bank-left/manifest.json --animation banner
+& $py $assetScript install @ropeArgs
+# Recovery only:
+& $py $assetScript rollback @ropeArgs
+```
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.

@@ -41,7 +41,7 @@ def scene(banner=False):
       t=k*500;angle=4*math.pi*k/24+u*3-v*2
       keys.append((t,(.18*free*math.sin(angle),.08*free*math.sin(angle),.035*free*math.cos(angle))))
      b=bone(keys)
-    vertex(1.3,3.2+(40+.8*512*u)/512*3.0,.55-(80+.8*1024*v)/1024*6.0,u,v,b)
+    vertex(1.3,3.2+(105+.8*512*u)/512*3.0,.55-(110+.8*1024*v)/1024*6.0,u,v,b)
   for row in range(rows):
    for col in range(cols):
     i=sv+row*(cols+1)+col;indices.extend([i,i+1,i+cols+2,i,i+cols+2,i+cols+1])
