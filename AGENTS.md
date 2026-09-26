@@ -7,3 +7,5 @@
 - Keep HeroFreePick and More Minions in their own source repositories. Do not put proprietary client archives, personal settings, credentials, database exports or generated binaries into source history.
 - Webhook credentials belong only on a future backend. Account requests remain disconnected until the owner configures that service.
 - Mock/fixture tests do not prove live-client behavior. Preserve backups and fail closed on mismatched files, unsafe paths or an active game process.
+
+- For WoW login-screen background/logo work, use `.agents/skills/bear-cave-login-art/SKILL.md`; it includes the inspected BLP/GlueXML workflow, exact commands and rollback procedure. This is distinct from launcher UI artwork.
