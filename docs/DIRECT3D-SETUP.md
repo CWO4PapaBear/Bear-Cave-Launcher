@@ -4,4 +4,6 @@ The launcher configures native Windows clients to use `SET gxApi "D3D9"` during 
 
 Only the renderer and existing realm settings are edited. Original configuration files are backed up under `.bear-cave-launcher/realm-backups`; unrelated settings and encoding are preserved. Missing WTF configuration is created. Running-game and linked-path guards still apply. Wine/Proton/native Linux retain their renderer settings.
 
-Deployment requires the rebuilt launcher ZIP. Existing launcher executables do not self-update, and the managed client package deliberately excludes personal WTF settings. Distribute the new configured ZIP privately, then testers select their existing client and Check or Play with WoW closed. No new client patch or server restart is required. The ZIP includes deployment connection settings and is not committed to source.
+Deployment requires the rebuilt launcher ZIP. Launchers older than 0.3.0 do not self-update, and the managed client package deliberately excludes personal WTF settings. Distribute the new configured ZIP privately, then testers select their existing client and Check or Play with WoW closed. No new client patch or server restart is required. The ZIP includes deployment connection settings and is not committed to source.
+
+Launcher 0.3.0 includes the self-update bootstrap. See LAUNCHER-SELF-UPDATE.md; distribute this configured ZIP once, then future code-only releases arrive through the separate launcher channel.

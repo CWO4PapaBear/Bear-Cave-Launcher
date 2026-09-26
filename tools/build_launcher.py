@@ -1,6 +1,6 @@
 """Build on the target OS; requires pip install pyinstaller==6.22.3."""
 from pathlib import Path
-import subprocess,sys,shutil
+import subprocess,sys,shutil,json
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
 from launcher import connection
@@ -20,5 +20,7 @@ exe=folder/('BearCaveLauncher.exe'if sys.platform=='win32'else'BearCaveLauncher'
 subprocess.run([str(exe),'--self-test'],check=True)
 if sys.platform=='win32':
     (folder/'Start Compatibility Mode.cmd').write_text('@echo off\nstart "" "%~dp0BearCaveLauncher.exe" --compatibility\n',encoding='ascii')
+from launcher.selfupdate import VERSION,BUILD
+(folder/'launcher-version.json').write_text(json.dumps({'version':VERSION,'build':BUILD}))
 archive=shutil.make_archive(str(root/'dist'/('BearCaveLauncher-'+sys.platform)),'zip',root_dir=folder.parent,base_dir=folder.name)
 print('Built launcher bundle:',archive)

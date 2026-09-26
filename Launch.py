@@ -2,7 +2,10 @@ from launcher.app import main
 
 if __name__ == '__main__':
     import sys
-    if '--desktop-smoke-test' in sys.argv:
+    if '--apply-launcher-update' in sys.argv:
+        from launcher.selfupdate import apply
+        apply(sys.argv[sys.argv.index('--apply-launcher-update')+1])
+    elif '--desktop-smoke-test' in sys.argv:
         from pathlib import Path
         main(Path(sys.argv[sys.argv.index('--desktop-smoke-test')+1]).resolve())
     elif '--self-test' in sys.argv:
@@ -26,6 +29,8 @@ if __name__ == '__main__':
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:
+            from launcher.selfupdate import startup
+            if startup():sys.exit(0)
             if '--compatibility' in sys.argv:
                 from launcher.compatibility import main as compatibility_main
                 compatibility_main()
