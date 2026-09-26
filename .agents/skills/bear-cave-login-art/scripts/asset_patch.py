@@ -7,7 +7,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('action',choices=['build','install','rollback'])
  for key in ['client','art','work','mpq-tools']:p.add_argument('--'+key,type=Path,required=True)
  p.add_argument('--previous-build',type=Path)
- p.add_argument('--animation',choices=['snow','banner'])
+ p.add_argument('--animation',choices=['snow','banner','fire'])
  p.add_argument('--original-snow',action='store_true')
  a=p.parse_args();sys.path.insert(0,str(a.mpq_tools));from lib.mpq import MPQArchive,write_archive
  if a.original_snow:raise RuntimeError('Original-snow prototype caused client error 132; disabled pending model validation.')
@@ -23,13 +23,16 @@ def main():
   original=files.copy();m,s=scene();validate(m,s)
   if a.animation:
    from animated_scene import scene as animated_scene
-   m,s=animated_scene(banner=a.animation=='banner')
+   m,s=animated_scene(banner=a.animation in ('banner','fire'),fire=a.animation=='fire')
   assets={'Interface\\Glues\\BearCave\\Background.blp':(a.art/'background_full_2048x1024.blp').read_bytes(),'Interface\\Glues\\Common\\Glues-WoW-WotLKLogo.blp':(a.art/'logo_SEPARATE_1024x512.blp').read_bytes()}
   if a.animation:
    from animated_scene import snow_texture
    assets['Interface\\Glues\\BearCave\\Snow.tga']=snow_texture()
-   if a.animation=='banner':
+   if a.animation in ('banner','fire'):
     for dest,src in [('Cloth','animated_cloth_banner_512x1024'),('Frame','fixed_stick_frame_512x1024'),('Snowbank','foreground_snowbank_512x256')]:assets['Interface\\Glues\\BearCave\\'+dest+'.blp']=(a.art/(src+'.blp')).read_bytes()
+  if a.animation=='fire':
+   from animated_scene import fire_texture
+   assets['Interface\\Glues\\BearCave\\Firelight.tga']=fire_texture()
   for name in ['UI_MainMenu_Northrend','UI_MainMenu']:
    base='Interface\\Glues\\Models\\'+name+'\\'+name;assets[base+'.m2']=m;assets[base+'00.skin']=s
   overlap={n.lower()for n in assets}&{n.lower()for n in files}
@@ -53,7 +56,7 @@ def main():
    model=ar.read_file('Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend.m2')
    if info.get('animation'):
     from animated_scene import scene as animated_scene
-    expected,skin=animated_scene(banner=info['animation']=='banner')
+    expected,skin=animated_scene(banner=info['animation'] in ('banner','fire'),fire=info['animation']=='fire')
     assert model==expected and ar.read_file('Interface/Glues/Models/UI_MainMenu_Northrend/UI_MainMenu_Northrend00.skin')==skin,'Original animation differs from reviewed generator'
    else:assert struct.unpack_from('<I',model,60)[0]==4,'Donor-snow prototype is blocked after client error 132'
   assert sha(target)==info['before'] and sha(candidate)==info['after'] and not backup.exists(),'Archive/backup drift'

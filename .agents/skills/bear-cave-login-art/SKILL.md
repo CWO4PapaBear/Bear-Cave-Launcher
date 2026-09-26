@@ -115,6 +115,21 @@ $ropeArgs[5]='outputs/Bear_Cave_Login_Art/banner-rope-alignment'
 & $py $assetScript rollback @ropeArgs
 ```
 
+### Local cave firelight test
+
+`--animation fire` retains the accepted banner and 224 flakes and adds an original procedural amber TGA glow over the left cave wall. A separate texture-weight track combines 1500ms, 400ms and 750ms rhythms over the existing 12-second loop. The background and other layers retain full opacity. This is a localized alpha overlay, not a model light or a GlueXML change. Validate its 97 short opacity keys (0..32767), matching timestamps and loop endpoints, plus existing model/skin and archive checks. Actual glow placement/intensity requires client review.
+
+```powershell
+$fireArgs=$argsList.Clone()
+$fireArgs[5]='outputs/Bear_Cave_Login_Art/cave-firelight'
+& $py $assetScript build @fireArgs --previous-build outputs/Bear_Cave_Login_Art/banner-rope-alignment/manifest.json --animation fire
+& $py $assetScript install @fireArgs
+# Recovery only, client closed:
+& $py $assetScript rollback @fireArgs
+```
+
+Installed locally with a verified prior-archive backup. No server restart or launcher channel promotion. Test the left cave's warm lighting for subtle fluctuating brightness, no rectangular edge and no effects on login controls. Do not claim acceptance until reviewed in-game.
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.

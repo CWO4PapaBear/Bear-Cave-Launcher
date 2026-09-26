@@ -2,7 +2,7 @@
 import math,struct,random
 from build_scene import scene as static_scene,P
 DURATION=12000
-def scene(banner=False):
+def scene(banner=False,fire=False):
  base,unused=static_scene();m=bytearray(base)
  def raw(data):
   m.extend(b'\0'*((-len(m))%16));o=len(m);m.extend(data);return o
@@ -47,6 +47,9 @@ def scene(banner=False):
     i=sv+row*(cols+1)+col;indices.extend([i,i+1,i+cols+2,i,i+cols+2,i+cols+1])
   section(sv,si,2)
   sv,si=len(vertices),len(indices);quad(1.6,1.0,6.0,-1.9,-4.4);section(sv,si,4)
+ if fire:
+  fire_texture=len(textures);textures.append('Interface\\Glues\\BearCave\\Firelight.tga')
+  sv,si=len(vertices),len(indices);quad(.01,-8,-3.8,1.0,-4.57);section(sv,si,fire_texture)
  # Snow starts above and finishes below the viewport; wrap happens offscreen.
  rng=random.Random(20260926);sv,si=len(vertices),len(indices)
  snow_bones=[]
@@ -77,6 +80,14 @@ def scene(banner=False):
   name=path.encode()+b'\0';o=raw(name);texture_data+=P('4I',0,0,len(name),o)
  arr(80,len(textures),texture_data);arr(128,len(textures),P('H'*len(textures),*range(len(textures))))
  arr(112,2,P('4H',7,0,23,2))
+ if fire:
+  # Preserve full opacity for other layers; animate only the localized glow.
+  _,weight_offset=struct.unpack_from('<II',m,88);constant=bytes(m[weight_offset:weight_offset+20])
+  times=list(range(0,DURATION+1,125))
+  values=[int(32767*(.55+.18*math.sin(2*math.pi*t/1500)+.12*math.sin(2*math.pi*t/400)+.08*math.sin(2*math.pi*t/750)))for t in times]
+  to=raw(P('I'*len(times),*times));vo=raw(P('h'*len(values),*values))
+  ta=raw(P('II',len(times),to));va=raw(P('II',len(values),vo))
+  arr(88,2,constant+P('Hh4I',1,-1,1,ta,1,va));arr(144,2,P('2H',0,1))
  # Preserve the working static camera and opacity track. Extend Stand duration.
  n,o=struct.unpack_from('<II',m,28);struct.pack_into('<I',m,o+4,DURATION)
  s=bytearray(48);s[:4]=b'SKIN'
@@ -91,7 +102,7 @@ def scene(banner=False):
  for i,(sv,nv,si,ni,tex)in enumerate(sections):
   sm+=P('10H7f',0,0,sv,nv,si,ni,len(palettes[i]),palette_start,1,0,0,0,0,0,0,0,12)
   palette_start+=len(palettes[i])
-  batches+=P('BbHHHh7H',0,0,0,i,i,-1,0 if tex==0 else 1,0,1,tex,0,0,0)
+  batches+=P('BbHHHh7H',0,0,0,i,i,-1,0 if tex==0 else 1,0,1,tex,0,1 if fire and tex==fire_texture else 0,0)
  sa(28,len(sections),sm);sa(36,len(sections),batches);struct.pack_into('<I',s,44,max(map(len,palettes)))
  validate(bytes(m),bytes(s));return bytes(m),bytes(s)
 def snow_texture():
@@ -101,6 +112,19 @@ def snow_texture():
   for x in range(16):
    r=math.hypot(x-7.5,y-7.5)/7.5;alpha=int(190*max(0,1-r)**1.5);data.extend((255,250,240,alpha))
  return bytes(data)
+def fire_texture():
+ # Original procedural warm glow; transparent perimeter avoids a visible panel.
+ width,height=128,256
+ data=bytearray(struct.pack('<BBBHHBHHHHBB',0,0,2,0,0,0,0,0,width,height,32,0x28))
+ for y in range(height):
+  v=y/(height-1)
+  for x in range(width):
+   u=x/(width-1)
+   glow=math.exp(-((u-.20)/.32)**2-((v-.60)/.32)**2)
+   edge=min(1,u*12,(1-u)*12,v*12,(1-v)*12)
+   data.extend((25,115,255,int(65*glow*max(0,edge))))
+ return bytes(data)
+
 def validate(m,s):
  def block(buf,at,size):
   n,o=struct.unpack_from('<II',buf,at);assert o+n*size<=len(buf);return n,o
