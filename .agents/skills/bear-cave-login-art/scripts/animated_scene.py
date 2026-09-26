@@ -26,7 +26,8 @@ def scene(banner=False):
  quad(0,-8,8,4.571429,-4.571429,(.0625,.9375,0,1));section(0,0,0)
  textures=['Interface\\Glues\\BearCave\\Background.blp','Interface\\Glues\\BearCave\\Snow.tga']
  if banner:
-  textures+=['Interface\\Glues\\BearCave\\Cloth.blp','Interface\\Glues\\BearCave\\Frame.blp']
+  textures+=['Interface\\Glues\\BearCave\\Cloth.blp','Interface\\Glues\\BearCave\\Frame.blp','Interface\\Glues\\BearCave\\Snowbank.blp']
+  sv,si=len(vertices),len(indices);quad(1,3.2,6.2,.55,-5.45);section(sv,si,3)
   sv,si=len(vertices),len(indices);cols,rows=6,5
   # Both supplied canvases share 512x1024 dimensions. Fit cloth under rope beam.
   for row in range(rows+1):
@@ -37,24 +38,26 @@ def scene(banner=False):
     if free:
      keys=[]
      for k in range(25):
-      t=k*500;angle=2*math.pi*k/24+u*3-v*2
-      keys.append((t,(.10*free*math.sin(angle),.045*free*math.sin(angle),.02*free*math.cos(angle))))
+      t=k*500;angle=4*math.pi*k/24+u*3-v*2
+      keys.append((t,(.18*free*math.sin(angle),.08*free*math.sin(angle),.035*free*math.cos(angle))))
      b=bone(keys)
-    vertex(.8,3.2+(40+.8*512*u)/512*3.0,3.7-(80+.8*1024*v)/1024*6.0,u,v,b)
+    vertex(1.3,3.2+(40+.8*512*u)/512*3.0,.55-(80+.8*1024*v)/1024*6.0,u,v,b)
   for row in range(rows):
    for col in range(cols):
     i=sv+row*(cols+1)+col;indices.extend([i,i+1,i+cols+2,i,i+cols+2,i+cols+1])
   section(sv,si,2)
-  sv,si=len(vertices),len(indices);quad(1,3.2,6.2,3.7,-2.3);section(sv,si,3)
+  sv,si=len(vertices),len(indices);quad(1.6,2.6,7.6,-2.7,-5.2);section(sv,si,4)
  # Snow starts above and finishes below the viewport; wrap happens offscreen.
  rng=random.Random(20260926);sv,si=len(vertices),len(indices)
- for i in range(56):
-  phase=rng.randrange(DURATION);y=rng.uniform(-8,8);size=rng.uniform(.017,.035);drift=rng.uniform(.08,.22)
-  wrap=DURATION-phase;times=sorted(set([0,DURATION]+list(range(0,DURATION+1,500))+([wrap-1,wrap]if 0<wrap<DURATION else [])))
+ for i in range(112):
+  period=[12000,6000,4000][i%3];phase=rng.randrange(period);y=rng.uniform(-8,8);size=rng.uniform(.017,.035)
+  swirl=i%4==0;drift=rng.uniform(.35,.85) if swirl else rng.uniform(.12,.3)
+  wraps=range(period-phase,DURATION+1,period)
+  times=sorted(set([0,DURATION]+list(range(0,DURATION+1,125))+[t for w in wraps for t in (w-1,w) if 0<=t<=DURATION]))
   keys=[]
   for t in times:
-   elapsed=(t+phase)%DURATION
-   keys.append((t,(0,drift*math.sin(2*math.pi*(t+phase)/DURATION),6-12*elapsed/DURATION)))
+   elapsed=(t+phase)%period;angle=4*math.pi*(t+phase)/period
+   keys.append((t,(0,drift*math.sin(angle),6-12*elapsed/period+(.35*math.sin(angle) if swirl else 0))))
   b=bone(keys);quad(2,y-size,y+size,size,-size,b=b)
   if (i+1)%28==0:
    section(sv,si,1);sv,si=len(vertices),len(indices)

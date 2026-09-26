@@ -56,6 +56,24 @@ $bannerArgs[5]='outputs/Bear_Cave_Login_Art/banner-double-snow'
 
 Model validation and complete MPQ read-back passed; installation preserved the accepted snow archive as `banner-double-snow/original.MPQ`. Banner framing, attachments and motion await in-game review. No tester release was published. After banner acceptance, the requested final layer is localized warm flickering light on the cave wall, suggesting a fire inside the cave. Keep this localized rather than changing the whole background brightness; preserve the validated snow and banner. This firelight layer is not implemented yet.
 
+### Grounded banner and wind revision
+
+The next local review requested 112 flakes, varied speed and swirling movement. The generator now uses 12-, 6- and 4-second fall periods; every fourth flake has a wider sinusoidal path. Tracks sample at 125ms with explicit offscreen wrap keys. Four 28-bone snow sections preserve palette limits. Cloth waves twice per 12-second loop with greater amplitude. The assembly is lowered 3.15 model units, and supplied `foreground_snowbank_512x256.blp` covers the base. Cloth depth remains in front of the post throughout its motion; render sections are frame, cloth, snowbank, then snow.
+
+Installed locally with complete archive read-back and backup; visual acceptance pending. Commands:
+
+```powershell
+$windArgs=$argsList.Clone()
+$windArgs[5]='outputs/Bear_Cave_Login_Art/grounded-banner-snow'
+& $py outputs/Bear-Cave-Launcher/.agents/skills/bear-cave-login-art/scripts/animated_scene.py
+& $py $assetScript build @windArgs --previous-build outputs/Bear_Cave_Login_Art/banner-double-snow/manifest.json --animation banner
+& $py $assetScript install @windArgs
+# Recovery only:
+& $py $assetScript rollback @windArgs
+```
+
+Check post/snowbank grounding at the actual resolution, cloth overlap, snowfall density and smooth motion before adding the final cave firelight. Firelight remains pending. No launcher client channel promotion.
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.

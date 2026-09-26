@@ -29,7 +29,7 @@ def main():
    from animated_scene import snow_texture
    assets['Interface\\Glues\\BearCave\\Snow.tga']=snow_texture()
    if a.animation=='banner':
-    for dest,src in [('Cloth','animated_cloth_banner_512x1024'),('Frame','fixed_stick_frame_512x1024')]:assets['Interface\\Glues\\BearCave\\'+dest+'.blp']=(a.art/(src+'.blp')).read_bytes()
+    for dest,src in [('Cloth','animated_cloth_banner_512x1024'),('Frame','fixed_stick_frame_512x1024'),('Snowbank','foreground_snowbank_512x256')]:assets['Interface\\Glues\\BearCave\\'+dest+'.blp']=(a.art/(src+'.blp')).read_bytes()
   for name in ['UI_MainMenu_Northrend','UI_MainMenu']:
    base='Interface\\Glues\\Models\\'+name+'\\'+name;assets[base+'.m2']=m;assets[base+'00.skin']=s
   overlap={n.lower()for n in assets}&{n.lower()for n in files}
