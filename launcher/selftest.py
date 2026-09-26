@@ -24,6 +24,7 @@ def connection_check():
         host=connection.load(app.ROOT)
         assert all(('SET realmList "'+host+'"') in path.read_text() for path in paths)
         assert (client/'WTF/private.txt').read_text()=='preserved'
+        if connection.native_windows():assert 'SET gxApi "D3D9"' in paths[-1].read_text()
         assert application.changes==[] and 'PTR connection configured.' in application.message
     finally:
         updater.latest,updater.changed,updater.ensure_closed=original

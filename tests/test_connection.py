@@ -15,6 +15,30 @@ def test_directory():
         shutil.rmtree(root)
 
 class ConnectionTests(unittest.TestCase):
+    def test_direct3d_preserves_settings_and_backs_up(self):
+        with test_directory() as root:
+            (root/'WTF').mkdir();config=root/'WTF/Config.wtf'
+            original=b'SET gxApi "OpenGL"\r\nSET gxResolution "2560x1440"\r\n# \xfc\r\n'
+            config.write_bytes(original);state=root/'state'
+            with patch.object(connection,'native_windows',return_value=True):
+                connection.configure(root,state,'ptr.example.com',lambda:None)
+                self.assertIn(b'SET gxApi "D3D9"',config.read_bytes())
+                self.assertIn(b'SET gxResolution "2560x1440"\r\n# \xfc',config.read_bytes())
+                self.assertEqual(next((state/'realm-backups').glob('*/WTF/Config.wtf')).read_bytes(),original)
+                count=len(list((state/'realm-backups').iterdir()))
+                connection.configure(root,state,'ptr.example.com',lambda:None)
+                self.assertEqual(count,len(list((state/'realm-backups').iterdir())))
+    def test_fresh_windows_config_and_wine_preservation(self):
+        with test_directory() as root:
+            with patch.object(connection,'native_windows',return_value=True):
+                connection.configure(root,root/'state','ptr.example.com',lambda:None)
+            config=root/'WTF/Config.wtf'
+            self.assertIn(b'SET gxApi "D3D9"',config.read_bytes())
+            config.write_bytes(b'SET gxApi "OpenGL"\n')
+            with patch.object(connection,'native_windows',return_value=False):
+                connection.configure(root,root/'state','ptr.example.com',lambda:None)
+            self.assertIn(b'SET gxApi "OpenGL"',config.read_bytes())
+
     def test_check_repairs_connection_when_no_update_is_needed(self):
         from launcher import app
         class ImmediateThread:

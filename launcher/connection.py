@@ -27,6 +27,16 @@ def safe(root,relative):
     if not target.resolve().is_relative_to(root.resolve()):raise ValueError('Realm configuration escapes client')
     return target
 
+def native_windows():
+    if os.name!='nt' or os.environ.get('WINEPREFIX') or os.environ.get('WINELOADERNOEXEC'):return False
+    import ctypes
+    try:
+        getattr(ctypes.WinDLL('ntdll'),'wine_get_version')
+        return False
+    except AttributeError:return True
+    except OSError:return False
+
+
 def configure(root,state,host,guard):
     """Caller holds updater.locked. Preserve originals and all unrelated settings."""
     host=address(host);guard()
@@ -39,7 +49,8 @@ def configure(root,state,host,guard):
     root_list=safe(root,'realmlist.wtf')
     if root_list.exists() or not targets:targets.append(root_list)
     config=safe(root,'WTF/Config.wtf')
-    if config.is_file():targets.append(config)
+    direct3d=native_windows()
+    if config.is_file() or direct3d:targets.append(config)
     changes=[]
     for target in targets:
         original=target.read_bytes() if target.exists() else None
@@ -49,6 +60,11 @@ def configure(root,state,host,guard):
         pattern=rb'(?im)^[ \t]*set[ \t]+realmlist[ \t]+[^\r\n]*'
         if re.search(pattern,content):updated=re.sub(pattern,lambda _:line,content)
         else:updated=content+(b'\r\n' if content and not content.endswith(b'\n') else b'')+line+b'\r\n'
+        if target==config and direct3d:
+            renderer=b'SET gxApi "D3D9"'
+            api=rb'(?im)^[ \t]*set[ \t]+gxapi[ \t]+[^\r\n]*'
+            if re.search(api,updated):updated=re.sub(api,lambda _:renderer,updated)
+            else:updated+= (b'\r\n' if updated and not updated.endswith(b'\n') else b'')+renderer+b'\r\n'
         if updated!=original:changes.append((target,original,updated))
     if not changes:return
     backup=state/'realm-backups'/uuid.uuid4().hex;backup.mkdir(parents=True)
@@ -60,6 +76,7 @@ def configure(root,state,host,guard):
         for target,original,updated in changes:
             guard()
             if (target.read_bytes() if target.exists() else None)!=original:raise RuntimeError('Realm settings changed during setup')
+            target.parent.mkdir(parents=True,exist_ok=True)
             temp=target.with_name(target.name+'.'+uuid.uuid4().hex+'.tmp')
             try:
                 with temp.open('xb') as stream:stream.write(updated);stream.flush();os.fsync(stream.fileno())
