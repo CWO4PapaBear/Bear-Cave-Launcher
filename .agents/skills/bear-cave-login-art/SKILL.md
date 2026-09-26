@@ -74,6 +74,19 @@ $windArgs[5]='outputs/Bear_Cave_Login_Art/grounded-banner-snow'
 
 Check post/snowbank grounding at the actual resolution, cloth overlap, snowfall density and smooth motion before adding the final cave firelight. Firelight remains pending. No launcher client channel promotion.
 
+### Snowbank overlap correction
+
+The grounded-banner screenshot still exposed the pointed post end. The snowbank texture's upper half is transparent, so positioning its canvas did not place the visible snow ridge high enough. Raise the snowbank by 0.8 model units (top -1.9, bottom -4.4), retaining its foreground depth, proportions and source artwork. Candidate `buried-post` was validated, read-back verified, and installed with the prior archive backed up. Visual acceptance remains pending.
+
+```powershell
+$bankArgs=$argsList.Clone()
+$bankArgs[5]='outputs/Bear_Cave_Login_Art/buried-post'
+& $py $assetScript build @bankArgs --previous-build outputs/Bear_Cave_Login_Art/grounded-banner-snow/manifest.json --animation banner
+& $py $assetScript install @bankArgs
+# Recovery only:
+& $py $assetScript rollback @bankArgs
+```
+
 ### Camera correction and original snowfall revision
 
 **Failed in-client test:** The original-snow revision caused ERROR #132 / ACCESS_VIOLATION at 0x006844E8 on build 12340. It was rolled back to camera-fit and its build/install paths are blocked. The commands below are historical reproduction notes, not approval to reinstall it. Retained-array and index checks did not prove renderer compatibility. The exact defective relationship is not yet diagnosed. Do not use this prototype in a launcher release or imply that original snow is working. Static camera-fit remains installed pending confirmation of reopening/framing.

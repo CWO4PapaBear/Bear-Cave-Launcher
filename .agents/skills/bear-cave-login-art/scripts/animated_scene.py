@@ -46,7 +46,7 @@ def scene(banner=False):
    for col in range(cols):
     i=sv+row*(cols+1)+col;indices.extend([i,i+1,i+cols+2,i,i+cols+2,i+cols+1])
   section(sv,si,2)
-  sv,si=len(vertices),len(indices);quad(1.6,2.6,7.6,-2.7,-5.2);section(sv,si,4)
+  sv,si=len(vertices),len(indices);quad(1.6,2.6,7.6,-1.9,-4.4);section(sv,si,4)
  # Snow starts above and finishes below the viewport; wrap happens offscreen.
  rng=random.Random(20260926);sv,si=len(vertices),len(indices)
  for i in range(112):
