@@ -1,0 +1,72 @@
+--- a/BattlePass.lua
++++ b/BattlePass.lua
+@@ -25,6 +25,8 @@
+         [3] = "BattlePass_OnProgressUpdate",
+         [4] = "BattlePass_OnClaimResult",
+         [5] = "BattlePass_OnError",
++        [6] = "BattlePass_OnSpinResult",
++        [7] = "BattlePass_OnSpinQueue",
+     }
+ }
+ 
+@@ -406,12 +408,12 @@
+ 
+ -- Request to claim a specific level
+ local function RequestClaimLevel(level)
+-    SendClientRequest(CSMHConfig.Prefix, 2, level)
++    SendClientRequest(CSMHConfig.Prefix, 2, level, "spin-v1")
+ end
+ 
+ -- Request to claim all available rewards
+ function BattlePass_ClaimAll()
+-    SendClientRequest(CSMHConfig.Prefix, 3)
++    SendClientRequest(CSMHConfig.Prefix, 3, "spin-v1")
+ end
+ 
+ -- ============================================================================
+@@ -704,9 +706,17 @@
+         [3] = "Title",
+         [4] = "Spell",
+         [5] = "Currency",
++        [6] = "Dice Spin",
+     }
+     local typeName = typeNames[levelData.rewardType] or "Reward"
+     GameTooltip:AddLine(typeName .. " x" .. levelData.count, 0.5, 0.5, 0.5)
++    if levelData.rewardType == 6 then
++        GameTooltip:AddLine("Rune of Retreat: 35%",0.1,1,0.1)
++        GameTooltip:AddLine("Rune of Return: 35%",0.1,1,0.1)
++        GameTooltip:AddLine("Inherited Mark: 25%",0.25,0.55,1)
++        GameTooltip:AddLine("Legacy Mount Token: 5%",0.75,0.35,1)
++        GameTooltip:AddLine("One prize. Delivered after the reveal.",1,1,1)
++    end
+ 
+     -- Status (using server status if available)
+     local status = GetLevelStatus(level)
+@@ -963,3 +973,27 @@
+         end
+     end
+ end)
++
++-- A prize is selected and saved by the server before the animation starts.
++-- Delivery is requested only after the five-second hold and flight to bags.
++function BattlePass_OnSpinResult(sender, args)
++    if not args then return end
++    local level, item, token = tonumber(args[1]), tonumber(args[2]), args[3]
++    if not level or level~=math.floor(level) or level<4 or level%4~=0 or
++       type(token)~='string' or not token:match('^%d+$') or #token>20 then return end
++    local accepted=BattlePassSpin.Play(item,token,function()
++        SendClientRequest(CSMHConfig.Prefix,4,level,token)
++    end)
++    if accepted and BattlePassFrame then BattlePassFrame:Hide() end
++end
++local spinQueueNext=false
++function BattlePass_OnSpinQueue(sender,args)
++    spinQueueNext=args and args[1]==true or false
++end
++local spinQueueFrame=CreateFrame('Frame')
++spinQueueFrame:SetScript('OnUpdate',function()
++    if spinQueueNext and not BattlePassSpin.IsBusy() then
++        spinQueueNext=false
++        SendClientRequest(CSMHConfig.Prefix,3,'spin-v1')
++    end
++end)

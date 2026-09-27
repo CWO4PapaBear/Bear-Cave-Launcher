@@ -1,0 +1,9 @@
+--- a/BattlePass.toc
++++ b/BattlePass.toc
+@@ -8,5 +8,6 @@
+ 
+ smallfolk.lua
+ CMH.lua
++RewardSpin.lua
+ BattlePass.lua
+ BattlePass.xml
