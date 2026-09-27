@@ -1,6 +1,6 @@
 // Loaded only by the local launcher service; the standalone HTML stays a preview.
 document.querySelector('.preview').textContent='PTR LAUNCHER · EARLY TEST';
-document.querySelector('footer span').textContent='The Bear Cave · PTR updater 0.2';
+document.querySelector('footer span').textContent='The Bear Cave · PTR launcher';
 document.querySelector('[data-channel="main"]').disabled=true;
 document.querySelector('[data-channel="main"] small').textContent='Main Server · Not enabled yet';
 document.querySelector('[data-channel="ptr"]').click();
@@ -21,6 +21,7 @@ for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['
 let lastState=null;
 function render(state){
  lastState=state;
+ document.querySelector('footer span').textContent='The Bear Cave · Launcher '+(state.launcher_version||'');
  document.getElementById('runtime-status').textContent=state.message;
  document.getElementById('runtime-error').textContent=state.error||'';
  const input=document.getElementById('client-path');

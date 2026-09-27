@@ -17,8 +17,10 @@ class Application:
         self.folder_picker=None
 
     def status(self):
+        from .selfupdate import VERSION
         return dict(client=self.client,busy=self.busy,message=self.message,error=self.error,
-                    changes=self.changes,version=self.manifest['version'] if self.manifest else None)
+                    changes=self.changes,version=self.manifest['version'] if self.manifest else None,
+                    launcher_version=VERSION)
 
     def report(self,text): self.message=text
 
@@ -51,9 +53,9 @@ class Application:
                     # Repair the connection even when no patch components need updating.
                     with updater.locked(root) as state:
                         connection.configure(root,state,connection.load(ROOT),updater.ensure_closed)
-                    manifest=updater.latest();parts=updater.changed(root,manifest)
-                    self.manifest=manifest;self.changes=[dict(id=c['id'],bytes=c['bytes']) for c in parts]
-                    self.message=f'{len(parts)} component(s) need updating.' if parts else 'Your PTR files match the published version.'
+                    manifest=updater.latest();changes=updater.pending_changes(root,manifest)
+                    self.manifest=manifest;self.changes=changes
+                    self.message=f'{len(changes)} component(s) need updating.' if changes else 'Your PTR files match the published version.'
                     self.message+=' PTR connection configured.'
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')

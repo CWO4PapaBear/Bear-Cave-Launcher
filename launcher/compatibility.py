@@ -3,12 +3,13 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 
 from .app import Application, ROOT
+from .selfupdate import VERSION
 
 
 class CompatibilityWindow:
     def __init__(self, root, app):
         self.root, self.app = root, app
-        root.title('The Bear Cave — PTR Compatibility Launcher')
+        root.title('The Bear Cave — PTR Compatibility Launcher '+VERSION)
         root.geometry('880x510')
         root.minsize(720, 460)
         root.configure(bg='#071422')

@@ -55,6 +55,10 @@ def build(root, config, output, notes):
     manifest = dict(schema=1, channel=channel, version=version, tag=tag,
                     server_build=config['server_build'], realm_address=config.get('realm_address'),
                     components=[], notes_url=base+'PATCH-NOTES.md')
+    if config.get('client_fixes'):
+        if config['client_fixes'] != ['rune-recovery-v1']:
+            raise ValueError('Unknown client fix')
+        manifest.update(schema=2, client_fixes=config['client_fixes'], minimum_launcher_build=301)
     used, ids = set(), set()
     output.parent.mkdir(parents=True, exist_ok=True)
     temp = output.parent / ('.bear-package-' + uuid.uuid4().hex)

@@ -6,6 +6,7 @@ from urllib.request import Request, urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 from package import managed_path, safe_file, sha
+from . import rune_fix
 
 REPOSITORY = 'CWO4PapaBear/Bear-Cave-Launcher'
 CHANNEL_URL = f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/ptr.json'
@@ -48,8 +49,13 @@ def valid_digest(value):
     return isinstance(value,str) and re.fullmatch(r'[0-9a-f]{64}',value)
 
 def validate_manifest(m):
-    if m.get('schema')!=1 or m.get('channel')!='ptr':
+    if m.get('schema') not in (1,2) or m.get('channel')!='ptr':
         raise ValueError('This launcher installs PTR only')
+    if m.get('schema') == 2:
+        if m.get('client_fixes') != [rune_fix.FIX_ID] or m.get('minimum_launcher_build') != 301:
+            raise ValueError('Unsupported client compatibility requirements')
+    elif m.get('client_fixes') or m.get('minimum_launcher_build'):
+        raise ValueError('Client compatibility fixes require manifest schema 2')
     version=m.get('version','')
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}',version) or m.get('tag')!='ptr-'+version:
         raise ValueError('Invalid release identity')
@@ -164,9 +170,21 @@ def changed(root,m):
     return result
 
 def stored_file(base,relative):
-    managed_path(relative)
+    if relative != 'Wow.exe': managed_path(relative)
     # Flat internal names avoid duplicating long addon paths under backups/stage.
     return base/hashlib.sha256(relative.encode('utf-8')).hexdigest()[:32]
+
+def transaction_file(root, relative):
+    # Executable files remain forbidden in downloaded components. Only the
+    # built-in, hash-locked repair can add this path to a transaction.
+    return rune_fix.target(root) if relative == 'Wow.exe' else safe_file(root, relative)
+
+def pending_changes(root, manifest):
+    parts = changed(root, manifest)
+    result = [dict(id=c['id'],bytes=c['bytes']) for c in parts]
+    if rune_fix.needed(root, manifest):
+        result.append(dict(id='rune-recovery-client-fix',bytes=0))
+    return result
 
 def unpack(asset,component,stage):
     if asset.stat().st_size!=component['bytes'] or sha(asset)!=component['sha256']:
@@ -197,7 +215,7 @@ def recover(root,guard=ensure_closed,report=lambda message:None):
         if not re.fullmatch(r'[0-9a-f]{32}',tx): raise ValueError('Invalid recovery journal')
         base=state/'transactions'/tx
         for f in reversed(journal['files']):
-            guard(); target=safe_file(root,f['path']); current=sha(target) if target.is_file() else None
+            guard(); target=transaction_file(root,f['path']); current=sha(target) if target.is_file() else None
             if current==f['before']: continue
             if current!=f['after']: raise RuntimeError('File changed outside launcher; recovery paused: '+f['path'])
             if f['before'] is None:
@@ -219,12 +237,22 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
     try:
         with locked(root) as state:
             if (state/'pending.json').exists(): raise RuntimeError('Recover the interrupted update first.')
+            executable = rune_fix.target(root) if rune_fix.FIX_ID in m.get('client_fixes',[]) else None
+            original = executable.read_bytes() if executable else None
+            repaired = rune_fix.patched(original) if original is not None else None
             parts=changed(root,m)
-            if not parts: return 'PTR client is up to date.'
-            needed=sum(c['bytes']+sum(f['bytes']*2 for f in c['files']) for c in parts)
+            if not parts and repaired is None: return 'PTR client is up to date.'
+            needed=sum(c['bytes']+sum(f['bytes']*2 for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             if shutil.disk_usage(root).free<needed+128*1024**2: raise RuntimeError('Not enough free space for downloads and backups')
             tx=uuid.uuid4().hex;base=state/'transactions'/tx;base.mkdir(parents=True)
             stage=base/'stage';stage.mkdir();files=[]
+            if repaired is not None:
+                backup=stored_file(base/'backup','Wow.exe');backup.parent.mkdir(parents=True,exist_ok=True)
+                backup.write_bytes(original)
+                stored_file(stage,'Wow.exe').write_bytes(repaired)
+                if sha(backup)!=rune_fix.BEFORE or sha(stored_file(stage,'Wow.exe'))!=rune_fix.AFTER:
+                    raise ValueError('Rune repair staging verification failed')
+                files.append(dict(path='Wow.exe',before=rune_fix.BEFORE,after=rune_fix.AFTER))
             for c in parts:
                 asset=base/c['asset'];download(c['url'],target=asset,limit=c['bytes'],report=report)
                 unpack(asset,c,stage)
@@ -243,7 +271,7 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             save_json(base/'files.json',files)
             save_json(state/'pending.json',dict(transaction=tx,files=files,previous_install=previous))
             for f in files:
-                guard();target=safe_file(root,f['path'])
+                guard();target=transaction_file(root,f['path'])
                 if (sha(target) if target.is_file() else None)!=f['before']:
                     raise RuntimeError('Client changed during update: '+f['path'])
                 target.parent.mkdir(parents=True,exist_ok=True)
