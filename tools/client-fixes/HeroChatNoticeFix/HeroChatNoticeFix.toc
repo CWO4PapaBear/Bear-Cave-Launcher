@@ -1,0 +1,5 @@
+## Interface: 30300
+## Title: Hero Channel Notice Compatibility
+## Notes: Fallback for channel notices missing client text.
+## SavedVariables: HeroChatNoticeDiagnostics
+HeroChatNoticeFix.lua
