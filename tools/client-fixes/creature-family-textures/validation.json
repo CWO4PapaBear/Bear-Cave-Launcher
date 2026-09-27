@@ -1,0 +1,448 @@
+{
+  "status": "installed-local-awaiting-visual-test",
+  "displayCorrections": 64,
+  "archives": [
+    {
+      "path": "Data/patch-Z.MPQ",
+      "before": "594655ca8033d1af3637ca13e2c4b12e462721fd1afd419e38822abde768ee11",
+      "after": "03e89e3cfecc393a8ef88b20b6dc5bd58da764882d35fde11c25fb3e8dc214ae"
+    },
+    {
+      "path": "Data/enUS/patch-enUS-Z.MPQ",
+      "before": "79d8966c7ced34abb802da54cb0f9a6521070d5bd5213a4477c22f2282aa3e52",
+      "after": "000885b9f0cf5bb240b3d619cf32afa1285b4dc26edfd562d031714ad12eb1c8"
+    }
+  ],
+  "assets": [
+    {
+      "path": "Creature\\OgreHighmaulKing\\smoothreflect.blp",
+      "source": "patch-CO.MPQ",
+      "sha256": "4cc1368aab36cc3596227e1e9199d5c91625851fe4ce7521d32e765b58c24174"
+    },
+    {
+      "path": "Creature\\OgreHighmaulKing\\ArmorReflect4.blp",
+      "source": "patch-CO.MPQ",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d"
+    },
+    {
+      "path": "Creature\\KodoBeast2\\OrbReflectBright.blp",
+      "source": "patch-CK.MPQ",
+      "sourcePath": "Creature\\kodobeast2mount\\orbreflectbright.blp",
+      "sha256": "ff8db5fbdd2e07e1f4b4aca767aa29822921bed65384707b79f28c9edd1b4276",
+      "reason": "Shared modern Kodo reflection-map alias; visual test required"
+    },
+    {
+      "path": "Creature\\KodoBeast2Wooly\\OrbReflectBright.blp",
+      "source": "patch-CK.MPQ",
+      "sourcePath": "Creature\\kodobeast2mount\\orbreflectbright.blp",
+      "sha256": "ff8db5fbdd2e07e1f4b4aca767aa29822921bed65384707b79f28c9edd1b4276",
+      "reason": "Shared modern Kodo reflection-map alias; visual test required"
+    },
+    {
+      "path": "Creature\\ArakkoaGolem\\ArmorReflect4.blp",
+      "source": "patch-CA.MPQ",
+      "sourcePath": "Creature\\arakkoagolem\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\ArakkoaGolem\\BloodGlass.blp",
+      "source": "patch-CA.MPQ",
+      "sourcePath": "Creature\\arakkoagolem\\bloodglass.blp",
+      "sha256": "811b76d15525d5cc3867e90d6ad566cceb281ddc55b8825d33f4e9cf715cf42d",
+      "bytes": 6660
+    },
+    {
+      "path": "Creature\\BabyPig\\FresnelReflect.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\babypig\\fresnelreflect.blp",
+      "sha256": "78fbf6e6f0768d37932a5d4b8691e31ccd4af4826d25224a95b71100498a046a",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\BabyTurtle\\ArmorReflect4.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\babyturtle\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Bear2\\ArmorReflect_Organic01.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\bear2\\armorreflect_organic01.blp",
+      "sha256": "0aad0d448218992ba7468a49969a459bd4910b09c1797c0c7558d4ef6c794a35",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\BeholderWarlock_Boss\\ArmorReflect_Hard.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\beholderwarlock_boss\\armorreflect_hard.blp",
+      "sha256": "b1bb3e5b572250e0d5f03a2c5cb8d3c10e25f6ff77fc2e1fe8be8ca6e6c2a835",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\BeholderWarlock_Boss\\BeholderWarlock_Purple.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\beholderwarlock_boss\\beholderwarlock_purple.blp",
+      "sha256": "029f619a80fa402c653e7821bae9a49c3224418378d21d17e33af211c805fa53",
+      "bytes": 350724
+    },
+    {
+      "path": "Creature\\BeholderWarlock_Boss\\Caustic_MedFreq_Green.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\beholderwarlock_boss\\caustic_medfreq_green.blp",
+      "sha256": "9f2e9878c33b51f2fd895d865a23aa40f0942e91715c75061fe13d872217378a",
+      "bytes": 88580
+    },
+    {
+      "path": "Creature\\BeholderWarlock_Boss\\felBodyFire_1.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\beholderwarlock_boss\\felbodyfire_1.blp",
+      "sha256": "8bce9de646723b536f73a97ddc94d690ebf6d86798711b6f600fa690524733cc",
+      "bytes": 6660
+    },
+    {
+      "path": "Creature\\BeholderWarlock_Boss\\smoothreflect_blue.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\beholderwarlock_boss\\smoothreflect_blue.blp",
+      "sha256": "f9fccda9d67b25af3e550ab50fe9f039567cacae9c0e58cf2310fef7e06c9c50",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\BoastfulGruntling\\ArmorReflect4.blp",
+      "source": "patch-CB.MPQ",
+      "sourcePath": "Creature\\boastfulgruntling\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "creature\\Chicken2\\ArmorReflect5.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\chicken2\\armorreflect5.blp",
+      "sha256": "26f1e33ed29f7ebab5bb371abb62ec7dcee03879696503167076eee7df6af77a",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\ClefthoofDraenor\\OrbReflect02.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\clefthoofdraenor\\orbreflect02.blp",
+      "sha256": "c373c97d032e8df65b163c53ed6525f5388af29526e4707025de1271d38f1ccd",
+      "bytes": 1868
+    },
+    {
+      "path": "CREATURE\\DARKHOUND2\\ArmorReflect4.blp",
+      "source": "patch-CD.MPQ",
+      "sourcePath": "Creature\\darkhound2\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Doomguard2\\ArmorReflect3.blp",
+      "source": "patch-CD.MPQ",
+      "sourcePath": "Creature\\doomguard2\\armorreflect3.blp",
+      "sha256": "4b4d342fc65ff011f348e9d24b3a2b7208723876053cb5efaca68c5f573df713",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\EliteWyvern\\ArmorReflect4.blp",
+      "source": "patch-CE.MPQ",
+      "sourcePath": "Creature\\elitewyvern\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\FACELESSONE2\\ArmorReflect_Rainbow.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\facelessone2\\armorreflect_rainbow.blp",
+      "sha256": "9f8b36fc892ecf257c021f7f25b8d9a2093a8c9d19847d1a19e006fd012facf3",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\FACELESSONE2\\OrbReflectDark_reverse.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\facelessone2\\orbreflectdark_reverse.blp",
+      "sha256": "c3cabc53986b2853ac10b770d33fed8d204aee640bb909973fd2d859a2c609a3",
+      "bytes": 12108
+    },
+    {
+      "path": "Creature\\Felhound2\\ArmorReflect3.blp",
+      "source": "patch-CF.MPQ",
+      "sourcePath": "Creature\\felhound2\\armorreflect3.blp",
+      "sha256": "4b4d342fc65ff011f348e9d24b3a2b7208723876053cb5efaca68c5f573df713",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\FleshGolem2\\ArmorReflect_Hard.blp",
+      "source": "patch-CF.MPQ",
+      "sourcePath": "Creature\\fleshgolem2\\armorreflect_hard.blp",
+      "sha256": "b1bb3e5b572250e0d5f03a2c5cb8d3c10e25f6ff77fc2e1fe8be8ca6e6c2a835",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\FLYINGPANTHER\\SIBERIANTIGERGODWISKERSGLOW.BLP",
+      "source": "patch-CF.MPQ",
+      "sourcePath": "Creature\\FlyingPanther\\siberiantigergodwiskersglow.blp",
+      "sha256": "465ac43d5e30e96ece660bc9a77609a5a0ca0604b8e18dfcef17d18a4d93bbbf",
+      "bytes": 88580
+    },
+    {
+      "path": "Creature\\GiantBoar\\smoothreflect.blp",
+      "source": "patch-CG.MPQ",
+      "sourcePath": "Creature\\giantboar\\smoothreflect.blp",
+      "sha256": "4cc1368aab36cc3596227e1e9199d5c91625851fe4ce7521d32e765b58c24174",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\GREATERSLIME\\ACIDSPLASH_GREY.BLP",
+      "source": "patch-CG.MPQ",
+      "sourcePath": "Creature\\greaterslime\\ACIDSPLASH_GREY.BLP",
+      "sha256": "0b6bc9383dd13d3b3239c4f648fd330b76a8ae7a16f22ce0c8c6a6901bb8f392",
+      "bytes": 6660
+    },
+    {
+      "path": "Creature\\Harpy2\\ArmorReflect4.blp",
+      "source": "patch-CH.MPQ",
+      "sourcePath": "Creature\\harpy2\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\HordeScorpionMount\\OrbReflectBright.blp",
+      "source": "patch-CH.MPQ",
+      "sourcePath": "Creature\\HordeScorpionMount\\orbreflectbright.blp",
+      "sha256": "ff8db5fbdd2e07e1f4b4aca767aa29822921bed65384707b79f28c9edd1b4276",
+      "bytes": 1868
+    },
+    {
+      "path": "Creature\\HordeScorpionMount\\ScorpionReflect.blp",
+      "source": "patch-CH.MPQ",
+      "sourcePath": "Creature\\HordeScorpionMount\\scorpionreflect.blp",
+      "sha256": "f593c9f1aaa99668c18d9c04fca490007d2809d42366480272154248c67f6374",
+      "bytes": 2564
+    },
+    {
+      "path": "Creature\\HorseMultiSaddle\\ArmorReflect_Rainbow.blp",
+      "source": "patch-CH.MPQ",
+      "sourcePath": "Creature\\horsemultisaddle\\armorreflect_rainbow.blp",
+      "sha256": "9f8b36fc892ecf257c021f7f25b8d9a2093a8c9d19847d1a19e006fd012facf3",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Inquisitor\\ArmorReflect3.blp",
+      "source": "patch-CI.MPQ",
+      "sourcePath": "Creature\\inquisitor\\armorreflect3.blp",
+      "sha256": "4b4d342fc65ff011f348e9d24b3a2b7208723876053cb5efaca68c5f573df713",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Khazgoroth\\ArmorReflectGold2.blp",
+      "source": "patch-CK.MPQ",
+      "sourcePath": "Creature\\khazgoroth\\armorreflectgold2.blp",
+      "sha256": "a62065dd94a4b5e4dc941d80631342134f07a06cc0389c822bbf9e6c1e008dc3",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\KodoBeast2Mount\\OrbReflectBright.blp",
+      "source": "patch-CK.MPQ",
+      "sourcePath": "Creature\\kodobeast2mount\\orbreflectbright.blp",
+      "sha256": "ff8db5fbdd2e07e1f4b4aca767aa29822921bed65384707b79f28c9edd1b4276",
+      "bytes": 1868
+    },
+    {
+      "path": "CREATURE\\MantidTank\\ArmorReflect3.blp",
+      "source": "patch-CM.MPQ",
+      "sourcePath": "Creature\\mantidtank\\armorreflect3.blp",
+      "sha256": "4bc76fe6bfce7c1695c3478bd425629e2b55cc14fdcd2038454ef9729243338e",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\MineSpider2\\FresnelReflection.blp",
+      "source": "patch-CM.MPQ",
+      "sourcePath": "Creature\\minespider2\\fresnelreflection.blp",
+      "sha256": "0234b7885a2285063017bfd59e3f4edbf9a5cb051fec956c8ec22553ae97d942",
+      "bytes": 2564
+    },
+    {
+      "path": "Creature\\OgreDraenor\\ArmorReflect4.blp",
+      "source": "patch-CO.MPQ",
+      "sourcePath": "Creature\\ogredraenor\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\OgreDraenor\\helmShadowMod.blp",
+      "source": "patch-CO.MPQ",
+      "sourcePath": "Creature\\ogredraenor\\helmshadowmod.blp",
+      "sha256": "de309904a3776217632e3ab2a966cad22885bf3ff3f188a02a806a4132de7551",
+      "bytes": 6652
+    },
+    {
+      "path": "Creature\\OgreDraenor\\OgreDraenorButcher.blp",
+      "source": "patch-CO.MPQ",
+      "sourcePath": "Creature\\ogredraenor\\ogredraenorbutcher.blp",
+      "sha256": "9580d7017c69d7c18b8554f83672a8d99680c6fbf371019665215e8569064675",
+      "bytes": 350724
+    },
+    {
+      "path": "Creature\\OgreDraenor\\smoothreflect.blp",
+      "source": "patch-CO.MPQ",
+      "sourcePath": "Creature\\ogredraenor\\smoothreflect.blp",
+      "sha256": "4cc1368aab36cc3596227e1e9199d5c91625851fe4ce7521d32e765b58c24174",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\PythonPet\\ArmorReflect_Rainbow.blp",
+      "source": "patch-CP.MPQ",
+      "sourcePath": "Creature\\pythonpet\\armorreflect_rainbow.blp",
+      "sha256": "448c603332bed81c53cfca4d48934debdbf7f9dc2cff8f1c1163125061f7f4ee",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Rabbit2\\ArmorReflect4.blp",
+      "source": "patch-CR.MPQ",
+      "sourcePath": "Creature\\rabbit2\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\SALAMANDERHUNTER\\SALAMANDERHUNTERARMORGLOW.BLP",
+      "source": "patch-CS.MPQ",
+      "sourcePath": "Creature\\SalamanderHunter\\salamanderhunterarmorglow.blp",
+      "sha256": "19f104fcdacc3b59865353946f73a6e7efc6876c562aca02879c7c2e20c734ee",
+      "bytes": 44876
+    },
+    {
+      "path": "CREATURE\\SALAMANDERHUNTER\\SALAMANDERHUNTERFLAGFIRE.BLP",
+      "source": "patch-CS.MPQ",
+      "sourcePath": "Creature\\SalamanderHunter\\salamanderhunterflagfire.blp",
+      "sha256": "00af165ccfc713e33a52d213cda2c12319592b30697624b1314a8345ccdcf6f6",
+      "bytes": 88580
+    },
+    {
+      "path": "CREATURE\\SALAMANDERHUNTER\\SALAMANDERHUNTERFLAGGLOW.BLP",
+      "source": "patch-CS.MPQ",
+      "sourcePath": "Creature\\SalamanderHunter\\salamanderhunterflagglow.blp",
+      "sha256": "df29f02273e7e1d9ad8b887de6cfb9b23de43aecf3776564ee1068c46eced37b",
+      "bytes": 175948
+    },
+    {
+      "path": "CREATURE\\SIBERIANTIGERGOD\\FIREPARTICLEBLUE.BLP",
+      "source": "patch-CS.MPQ",
+      "sourcePath": "Creature\\siberiantigergod\\fireparticleblue.blp",
+      "sha256": "56cab934449e7d69753fc428fc7316b61742a38263ebf4bdebc5a1d3e9dda8d3",
+      "bytes": 44876
+    },
+    {
+      "path": "Creature\\SkeletalWarHorse2\\ArmorReflect_Rainbow.blp",
+      "source": "patch-CS.MPQ",
+      "sourcePath": "Creature\\skeletalwarhorse2\\ArmorReflect_Rainbow.blp",
+      "sha256": "9f8b36fc892ecf257c021f7f25b8d9a2093a8c9d19847d1a19e006fd012facf3",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\TalbukDraenor\\OrbReflectBright.blp",
+      "source": "patch-CT.MPQ",
+      "sourcePath": "Creature\\talbukdraenor\\orbreflectbright.blp",
+      "sha256": "ff8db5fbdd2e07e1f4b4aca767aa29822921bed65384707b79f28c9edd1b4276",
+      "bytes": 1868
+    },
+    {
+      "path": "creature\\ThunderLizard2\\ArmorReflect_Hard.blp",
+      "source": "patch-CT.MPQ",
+      "sourcePath": "Creature\\thunderlizard2\\armorreflect_hard.blp",
+      "sha256": "b1bb3e5b572250e0d5f03a2c5cb8d3c10e25f6ff77fc2e1fe8be8ca6e6c2a835",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\ThunderPterodactyl\\ArmorReflect4.blp",
+      "source": "patch-CT.MPQ",
+      "sourcePath": "Creature\\thunderpterodactyl\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "CREATURE\\TIGERGODCUB\\TIGERGODCUBGLOW.BLP",
+      "source": "patch-CT.MPQ",
+      "sourcePath": "Creature\\tigergodcub\\tigergodcubglow.blp",
+      "sha256": "d32190c96bd9b5f9bbab612e26046ce0bbd27475afcbd428388228abe8ba4839",
+      "bytes": 350724
+    },
+    {
+      "path": "Creature\\WarNightSaberMount\\ArmorReflect4.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\warnightsabermount\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\WolfDraenor\\ArmorReflect4.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\wolfdraenor\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Wrathguard2\\ArmorReflect3.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\wrathguard2\\armorreflect3.blp",
+      "sha256": "4b4d342fc65ff011f348e9d24b3a2b7208723876053cb5efaca68c5f573df713",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Wyrmtongue\\ArmorReflect3.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\wyrmtongue\\armorreflect3.blp",
+      "sha256": "4b4d342fc65ff011f348e9d24b3a2b7208723876053cb5efaca68c5f573df713",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Wyrmtongue\\ArmorReflect4.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\wyrmtongue\\armorreflect4.blp",
+      "sha256": "10347b0a7502f994e7b556e279dc8709a8755c6536163b57a3b388151c48fb1d",
+      "bytes": 3916
+    },
+    {
+      "path": "Creature\\Wyrmtongue\\GlowBall.blp",
+      "source": "patch-CW.MPQ",
+      "sourcePath": "Creature\\wyrmtongue\\glowball.blp",
+      "sha256": "f2ecaa3d47fc455148e57154dadd1d6324c5d31136b70172c94a7c1418dde08e",
+      "bytes": 1540
+    },
+    {
+      "path": "CREATURE\\ZOMBIE2\\OrbReflectBright_Greenish.blp",
+      "source": "patch-CZ.MPQ",
+      "sourcePath": "Creature\\zombie2\\orbreflectbright_greenish.blp",
+      "sha256": "c828b78795588c15d572638aeeec73375a8e6e138ad7ed5a7d0cd7b105472206",
+      "bytes": 1868
+    },
+    {
+      "path": "ITEM\\OBJECTCOMPONENTS\\HEAD\\FLAMEWISP01GREY.BLP",
+      "source": "patch-TA.MPQ",
+      "sourcePath": "ITEM\\OBJECTCOMPONENTS\\head\\FLAMEWISP01GREY.BLP",
+      "sha256": "596642621933b2352f4ed782d6a9f71341c8f8af32e6e12d097a41f0c85924a3",
+      "bytes": 6660
+    },
+    {
+      "path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\ARMORREFLECT5.BLP",
+      "source": "patch-TW.MPQ",
+      "sourcePath": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\ARMORREFLECT5.BLP",
+      "sha256": "2d8ddae1169f6a7a5b88057831ef410335bab8c875eedab43d1b76679c958a28",
+      "bytes": 3916
+    },
+    {
+      "path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\SLIMEDRIP.BLP",
+      "source": "patch-TW.MPQ",
+      "sourcePath": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\SlimeDrip.blp",
+      "sha256": "2f869912dbd1a5176072b330c2df37aeddf83e43736f0fe2430c1e04e69b8ce8",
+      "bytes": 2564
+    },
+    {
+      "path": "Creature\\Basilisk2\\ArmorReflect_Organic01.blp",
+      "source": "patch-V.MPQ",
+      "sourcePath": "Creature\\basilisk2\\armorreflect_organic01.blp",
+      "sha256": "0aad0d448218992ba7468a49969a459bd4910b09c1797c0c7558d4ef6c794a35",
+      "bytes": 3916
+    }
+  ]
+}

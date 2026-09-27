@@ -1,0 +1,860 @@
+[
+  {
+    "display": 33,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "OgreMageSkin2",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 326,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "OgreMageSkin2Blue",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 1461,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkin2",
+      "8": "AncientofWarSkin3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 3190,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "OgreMageSkin2Blue",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 3250,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2Copper",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 6170,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2White",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 6704,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "OgreMageSkin2Blue",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 6705,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "OgreMageSkin2",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 10914,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 10915,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 10916,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 10917,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 10919,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 11362,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 11532,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "OgreMageSkin2Blue",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11537,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11538,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11539,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11542,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2Copper",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11543,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2Copper",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11546,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11550,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinRed",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageRed"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11556,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11558,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11560,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11562,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11563,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "OgreMageSkin2",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11566,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11572,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11573,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11578,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2White",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 11585,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 12003,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreMageSkin2Copper",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 12472,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 13129,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 13170,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 14383,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 14423,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlack",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlack"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 14884,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinSnow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinSnow2",
+      "8": "AncientofWarSkinSnow3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 16020,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlack",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlack"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 16975,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkin2",
+      "8": "AncientofWarSkin3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 17454,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 17821,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinRed",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageRed"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 17835,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinRed",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageRed"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 18333,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinRed",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageRed"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 18354,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19485,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19922,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBeige",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBeige"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19927,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlack",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlack"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19930,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlue",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlue"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19934,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinGray",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageGray"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19939,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinRed",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageRed"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 19953,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinYellow",
+      "OgreSkinYellow",
+      ""
+    ],
+    "fields": {
+      "7": "MageYellow"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 20250,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 21634,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlack",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlack"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 21967,
+    "beforeModel": 33,
+    "beforeSkins": [
+      "OgreSkinBlack",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "MageBlack"
+    },
+    "reason": "Replacement ogre mage requires matching Mage armor atlas"
+  },
+  {
+    "display": 23265,
+    "beforeModel": 27,
+    "beforeSkins": [
+      "KotoBeastWoolySkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "1": 4005,
+      "6": "KotoBeastwoolySkin1",
+      "7": "KotoBeastwoolySkin2"
+    },
+    "reason": "Dedicated wooly replacement mesh and body/fur atlases"
+  },
+  {
+    "display": 23325,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinSnow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinSnow2",
+      "8": "AncientofWarSkinSnow3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 24961,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinSnow",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinSnow2",
+      "8": "AncientofWarSkinSnow3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 28505,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkin2",
+      "8": "AncientofWarSkin3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 28506,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkin",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkin2",
+      "8": "AncientofWarSkin3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 28656,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 28657,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  },
+  {
+    "display": 28658,
+    "beforeModel": 188,
+    "beforeSkins": [
+      "AncientofWarSkinDiseased",
+      "",
+      ""
+    ],
+    "fields": {
+      "7": "AncientofWarSkinDiseased2",
+      "8": "AncientofWarSkinDiseased3"
+    },
+    "reason": "Replacement ancient requires foliage and secondary body layers"
+  }
+]
