@@ -15,6 +15,6 @@
 
 Close WoW, open the launcher, select PTR and Update. The client patch is cumulative and preserves the Bear Cave login scene. Main is unchanged.
 
-## Server maintenance — activation pending
+## Server maintenance — activated
 
-The combined rune-readiness synchronization, Lootbot collection and Battle Pass daily-quest fixes have passed build/preflight checks, but activation has not yet been confirmed. These are server changes and are not installed by this client update. Grey auto-sale remains in the current server build.
+The combined server activation is complete and startup checks passed. Non-DK rune readiness now receives a full server-state resynchronization; Lootbot uses supported queue storage; Battle Pass uses the supported daily-quest API. Grey auto-sale is retained. Please verify rune reuse, companion collection/grey selling, and ordinary/daily quest progression in game. These changes do not require another client download. Previous server image and source/Lua backups are retained.
