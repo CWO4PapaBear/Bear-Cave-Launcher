@@ -3,7 +3,7 @@
   "channel": "ptr",
   "name": "The Bear Cave \u2014 PTR",
   "enabled": true,
-  "manifest_url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/releases/download/ptr-0.2.13-test.1/manifest.json",
-  "manifest_sha256": "1a5283f65d2bcffe0d219cd11fc9e01a5b0aabb6f1375d674bd28f984d3029a0",
-  "message": "Update available: 0.2.13-test.1"
+  "manifest_url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/releases/download/ptr-0.2.14-test.1/manifest.json",
+  "manifest_sha256": "45eecb60fc94010b8c01ff74b488386c1c25ee3225978e87b67bd7aa84496f11",
+  "message": "Update available: 0.2.14-test.1"
 }
