@@ -32,6 +32,29 @@ class RuneRepair(Updater):
         self.assertEqual((self.client/'Wow.exe').read_bytes(),b'unknown')
         self.assertFalse((self.client/'Interface/AddOns/HeroFreePick/New.lua').exists())
 
+    def test_second_reviewed_build_preserves_other_modifications(self):
+        original = self.original + b'second-build-modifications'
+        fixed = self.fixed + b'second-build-modifications'
+        with patch.multiple(rune_fix,
+                            WARMANE_BEFORE=hashlib.sha256(original).hexdigest(),
+                            WARMANE_AFTER=hashlib.sha256(fixed).hexdigest(),
+                            WARMANE_SIZE=len(original)):
+            (self.client/'Wow.exe').write_bytes(original)
+            self.install()
+            self.assertEqual((self.client/'Wow.exe').read_bytes(), fixed)
+            self.assertIn('up to date', self.install())
+            self.assertIsNone(rune_fix.patched(fixed))
+            with self.assertRaisesRegex(ValueError, 'not been reviewed'):
+                rune_fix.patched(original + b'changed')
+
+    def test_second_build_output_hash_is_enforced(self):
+        original = self.original + b'second-build'
+        with patch.multiple(rune_fix,
+                            WARMANE_BEFORE=hashlib.sha256(original).hexdigest(),
+                            WARMANE_AFTER='0'*64, WARMANE_SIZE=len(original)):
+            with self.assertRaisesRegex(ValueError, 'output checksum mismatch'):
+                rune_fix.patched(original)
+
     def test_repair_when_all_archive_files_already_current(self):
         old=dict(self.manifest);old['schema']=1;old.pop('client_fixes');old.pop('minimum_launcher_build')
         updater.install(self.client,old,download=self.download,guard=self.guard)

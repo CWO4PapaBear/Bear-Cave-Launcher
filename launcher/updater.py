@@ -250,9 +250,11 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
                 backup=stored_file(base/'backup','Wow.exe');backup.parent.mkdir(parents=True,exist_ok=True)
                 backup.write_bytes(original)
                 stored_file(stage,'Wow.exe').write_bytes(repaired)
-                if sha(backup)!=rune_fix.BEFORE or sha(stored_file(stage,'Wow.exe'))!=rune_fix.AFTER:
+                original_hash=hashlib.sha256(original).hexdigest()
+                repaired_hash=hashlib.sha256(repaired).hexdigest()
+                if sha(backup)!=original_hash or sha(stored_file(stage,'Wow.exe'))!=repaired_hash:
                     raise ValueError('Rune repair staging verification failed')
-                files.append(dict(path='Wow.exe',before=rune_fix.BEFORE,after=rune_fix.AFTER))
+                files.append(dict(path='Wow.exe',before=original_hash,after=repaired_hash))
             for c in parts:
                 asset=base/c['asset'];download(c['url'],target=asset,limit=c['bytes'],report=report)
                 unpack(asset,c,stage)
