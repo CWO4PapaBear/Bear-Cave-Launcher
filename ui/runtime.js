@@ -19,7 +19,7 @@ for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['
  button.addEventListener('click',()=>send(action));footer.appendChild(button);
 }
 const alpha=document.createElement('button');alpha.className='realm';alpha.dataset.channel='area52';
-alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev · COACore client</small>';
+alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev ï¿½ COACore client</small>';
 document.querySelector('.side-note').before(alpha);
 for(const channel of ['ptr','area52']){
  document.querySelector('[data-channel="'+channel+'"]').addEventListener('click',()=>send('channel',{channel}));
@@ -99,9 +99,21 @@ function fitLauncherHeight() {
    const nav = document.querySelector('nav');
    const chrome = document.querySelector('.window-chrome');
    const footer = document.querySelector('footer');
-   const content = Math.max(main.scrollHeight, nav.scrollHeight + parseFloat(getComputedStyle(nav).marginTop));
+   // Panel scrollHeight is at least its stretched grid height, even without overflow.
+   // Measure child content instead so increasing the window does not increase the target.
+   function contentHeight(panel) {
+    const style = getComputedStyle(panel);
+    const origin = panel.getBoundingClientRect().top;
+    let bottom = parseFloat(style.paddingTop);
+    for (const child of panel.children) {
+     if (!child.getClientRects().length) continue;
+     bottom = Math.max(bottom, child.getBoundingClientRect().bottom - origin + panel.scrollTop + parseFloat(getComputedStyle(child).marginBottom));
+    }
+    return bottom + parseFloat(style.paddingBottom);
+   }
+   const content = Math.max(contentHeight(main), contentHeight(nav) + parseFloat(getComputedStyle(nav).marginTop));
    const required = Math.ceil(content + chrome.offsetHeight + footer.offsetHeight + 4);
-   await window.pywebview.api.fit_height(required, screen.availHeight, screen.availTop || 0);
+   await window.pywebview.api.fit_height(required, screen.availHeight, screen.availTop || 0, innerHeight);
   } finally { fitPending = false; }
  });
 }

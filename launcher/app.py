@@ -211,11 +211,11 @@ def main(smoke_dir=None):
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
         class WindowControls:
-            def fit_height(self, required, available, top):
+            def fit_height(self, required, available, top, viewport):
                 required, available, top = int(required), int(available), int(top)
                 if not 200 <= available <= 10000 or not 0 < required <= 20000:
                     return
-                height = min(available, max(window.height, required))
+                height = min(available, max(640, required + max(0, window.height - int(viewport))))
                 if height != window.height:
                     window.resize(window.width, height)
                 y = max(top, min(window.y, top + available - height))
@@ -252,6 +252,13 @@ def main(smoke_dir=None):
         if smoke_dir:
             def loaded():
                 result=window.evaluate_js("({title:document.title,browse:!!document.getElementById('client-browse'),update:!!document.querySelector('[data-action=update]')})")
+                window.show()
+                import time
+                samples = []
+                for _ in range(3):
+                    time.sleep(1)
+                    samples.append(window.evaluate_js("({height:innerHeight,available:screen.availHeight,mainOverflow:document.querySelector('main').scrollHeight-document.querySelector('main').clientHeight,navOverflow:document.querySelector('nav').scrollHeight-document.querySelector('nav').clientHeight})"))
+                result['sizing'] = samples
                 updater.save_json(smoke_dir/'desktop-smoke.json',result)
                 window.destroy()
             window.events.loaded+=loaded
