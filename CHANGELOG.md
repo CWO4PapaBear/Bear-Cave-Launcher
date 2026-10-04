@@ -59,3 +59,5 @@ This is a development foundation, not a released desktop updater.
 # PTR 0.2.3-test.1
 
 Publish the tested More Minions stable bridge with the original classic controls, family-specific stable icons, and Beast-only happiness displays. Undead and Demon stabling confirmed by the owner. Cumulative package contains 916 managed files matching the tested owner client; no Main or launcher executable changes. Prior-release upgrade, repeat-install and private-file preservation checks passed. See docs/PTR-0.2.3-test.1.md for tester instructions and remaining validation.
+
+- Launcher height automatically grows to fit channel content and messages, bounded by available screen height; scrolling remains available when the screen cannot fit the content.

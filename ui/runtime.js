@@ -87,3 +87,26 @@ discordButton.textContent='Request Account on Discord';
 discordButton.addEventListener('click',()=>send('discord'));
 document.getElementById('account-dialog').remove();
 document.querySelector('.account-entry p').innerHTML='<strong>Need an account?</strong>Contact the administrator directly on Discord.';
+
+// Grow to fit both columns as channel content and status messages change.
+let fitPending = false;
+function fitLauncherHeight() {
+ if (fitPending || !window.pywebview?.api?.fit_height) return;
+ fitPending = true;
+ requestAnimationFrame(async () => {
+  try {
+   const main = document.querySelector('main');
+   const nav = document.querySelector('nav');
+   const chrome = document.querySelector('.window-chrome');
+   const footer = document.querySelector('footer');
+   const content = Math.max(main.scrollHeight, nav.scrollHeight + parseFloat(getComputedStyle(nav).marginTop));
+   const required = Math.ceil(content + chrome.offsetHeight + footer.offsetHeight + 4);
+   await window.pywebview.api.fit_height(required, screen.availHeight, screen.availTop || 0);
+  } finally { fitPending = false; }
+ });
+}
+new ResizeObserver(fitLauncherHeight).observe(document.querySelector('.launcher'));
+new MutationObserver(fitLauncherHeight).observe(document.querySelector('.launcher'), {childList:true, subtree:true, characterData:true});
+window.addEventListener('pywebviewready', fitLauncherHeight);
+window.addEventListener('load', fitLauncherHeight);
+fitLauncherHeight();

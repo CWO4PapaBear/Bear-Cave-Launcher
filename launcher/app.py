@@ -211,6 +211,16 @@ def main(smoke_dir=None):
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
         class WindowControls:
+            def fit_height(self, required, available, top):
+                required, available, top = int(required), int(available), int(top)
+                if not 200 <= available <= 10000 or not 0 < required <= 20000:
+                    return
+                height = min(available, max(window.height, required))
+                if height != window.height:
+                    window.resize(window.width, height)
+                y = max(top, min(window.y, top + available - height))
+                if y != window.y:
+                    window.move(window.x, y)
             def minimize(self): window.minimize()
             def close(self):
                 if app.busy:
