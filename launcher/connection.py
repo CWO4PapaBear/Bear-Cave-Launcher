@@ -3,19 +3,25 @@ from pathlib import Path
 import json, os, re, shutil, uuid
 
 def address(value):
-    if not isinstance(value,str) or len(value)>253 or not re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?',value):
-        raise ValueError('Invalid PTR connection address')
-    if any(not label or len(label)>63 or label.startswith('-') or label.endswith('-') for label in value.split('.')):
-        raise ValueError('Invalid PTR connection address')
+    if not isinstance(value,str):raise ValueError('Invalid connection address')
+    host,separator,port=value.partition(':')
+    if separator and (not port.isdigit() or not 1<=int(port)<=65535):raise ValueError('Invalid auth port')
+    if len(host)>253 or not re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?',host):
+        raise ValueError('Invalid connection address')
+    if any(not label or len(label)>63 or label.startswith('-') or label.endswith('-') for label in host.split('.')):
+        raise ValueError('Invalid connection address')
     return value
 
-def load(root):
-    path=root/'connection.json'
-    if not path.exists():path=root/'local/connection.json'
+
+def load(root,channel='ptr'):
+    if channel not in ('ptr','area52'):raise ValueError('Unknown connection channel')
+    name='connection.json' if channel=='ptr' else 'connection-area52.json'
+    path=root/name
+    if not path.exists():path=root/'local'/name
     if not path.is_file():
         raise ValueError('This launcher package has no PTR connection settings. Obtain the configured launcher from the server owner.')
     data=json.loads(path.read_text(encoding='utf-8'))
-    if data.get('channel')!='ptr' or data.get('schema')!=1:raise ValueError('Invalid PTR connection settings')
+    if data.get('channel')!=channel or data.get('schema')!=1:raise ValueError('Invalid PTR connection settings')
     return address(data.get('address'))
 
 def safe(root,relative):
@@ -37,7 +43,7 @@ def native_windows():
     except OSError:return False
 
 
-def configure(root,state,host,guard):
+def configure(root,state,host,guard,force_direct3d=True):
     """Caller holds updater.locked. Preserve originals and all unrelated settings."""
     host=address(host);guard()
     targets=[]
@@ -49,7 +55,7 @@ def configure(root,state,host,guard):
     root_list=safe(root,'realmlist.wtf')
     if root_list.exists() or not targets:targets.append(root_list)
     config=safe(root,'WTF/Config.wtf')
-    direct3d=native_windows()
+    direct3d=force_direct3d and native_windows()
     if config.is_file() or direct3d:targets.append(config)
     changes=[]
     for target in targets:

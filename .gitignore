@@ -12,3 +12,5 @@ connection.json
 
 access.json
 *.bin
+
+connection-area52.json

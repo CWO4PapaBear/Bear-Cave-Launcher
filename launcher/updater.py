@@ -10,6 +10,12 @@ from . import rune_fix
 
 REPOSITORY = 'CWO4PapaBear/Bear-Cave-Launcher'
 CHANNEL_URL = f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/ptr.json'
+REPOSITORIES = {'ptr': REPOSITORY, 'area52': 'CWO4PapaBear/Area52-FreePick-Client'}
+
+def repository(channel):
+    if channel not in REPOSITORIES:raise ValueError('Unknown update channel')
+    return REPOSITORIES[channel]
+
 MAX_ASSET = 2 * 1024**3
 
 def save_json(path, data):
@@ -48,21 +54,23 @@ def fetch(url, target=None, limit=8*1024**2, report=lambda message: None):
 def valid_digest(value):
     return isinstance(value,str) and re.fullmatch(r'[0-9a-f]{64}',value)
 
-def validate_manifest(m):
-    if m.get('schema') not in (1,2) or m.get('channel')!='ptr':
-        raise ValueError('This launcher installs PTR only')
+def validate_manifest(m,channel='ptr'):
+    repo=repository(channel)
+    if m.get('schema') not in (1,2) or m.get('channel')!=channel:
+        raise ValueError('Manifest belongs to another channel')
+    if channel=='area52' and m.get('schema')!=1:raise ValueError('Area 52 does not use PTR executable repairs')
     if m.get('schema') == 2:
         if m.get('client_fixes') != [rune_fix.FIX_ID] or m.get('minimum_launcher_build') != 301:
             raise ValueError('Unsupported client compatibility requirements')
     elif m.get('client_fixes') or m.get('minimum_launcher_build'):
         raise ValueError('Client compatibility fixes require manifest schema 2')
     version=m.get('version','')
-    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}',version) or m.get('tag')!='ptr-'+version:
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}',version) or m.get('tag')!=channel+'-'+version:
         raise ValueError('Invalid release identity')
-    prefix=f'https://github.com/{REPOSITORY}/releases/download/{m["tag"]}/'
+    prefix=f'https://github.com/{repo}/releases/download/{m["tag"]}/'
     ids=set(); paths=set(); total=0
     components=m.get('components')
-    if not isinstance(components,list) or not 1<=len(components)<=100:
+    if not isinstance(components,list) or not (0 if channel=='area52' else 1)<=len(components)<=100:
         raise ValueError('Invalid component list')
     for c in components:
         cid=c.get('id','')
@@ -86,18 +94,24 @@ def validate_manifest(m):
     if m.get('notes_url')!=prefix+'PATCH-NOTES.md': raise ValueError('Unexpected notes URL')
     return m
 
-def latest():
-    pointer=json.loads(fetch(CHANNEL_URL))
-    if pointer.get('schema')!=1 or pointer.get('channel')!='ptr': raise ValueError('Invalid PTR channel')
-    if not pointer.get('enabled'): raise ValueError(pointer.get('message','PTR updates are not published yet.'))
+class ChannelUnavailable(ValueError):
+    pass
+
+
+def latest(channel='ptr'):
+    repo=repository(channel)
+    url=CHANNEL_URL if channel=='ptr' else f'https://raw.githubusercontent.com/{repo}/main/channels/{channel}.json'
+    pointer=json.loads(fetch(url))
+    if pointer.get('schema')!=1 or pointer.get('channel')!=channel: raise ValueError('Invalid PTR channel')
+    if not pointer.get('enabled'): raise ChannelUnavailable(pointer.get('message','Updates are not published yet.'))
     url=pointer.get('manifest_url','')
-    expected=f'https://github.com/{REPOSITORY}/releases/download/'
-    if not url.startswith(expected) or not re.fullmatch(r'ptr-[A-Za-z0-9._-]+/manifest.json',url[len(expected):]):
+    expected=f'https://github.com/{repo}/releases/download/'
+    if not url.startswith(expected) or not re.fullmatch(re.escape(channel)+r'-[A-Za-z0-9._-]+/manifest.json',url[len(expected):]):
         raise ValueError('Unexpected manifest URL')
     raw=fetch(url)
     if not valid_digest(pointer.get('manifest_sha256')) or hashlib.sha256(raw).hexdigest()!=pointer['manifest_sha256']:
         raise ValueError('Manifest checksum mismatch')
-    m=validate_manifest(json.loads(raw))
+    m=validate_manifest(json.loads(raw),channel)
     if url!=expected+m['tag']+'/manifest.json': raise ValueError('Manifest release mismatch')
     return m
 
@@ -106,7 +120,7 @@ def ensure_closed():
         p=subprocess.run(['tasklist','/FO','CSV','/NH'],capture_output=True,text=True,check=True,timeout=20,
                          creationflags=subprocess.CREATE_NO_WINDOW)
         rows=csv.reader(io.StringIO(p.stdout))
-        if any(row and row[0].lower() in ('wow.exe','wow-64.exe') for row in rows):
+        if any(row and row[0].lower() in ('wow.exe','wow-64.exe','ascension.exe') for row in rows):
             raise RuntimeError('Close WoW completely before updating or recovering files.')
     elif Path('/proc').is_dir():
         for directory in Path('/proc').iterdir():
@@ -114,20 +128,23 @@ def ensure_closed():
             try:
                 args=(directory/'cmdline').read_bytes().decode(errors='replace').lower().split('\0')
                 comm=(directory/'comm').read_text().strip().lower()
-                if comm in ('wow.exe','wow-64.exe') or any(a.replace('\\','/').rsplit('/',1)[-1] in ('wow.exe','wow-64.exe') for a in args):
+                if comm in ('wow.exe','wow-64.exe','ascension.exe') or any(a.replace('\\','/').rsplit('/',1)[-1] in ('wow.exe','wow-64.exe','ascension.exe') for a in args):
                     raise RuntimeError('Close WoW/Wine before updating or recovering files.')
             except (FileNotFoundError,ProcessLookupError): pass
             except PermissionError:
                 raise RuntimeError('Cannot verify running processes; refusing client changes.')
     else: raise RuntimeError('Process checks support Windows and Linux only.')
 
-def client_root(value):
+def client_root(value,channel='ptr'):
+    repository(channel)
+    executable='Ascension.exe' if channel=='area52' else 'Wow.exe'
     root=Path(value).expanduser().resolve(strict=True)
-    if not root.is_dir() or not (root/'Wow.exe').is_file():
-        raise ValueError('Select the dedicated PTR folder containing Wow.exe')
+    if not root.is_dir() or not (root/executable).is_file():
+        raise ValueError('Select the dedicated client folder containing '+executable)
     return root
 
-def state_dir(root):
+def state_dir(root,channel='ptr'):
+    repository(channel)
     path=root/'.bear-cave-launcher'
     if path.is_symlink() or (hasattr(path,'is_junction') and path.is_junction()):
         raise ValueError('Linked launcher state is not allowed')
@@ -137,13 +154,13 @@ def state_dir(root):
         if item.is_symlink() or (hasattr(item,'is_junction') and item.is_junction()):
             raise ValueError('Linked launcher state is not allowed')
     marker=path/'channel.json'
-    if marker.exists() and read_json(marker).get('channel')!='ptr':
+    if marker.exists() and read_json(marker).get('channel')!=channel:
         raise ValueError('This folder belongs to another channel')
     return path
 
 @contextmanager
-def locked(root):
-    state=state_dir(root)
+def locked(root,channel='ptr'):
+    state=state_dir(root,channel)
     with (state/'update.lock').open('a+b') as lock:
         lock.seek(0);lock.write(b'0');lock.flush();lock.seek(0)
         try:
@@ -160,8 +177,8 @@ def locked(root):
                 lock.seek(0);msvcrt.locking(lock.fileno(),msvcrt.LK_UNLCK,1)
             else: fcntl.flock(lock,fcntl.LOCK_UN)
 
-def changed(root,m):
-    validate_manifest(m); result=[]
+def changed(root,m,channel='ptr'):
+    validate_manifest(m,channel); result=[]
     for c in m['components']:
         for f in c['files']:
             target=safe_file(root,f['path'])
@@ -179,10 +196,10 @@ def transaction_file(root, relative):
     # built-in, hash-locked repair can add this path to a transaction.
     return rune_fix.target(root) if relative == 'Wow.exe' else safe_file(root, relative)
 
-def pending_changes(root, manifest):
-    parts = changed(root, manifest)
+def pending_changes(root, manifest, channel='ptr'):
+    parts = changed(root, manifest,channel)
     result = [dict(id=c['id'],bytes=c['bytes']) for c in parts]
-    if rune_fix.needed(root, manifest):
+    if channel=='ptr' and rune_fix.needed(root, manifest):
         result.append(dict(id='rune-recovery-client-fix',bytes=0))
     return result
 
@@ -207,8 +224,8 @@ def unpack(asset,component,stage):
                     out.write(block)
             if sha(target)!=record['sha256']: raise ValueError('File checksum mismatch')
 
-def recover(root,guard=ensure_closed,report=lambda message:None):
-    with locked(root) as state:
+def recover(root,guard=ensure_closed,report=lambda message:None,channel='ptr'):
+    with locked(root,channel) as state:
         guard(); pending=state/'pending.json'
         if not pending.exists(): return 'No interrupted update to recover.'
         journal=read_json(pending);tx=journal['transaction']
@@ -232,16 +249,16 @@ def recover(root,guard=ensure_closed,report=lambda message:None):
         pending.unlink()
         return 'Previous client files restored.'
 
-def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None):
-    validate_manifest(m);guard()
+def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None,channel='ptr'):
+    validate_manifest(m,channel);guard()
     try:
-        with locked(root) as state:
+        with locked(root,channel) as state:
             if (state/'pending.json').exists(): raise RuntimeError('Recover the interrupted update first.')
             executable = rune_fix.target(root) if rune_fix.FIX_ID in m.get('client_fixes',[]) else None
             original = executable.read_bytes() if executable else None
             repaired = rune_fix.patched(original) if original is not None else None
-            parts=changed(root,m)
-            if not parts and repaired is None: return 'PTR client is up to date.'
+            parts=changed(root,m,channel)
+            if not parts and repaired is None: return channel+' client is up to date.'
             needed=sum(c['bytes']+sum(f['bytes']*2 for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             if shutil.disk_usage(root).free<needed+128*1024**2: raise RuntimeError('Not enough free space for downloads and backups')
             tx=uuid.uuid4().hex;base=state/'transactions'/tx;base.mkdir(parents=True)
@@ -280,15 +297,15 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
                 report('Installing '+f['path']);os.replace(stored_file(stage,f['path']),target)
                 if sha(target)!=f['after']: raise RuntimeError('Installed file verification failed')
             # The pending journal is retained until the full install commits.
-            save_json(state/'channel.json',dict(channel='ptr'))
+            save_json(state/'channel.json',dict(channel=channel))
             save_json(state/'installed.json',dict(version=m['version'],transaction=tx))
             (state/'pending.json').unlink()
             report('Backup retained in '+str(base/'backup'))
-            return 'PTR updated to '+m['version']+'. Ready to play.'
+            return channel+' updated to '+m['version']+'. Ready to play.'
     except Exception:
         # Leave pending journal for explicit recovery if WoW started meanwhile.
         pending=root/'.bear-cave-launcher/pending.json'
         if pending.exists():
-            try: recover(root,guard,report)
+            try: recover(root,guard,report,channel)
             except Exception as recovery: report('Recovery required: '+str(recovery))
         raise

@@ -10,8 +10,8 @@ panels[1].innerHTML='<h3>PTR client folder</h3><p id="folder">Use a dedicated PT
 const browse=document.createElement('button');browse.type='button';browse.className='action';browse.id='client-browse';browse.textContent='Browseâ€¦';browse.style.marginRight='8px';
 document.querySelector('#client-form button').before(browse);
 browse.addEventListener('click',()=>send('browse'));
-document.querySelector('.side-note').textContent='Use a dedicated PTR client copy. Do not select your Main Server client. The updater preserves your settings and unrelated addons.';
-document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your PTR client. Recover restores an interrupted update. Account requests are not connected yet.';
+document.querySelector('.side-note').textContent='Each realm uses its own client folder and updates. Keep PTR and Area 52 separate.';
+document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your PTR client. Recover restores an interrupted update. Use Discord to request an account.';
 const footer=document.querySelector('footer');
 footer.querySelectorAll('button').forEach(b=>b.remove());
 for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['update','Update PTR'],['play','Play']]){
@@ -19,15 +19,19 @@ for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['
  button.addEventListener('click',()=>send(action));footer.appendChild(button);
 }
 const alpha=document.createElement('button');alpha.className='realm';alpha.dataset.channel='area52';
-alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Private Alpha · Preparing distribution</small>';
+alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev · COACore client</small>';
 document.querySelector('.side-note').before(alpha);
 for(const channel of ['ptr','area52']){
  document.querySelector('[data-channel="'+channel+'"]').addEventListener('click',()=>send('channel',{channel}));
 }
+const baseClient=document.createElement('button');baseClient.type='button';baseClient.className='action';baseClient.id='base-client-download';baseClient.textContent='Get COACore Client on Discord';baseClient.hidden=true;panels[1].appendChild(baseClient);baseClient.addEventListener('click',()=>send('base-client'));
 let lastState=null;
 function render(state){
  lastState=state;
+ document.getElementById('account-open').disabled=!state.discord_ready;
+ document.getElementById('account-open').title=state.discord_ready?'Open Discord in your browser':'Discord invitation is being configured';
  const area52=state.channel==='area52';
+ document.getElementById('base-client-download').hidden=!area52;
  document.querySelectorAll('[data-channel]').forEach(b=>{b.classList.toggle('selected',b.dataset.channel===state.channel);b.disabled=state.busy||b.dataset.channel==='main';});
  document.getElementById('badge').textContent=area52?'PRIVATE ALPHA':'PUBLIC TEST REALM';
  document.getElementById('title').textContent=area52?'Area 52 - Free Pick Alpha Dev':'Help shape the next adventure.';
@@ -77,36 +81,9 @@ function connectWindowControls(){
 window.addEventListener('pywebviewready',connectWindowControls);
 if(window.pywebview&&window.pywebview.api)connectWindowControls();
 
-document.getElementById('account-open').addEventListener('click',()=>{document.getElementById('account-realm').textContent=lastState?.channel==='area52'?'Area 52 - Free Pick Alpha Dev':'The Bear Cave — PTR';});
-
-const passwordLabel=document.createElement('label');passwordLabel.htmlFor='account-password';passwordLabel.textContent='Game password (10–16 characters; case-insensitive)';
-const passwordInput=document.createElement('input');passwordInput.id='account-password';passwordInput.type='password';passwordInput.autocomplete='new-password';passwordInput.minLength=10;passwordInput.maxLength=16;
-document.querySelector('.account-note').before(passwordLabel,passwordInput);
-const statusButton=document.createElement('button');statusButton.type='button';statusButton.className='action';statusButton.textContent='Check Account Status';document.querySelector('.dialog-actions').prepend(statusButton);
-document.getElementById('account-open').addEventListener('click',()=>{
- const alpha=lastState?.channel==='area52';
- document.getElementById('account-title').textContent=alpha?'Activate Your Invitation':'Request an Account';
- document.querySelector('label[for="account-contact"]').textContent=alpha?'One-time invitation key':'Email or Discord username';
- const key=document.getElementById('account-contact');key.type=alpha?'password':'text';key.placeholder=alpha?'Invitation provided by the administrator':'Where we can contact you privately';
- passwordInput.hidden=passwordLabel.hidden=!alpha;passwordInput.required=alpha;statusButton.hidden=!alpha;
- const submit=document.querySelector('#account-form button[type="submit"]');submit.disabled=!alpha||!lastState?.access_ready;submit.textContent=alpha?'Create Account':'Send Request';
- document.querySelector('.account-note').textContent=alpha?'Your invitation is your approval. No email is required. Passwords follow the game’s case-insensitive login rules.':'Account requests are not connected yet.';
- document.getElementById('account-status').textContent=alpha&&!lastState?.access_ready?'Private account service is being prepared. Nothing will be sent yet.':'';
-});
-async function accountRequest(action,payload){
- const output=document.getElementById('account-status');
- document.querySelectorAll('#account-form button').forEach(button=>button.disabled=true);
- try{
-  const response=await fetch('api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const result=await response.json();if(!response.ok)throw Error(result.error);
-  output.textContent=result.status==='ready'?'Account ready: '+result.username+'.':('Account request: '+result.status+'. Use Check Account Status to check completion.');
- }catch(error){output.textContent=error.message;}
- finally{document.querySelectorAll('#account-form button').forEach(button=>button.disabled=false);}
-}
-document.getElementById('account-form').addEventListener('submit',event=>{
- if(lastState?.channel!=='area52'||!lastState?.access_ready)return;
- event.preventDefault();const password=passwordInput.value;passwordInput.value='';
- const key=document.getElementById('account-contact');const invitation=key.value.trim();key.value='';
- accountRequest('enroll',{invitation,username:document.getElementById('account-name').value.trim(),password});
-});
-statusButton.addEventListener('click',()=>accountRequest('account-status',{}));
+const oldAccountButton=document.getElementById('account-open');
+const discordButton=oldAccountButton.cloneNode(true);oldAccountButton.replaceWith(discordButton);
+discordButton.textContent='Request Account on Discord';
+discordButton.addEventListener('click',()=>send('discord'));
+document.getElementById('account-dialog').remove();
+document.querySelector('.account-entry p').innerHTML='<strong>Need an account?</strong>Contact the administrator directly on Discord.';

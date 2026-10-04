@@ -1,7 +1,8 @@
 """Local-only browser shell for the Bear Cave PTR updater."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-import json, os, secrets, shutil, subprocess, sys, threading
+import json, os, secrets, shutil, subprocess, sys, threading, webbrowser
+from urllib.parse import urlsplit
 from . import updater, connection, access
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -16,15 +17,50 @@ class Application:
         if self.channel not in ('ptr','area52'):self.channel='ptr'
         self.clients={key:settings.get(key+'_client','') for key in ('ptr','area52')}
         self.client=self.clients[self.channel]
-        self.manifest=None;self.busy=False;self.message='Select your dedicated PTR client folder.'
+        self.manifest=None;self.busy=False;self.message='Select a separate client folder for this realm.'
         self.error='';self.changes=[];self.mutex=threading.Lock()
         self.folder_picker=None
 
     def status(self):
         from .selfupdate import VERSION
-        return dict(channel=self.channel,channel_ready=self.channel=='ptr',client=self.client,busy=self.busy,message=self.message,error=self.error,
+        return dict(channel=self.channel,channel_ready=self.channel=='ptr' or self.area52_ready(),client=self.client,busy=self.busy,message=self.message,error=self.error,
                     changes=self.changes,version=self.manifest['version'] if self.manifest else None,
-                    launcher_version=VERSION,access_ready=bool(access.service_url(ROOT)))
+                    launcher_version=VERSION,discord_ready=bool(self.discord_url()))
+
+    def area52_ready(self):
+        try:return bool(connection.load(ROOT,'area52'))
+        except ValueError:return False
+
+    def realm(self):
+        return connection.load(ROOT) if self.channel=='ptr' else connection.load(ROOT,'area52')
+
+    def configure_realm(self,root,state):
+        if self.channel=='ptr':connection.configure(root,state,self.realm(),updater.ensure_closed)
+        else:connection.configure(root,state,self.realm(),updater.ensure_closed,force_direct3d=False)
+
+    def discord_url(self):
+        path=ROOT/'config/account-discord.json'
+        if not path.exists():return None
+        url=updater.read_json(path).get(self.channel,'')
+        if not url:return None
+        parsed=urlsplit(url)
+        import re
+        if (parsed.scheme!='https' or parsed.username or parsed.password or parsed.port
+                or parsed.query or parsed.fragment
+                or not ((parsed.netloc=='discord.gg' and re.fullmatch(r'/[A-Za-z0-9-]+',parsed.path))
+                        or (parsed.netloc=='discord.com' and re.fullmatch(r'/invite/[A-Za-z0-9-]+',parsed.path)))):
+            raise ValueError('Invalid Discord invitation configuration')
+        return url
+
+    def open_client_download(self):
+        if self.channel!='area52':raise ValueError('Base-client link is Area 52 only')
+        if not webbrowser.open('https://discord.gg/RAkxswQ7Gx',new=2):raise RuntimeError('Could not open your browser')
+
+    def open_discord(self):
+        url=self.discord_url()
+        if not url:raise ValueError('Discord invitation is not configured yet')
+        if not webbrowser.open(url,new=2):raise RuntimeError('Could not open your browser')
+        self.message='Discord opened. Contact the administrator there to request an account.'
 
     def account(self,action,data):
         with self.mutex:
@@ -47,7 +83,7 @@ class Application:
             self.channel=channel;self.client=self.clients[channel]
             self.manifest=None;self.changes=[];self.error=''
             self.message=('Select your dedicated PTR client folder.' if channel=='ptr' else
-                          'Area 52 private alpha distribution is being prepared. Downloads and play are not enabled yet.')
+                          'Select your COACore client folder for Area 52.')
             self.save_settings()
 
     def save_settings(self):
@@ -74,9 +110,9 @@ class Application:
     def start(self,action):
         with self.mutex:
             if self.busy: raise ValueError('An operation is already running')
-            if self.channel!='ptr' and action!='browse':raise ValueError('Area 52 private alpha distribution is not enabled yet')
+            if self.channel=='area52' and not self.area52_ready() and action!='browse':raise ValueError('Area 52 connection is not configured yet')
             if action not in ('browse','check','update','recover','play'): raise ValueError('Unknown action')
-            root=updater.client_root(self.client) if action!='browse' else None
+            root=updater.client_root(self.client,self.channel) if action!='browse' else None
             self.busy=True;self.error='';self.message='Working…'
         def worker():
             try:
@@ -89,29 +125,32 @@ class Application:
                 elif action=='check':
                     self.manifest=None;self.changes=[];self.message='Checking the published PTR channel…'
                     # Repair the connection even when no patch components need updating.
-                    with updater.locked(root) as state:
-                        connection.configure(root,state,connection.load(ROOT),updater.ensure_closed)
-                    manifest=updater.latest();changes=updater.pending_changes(root,manifest)
+                    with updater.locked(root,self.channel) as state:
+                        self.configure_realm(root,state)
+                    manifest=updater.latest() if self.channel=='ptr' else updater.latest(self.channel)
+                    changes=updater.pending_changes(root,manifest) if self.channel=='ptr' else updater.pending_changes(root,manifest,self.channel)
                     self.manifest=manifest;self.changes=changes
-                    self.message=f'{len(changes)} component(s) need updating.' if changes else 'Your PTR files match the published version.'
-                    self.message+=' PTR connection configured.'
+                    self.message=f'{len(changes)} component(s) need updating.' if changes else 'Your client files match the published version.'
+                    self.message+=(' PTR connection configured.' if self.channel=='ptr' else ' Area 52 connection configured.')
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')
-                    realm=connection.load(ROOT)
-                    self.message=updater.install(root,self.manifest,report=self.report);self.changes=[]
-                    with updater.locked(root) as state:
-                        connection.configure(root,state,realm,updater.ensure_closed)
-                    self.message+=' PTR connection configured.'
-                elif action=='recover': self.message=updater.recover(root,report=self.report)
+                    realm=self.realm()
+                    self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel);self.changes=[]
+                    with updater.locked(root,self.channel) as state:
+                        self.configure_realm(root,state)
+                    self.message+=(' PTR connection configured.' if self.channel=='ptr' else ' Area 52 connection configured.')
+                elif action=='recover': self.message=updater.recover(root,report=self.report,channel=self.channel)
                 else:
-                    with updater.locked(root) as state:
+                    with updater.locked(root,self.channel) as state:
                         if (state/'pending.json').exists(): raise ValueError('Recover interrupted changes before playing')
                         updater.ensure_closed()
-                        connection.configure(root,state,connection.load(ROOT),updater.ensure_closed)
-                        exe=root/'Wow.exe'
+                        self.configure_realm(root,state)
+                        exe=root/('Ascension.exe' if self.channel=='area52' else 'Wow.exe')
                         command=[str(exe)] if os.name=='nt' else [shutil.which('wine') or 'wine',str(exe)]
                         subprocess.Popen(command,cwd=root)
-                        self.message='WoW launched with the PTR connection configured.'
+                        self.message='Game launched with the '+self.channel+' connection configured.'
+            except updater.ChannelUnavailable as error:
+                self.message=str(error)+' Realm connection configured; you can use Play.'
             except Exception as error:
                 self.error=str(error);self.message='Operation stopped. See the message below.'
             finally: self.busy=False
@@ -149,17 +188,16 @@ def create_server(app,port=0):
             self.respond(200,body,ctype)
         def do_POST(self):
             route=self.route()
-            if route not in ('api/enroll','api/account-status','api/channel','api/browse','api/select','api/check','api/update','api/recover','api/play'):
+            if route not in ('api/base-client','api/discord','api/channel','api/browse','api/select','api/check','api/update','api/recover','api/play'):
                 return self.respond(403,dict(error='Invalid launcher action'))
             try:
                 size=int(self.headers.get('Content-Length','0'))
                 if not 0<size<=4096 or self.headers.get('Content-Type')!='application/json':
                     raise ValueError('Invalid request')
                 data=json.loads(self.rfile.read(size))
-                if route in ('api/enroll','api/account-status'):
-                    action='enroll' if route=='api/enroll' else 'status'
-                    return self.respond(200,app.account(action,data))
-                if route=='api/channel':app.change_channel(data['channel'])
+                if route=='api/base-client':app.open_client_download()
+                elif route=='api/discord':app.open_discord()
+                elif route=='api/channel':app.change_channel(data['channel'])
                 elif route=='api/select':app.select(data['path'])
                 else:app.start(route.split('/')[-1])
                 self.respond(200,app.status())

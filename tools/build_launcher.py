@@ -11,13 +11,18 @@ connection_args=[]
 if '--unconfigured' not in sys.argv:
     connection.load(root)
     connection_args=['--add-data',str(connection_file)+':.']
-subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir','--windowed',
+area52_file=root/'local/connection-area52.json'
+if '--area52-local' in sys.argv:
+    connection.load(root,'area52')
+    connection_args+=['--add-data',str(area52_file)+':.']
+subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir',('--console' if '--diagnostic' in sys.argv else '--windowed'),
                 '--icon',str(root/'ui/assets/bear-cave-app-icon.ico'),'--name','BearCaveLauncher','--paths',str(root/'tools'),
-                '--add-data',str(root/'ui')+':ui',*connection_args,'--distpath',str(root/'dist/launcher'),
+                '--add-data',str(root/'ui')+':ui',
+                '--add-data',str(root/'config/account-discord.json')+':config',*connection_args,'--distpath',str(root/'dist/launcher'),
                 '--workpath',str(root/'local/build'),'--specpath',str(root/'local'),str(root/'Launch.py')],cwd=root,check=True)
 folder=root/'dist/launcher/BearCaveLauncher'
 exe=folder/('BearCaveLauncher.exe'if sys.platform=='win32'else'BearCaveLauncher')
-subprocess.run([str(exe),'--self-test'],check=True)
+subprocess.run([str(exe),'--self-test'],check=True,timeout=60)
 if sys.platform=='win32':
     (folder/'Start Compatibility Mode.cmd').write_text('@echo off\nstart "" "%~dp0BearCaveLauncher.exe" --compatibility\n',encoding='ascii')
 from launcher.selfupdate import VERSION,BUILD

@@ -3,8 +3,8 @@ from pathlib import Path, PurePosixPath
 import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request,urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.2'
-BUILD=302
+VERSION='0.3.3'
+BUILD=303
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
@@ -30,7 +30,7 @@ def extract(archive,destination,info):
             if (item.is_dir() or '\\' in name or any(not p or p in ('.','..') or p.endswith((' ','.')) or re.search(r'[<>:"|?*\x00-\x1f]',p) or re.fullmatch(r'(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?',p,re.I) for p in parts)
                 or name.lower() in seen or stat.S_ISLNK(item.external_attr>>16)):raise ValueError('Unsafe launcher archive path')
             if not (parts[0]=='_internal' or len(parts)==1):raise ValueError('Unexpected launcher layout')
-            if name.lower().endswith('connection.json'):raise ValueError('Public launcher asset contains private connection settings')
+            if name.lower().endswith(('connection.json','connection-area52.json','access.json')):raise ValueError('Public launcher asset contains private connection settings')
             seen.add(name.lower());total+=item.file_size
         if total>MAX_UNPACKED or not {'bearcavelauncher.exe','launcher-version.json'}<=seen:raise ValueError('Incomplete/oversized launcher')
         metadata=json.loads(z.read('launcher-version.json'))
@@ -41,11 +41,14 @@ def extract(archive,destination,info):
             with z.open(item) as source,target.open('xb') as out:shutil.copyfileobj(source,out)
 
 def preserve_connection(root,payload):
-    for relative in ['_internal/connection.json','connection.json','local/connection.json']:
-        path=root/relative
-        if path.exists():
-            if path.is_symlink() or any(p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()) for p in path.parents if p!=root.parent):raise ValueError('Linked connection configuration')
-            target=payload/'_internal/connection.json';target.parent.mkdir(exist_ok=True);shutil.copyfile(path,target);return
+    for name in ('connection.json','connection-area52.json'):
+        for relative in ('_internal/'+name,name,'local/'+name):
+            path=root/relative
+            if path.exists():
+                if path.is_symlink() or any(p.is_symlink() or (hasattr(p,'is_junction') and p.is_junction()) for p in path.parents if p!=root.parent):raise ValueError('Linked connection configuration')
+                target=payload/'_internal'/name;target.parent.mkdir(exist_ok=True);shutil.copyfile(path,target)
+                break
+
 
 def log(message):
     try:

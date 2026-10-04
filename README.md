@@ -42,8 +42,11 @@ Open `ui/preview.html` in a browser for the design preview.
 Automatic PTR realm configuration is applied by configured launcher builds; see [connection setup](docs/PTR-CONNECTION.md). Older launcher executables must be replaced once.
 
 
-## Area 52 private alpha preparation
+## Area 52 alpha channel
 
-The Area 52 sidebar channel and separate folder settings are implemented. Its download, repair, recovery and Play actions remain disabled until its client distribution is ready. Existing PTR operations are unchanged. The compatibility UI has not yet gained Area 52 enrollment controls; use the standard Windows UI for this staged feature.
+Area 52 has independent client-folder settings and a separate public update feed in CWO4PapaBear/Area52-FreePick-Client. Obtain the base client through the COACore Discord linked in the launcher. No full client is distributed here. A disabled patch feed still allows configured clients to Play.
 
-A deployment-only `access.json` (or `local/access.json`) may contain `{"channel":"area52","url":"https://YOUR_HOST"}`. Without that configuration, invitation submission stays disabled. Never place GitHub tokens or database credentials in the launcher. Enrollment credentials are protected with Windows DPAPI before network submission. Private access-service implementation is maintained separately in `CWO4PapaBear/Area52-FreePick-Client`. No public service, new launcher binary or Area 52 release assets have been activated.
+Local builds can include local/connection-area52.json using tools/build_launcher.py --area52-local. This deployment configuration is excluded from source and public update bundles. The local test endpoint is not a tester deployment address. PTR and Area 52 cannot share a client folder. Area 52 launches Ascension.exe and does not apply PTR executable repairs or renderer settings. Use the standard Windows UI for Area 52.
+## Current account-request flow
+
+The active launcher UI opens the Discord invitation in `config/account-discord.json` for account requests. PTR and Area 52 currently share the same community. Account enrollment/password entry is not exposed by the launcher HTTP API. The invitation-service implementation is retained for future deployment; Discord is the current account workflow. The invite configuration is included in packaged launcher builds.

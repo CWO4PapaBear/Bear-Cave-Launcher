@@ -15,7 +15,7 @@ def connection_check():
         (client/'WTF/private.txt').write_text('preserved')
         # Model an already-current client: connection repair must not require downloads.
         updater.latest=lambda:{'version':'self-test'}
-        updater.changed=lambda root,manifest:[]
+        updater.changed=lambda root,manifest,channel='ptr':[]
         updater.ensure_closed=lambda:None # Only our non-executable fixture is accessed.
         application=app.Application(work/'settings');application.select(str(client));application.start('check')
         deadline=time.monotonic()+15

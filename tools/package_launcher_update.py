@@ -14,7 +14,7 @@ def prepare():
             if p.is_symlink() or (hasattr(p,'is_junction')and p.is_junction()):raise ValueError('Linked build file')
             if not p.is_file():continue
             rel=p.relative_to(source).as_posix()
-            if rel.lower().endswith('connection.json'):continue
+            if rel.lower().endswith(('connection.json','connection-area52.json','access.json')):continue
             z.write(p,rel)
     info=dict(schema=1,enabled=True,platform='win32',version=VERSION,build=BUILD,
               url=f'https://github.com/{REPOSITORY}/releases/download/launcher-{VERSION}/{archive.name}',

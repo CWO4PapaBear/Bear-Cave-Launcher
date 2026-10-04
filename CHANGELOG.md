@@ -1,10 +1,21 @@
-## Unreleased — Area 52 private alpha preparation
+## 0.3.3 local candidate (not promoted)
+
+- Added independent Area 52 updates, client selection and Ascension.exe launch, with a COACore base-client Discord link.
+- Account requests open Bear Cave Discord. Enrollment endpoints are inactive.
+- Local desktop smoke test passed; 68 tests passed with one skipped. Tester channel remains unchanged.
+
+## Unreleased ï¿½ Discord account requests
+
+- Request Account on Discord opens the shared community invite in the default browser for both PTR and Area 52.
+- Removed the account form from the active launcher UI and disconnected enrollment endpoints. Invitation-service code remains inactive for future use.
+
+## Unreleased ï¿½ Area 52 private alpha preparation
 
 - Added a separate Area 52 - Free Pick Alpha Dev channel with independent folder settings; distribution actions remain disabled until its release feed is prepared.
 - Added invitation enrollment and account status integration, enabled only when the Area 52 HTTPS access service is configured. Windows protects the retained request credential with DPAPI. No email is required.
 - PTR updates retain their existing feed and behavior. No launcher binary or client assets are published by this source change.
 
-## Pending release — automatic PTR connection
+## Pending release ï¿½ automatic PTR connection
 
 - Configure realm files and saved realm overrides automatically after Update and before Play.
 - Back up originals and preserve unrelated settings.

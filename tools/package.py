@@ -40,7 +40,7 @@ def safe_file(root, relative):
 def build(root, config, output, notes):
     root = root.resolve(); output = output.resolve()
     channel, version, repo = config['channel'], config['version'], config['repository']
-    if channel not in ('main', 'ptr') or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}', version):
+    if channel not in ('main', 'ptr', 'area52') or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}', version):
         raise ValueError('Invalid channel/version')
     if not re.fullmatch(r'[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+', repo):
         raise ValueError('Invalid repository')

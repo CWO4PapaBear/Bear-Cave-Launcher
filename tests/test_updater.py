@@ -32,6 +32,22 @@ class Updater(unittest.TestCase):
         def blocked():raise RuntimeError('WoW running')
         with self.assertRaises(RuntimeError):updater.install(self.client,self.manifest,guard=blocked)
         self.assertFalse((self.client/'.bear-cave-launcher').exists())
+    def test_area52_install_rejects_ptr_feed_and_preserves_channel(self):
+        manifest=json.loads(json.dumps(self.manifest))
+        manifest['schema']=1
+        manifest.pop('client_fixes',None)
+        manifest.pop('minimum_launcher_build',None)
+        old=f'https://github.com/{updater.REPOSITORY}/releases/download/'+manifest['tag']+'/'
+        manifest['channel']='area52';manifest['tag']='area52-'+manifest['version']
+        new=f'https://github.com/{updater.repository("area52")}/releases/download/'+manifest['tag']+'/'
+        manifest['notes_url']=manifest['notes_url'].replace(old,new)
+        for component in manifest['components']:component['url']=component['url'].replace(old,new)
+        with self.assertRaises(ValueError):updater.validate_manifest(manifest)
+        with self.assertRaises(ValueError):updater.validate_manifest(self.manifest,'area52')
+        updater.install(self.client,manifest,download=self.download,guard=self.guard,channel='area52')
+        self.assertEqual(updater.read_json(self.client/'.bear-cave-launcher/channel.json')['channel'],'area52')
+        self.assertEqual(updater.changed(self.client,manifest,'area52'),[])
+        with self.assertRaises(ValueError):updater.state_dir(self.client,'ptr')
     def test_corrupt_archive_never_touches_client(self):
         (self.package/'hero.zip').write_bytes(b'bad')
         with self.assertRaises(ValueError):self.install()
