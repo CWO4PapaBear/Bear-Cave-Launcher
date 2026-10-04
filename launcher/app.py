@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json, os, secrets, shutil, subprocess, sys, threading, webbrowser
 from urllib.parse import urlsplit
-from . import updater, connection, access
+from . import updater, connection, access, baseline
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -11,6 +11,7 @@ class Application:
     def __init__(self,config_dir=None):
         self.directory=config_dir or (Path(os.getenv('LOCALAPPDATA') or Path.home()/'.config')/'BearCaveLauncher')
         self.directory.mkdir(parents=True,exist_ok=True)
+        self.baseline_stamp=None
         self.config=self.directory/'settings.json'
         settings=updater.read_json(self.config) if self.config.exists() else {}
         self.channel=settings.get('channel','ptr')
@@ -107,6 +108,22 @@ class Application:
         self.save_settings()
         self.message='Client folder saved for '+self.channel+'.';self.error=''
 
+    def verify_baseline(self,root):
+        self.baseline_stamp=None
+        mismatches,stamp=baseline.compare(root,self.manifest['baseline'],self.report)
+        updater.save_json(self.directory/'area52-verification.json',dict(version=self.manifest['version'],mismatches=mismatches))
+        if mismatches:
+            repaired={f['path'].lower() for c in self.manifest['components'] for f in c['files']}
+            base=[m for m in mismatches if m['path'].lower() not in repaired]
+            self.message=f'{len(mismatches)} client baseline mismatch(es). '
+            self.message+=('Update Area 52 to repair managed files. ' if len(base)!=len(mismatches) else '')
+            self.message+=('Base-client files also differ; obtain the matching COACore client. ' if base else '')
+            self.error='; '.join(m['path']+': '+m['reason'] for m in mismatches[:5])
+        else:
+            self.baseline_stamp=stamp
+            self.message='Area 52 base client matches the tested baseline.'
+            if self.changes:self.message+=' Install the pending Area 52 overlay update before playing.'
+
     def start(self,action):
         with self.mutex:
             if self.busy: raise ValueError('An operation is already running')
@@ -132,6 +149,8 @@ class Application:
                     self.manifest=manifest;self.changes=changes
                     self.message=f'{len(changes)} component(s) need updating.' if changes else 'Your client files match the published version.'
                     self.message+=(' PTR connection configured.' if self.channel=='ptr' else ' Area 52 connection configured.')
+                    if self.channel=='area52' and self.manifest.get('schema')==3:
+                        self.verify_baseline(root)
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')
                     realm=self.realm()
@@ -139,18 +158,28 @@ class Application:
                     with updater.locked(root,self.channel) as state:
                         self.configure_realm(root,state)
                     self.message+=(' PTR connection configured.' if self.channel=='ptr' else ' Area 52 connection configured.')
+                    if self.channel=='area52' and self.manifest.get('schema')==3:
+                        self.verify_baseline(root)
                 elif action=='recover': self.message=updater.recover(root,report=self.report,channel=self.channel)
                 else:
                     with updater.locked(root,self.channel) as state:
                         if (state/'pending.json').exists(): raise ValueError('Recover interrupted changes before playing')
                         updater.ensure_closed()
                         self.configure_realm(root,state)
+                        if self.channel=='area52':
+                            if not self.manifest or self.manifest.get('schema')!=3 or self.baseline_stamp is None:
+                                raise ValueError('Run Check / Repair and resolve client mismatches before playing Area 52.')
+                            if baseline.signature(root,self.manifest['baseline'])!=self.baseline_stamp:
+                                self.baseline_stamp=None
+                                raise ValueError('Client files changed. Run Check / Repair again.')
+                            if updater.changed(root,self.manifest,'area52'):
+                                raise ValueError('Install the pending Area 52 update before playing.')
                         exe=root/('Ascension.exe' if self.channel=='area52' else 'Wow.exe')
                         command=[str(exe)] if os.name=='nt' else [shutil.which('wine') or 'wine',str(exe)]
                         subprocess.Popen(command,cwd=root)
                         self.message='Game launched with the '+self.channel+' connection configured.'
             except updater.ChannelUnavailable as error:
-                self.message=str(error)+' Realm connection configured; you can use Play.'
+                self.message=str(error)+' Realm connection configured; client verification is unavailable.'
             except Exception as error:
                 self.error=str(error);self.message='Operation stopped. See the message below.'
             finally: self.busy=False

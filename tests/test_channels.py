@@ -17,9 +17,11 @@ class ChannelTests(unittest.TestCase):
             root=Path(directory);client=root/'client';client.mkdir()
             (client/'Ascension.exe').write_bytes(b'fixture')
             app=Application(root/'settings');app.change_channel('area52');app.select(str(client))
+            app.manifest={'schema':3,'baseline':[]};app.baseline_stamp={'extra_archives':()}
             with patch('launcher.app.connection.load',return_value='127.0.0.1:3725'), \
                     patch('launcher.app.threading.Thread',ImmediateThread), \
                     patch('launcher.app.updater.ensure_closed'), \
+                    patch('launcher.app.updater.changed',return_value=[]), \
                     patch('launcher.app.subprocess.Popen') as launch:
                 app.start('play')
             self.assertEqual(app.error,'')

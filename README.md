@@ -44,7 +44,7 @@ Automatic PTR realm configuration is applied by configured launcher builds; see 
 
 ## Area 52 alpha channel
 
-Area 52 has independent client-folder settings and a separate public update feed in CWO4PapaBear/Area52-FreePick-Client. Obtain the base client through the COACore Discord linked in the launcher. No full client is distributed here. A disabled patch feed still allows configured clients to Play.
+Area 52 has independent client-folder settings and a separate public update feed in CWO4PapaBear/Area52-FreePick-Client. Obtain the base client through the COACore Discord linked in the launcher. No full client is distributed here. The 0.3.5 candidate requires a reviewed schema-3 baseline before Play. Check / Repair verifies base-client hashes and Area 52 overlays; Update repairs the managed overlays. Base-client mismatches require the matching COACore client and are never overwritten by this repair. Unexpected patch archives also block verification. The public 0.3.4 release retains its previous behavior until the candidate and matching feed are promoted.
 
 Local builds can include local/connection-area52.json using tools/build_launcher.py --area52-local. This deployment configuration is excluded from source and public update bundles. The local test endpoint is not a tester deployment address. PTR and Area 52 cannot share a client folder. Area 52 launches Ascension.exe and does not apply PTR executable repairs or renderer settings. Use the standard Windows UI for Area 52.
 ## Current account-request flow

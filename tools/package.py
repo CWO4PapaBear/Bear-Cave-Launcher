@@ -9,7 +9,7 @@ def sha(path):
             h.update(block)
     return h.hexdigest()
 
-def managed_path(value):
+def managed_path(value, channel=None):
     if not isinstance(value, str) or '\\' in value:
         raise ValueError('Use relative forward-slash paths')
     path = PurePosixPath(value)
@@ -20,7 +20,8 @@ def managed_path(value):
     low = value.lower()
     addon = low.startswith('interface/addons/') and len(parts) >= 3
     patch = low in ('data/patch-z.mpq', 'data/enus/patch-enus-z.mpq')
-    if not (addon or patch):
+    area52 = channel in (None, 'area52') and low in ('data/patch-b.mpq', 'data/patch-t.mpq', 'data/area-52/patch-d.mpq', 'data/area-52/listarchive')
+    if not (addon or patch or area52):
         raise ValueError('Outside managed addon/patch paths: ' + value)
     if any(p.lower() in ('savedvariables', '.git', 'backups') for p in parts):
         raise ValueError('Private/generated directory: ' + value)
@@ -72,6 +73,7 @@ def build(root, config, output, notes):
             asset = temp / (cid + '.zip')
             with zipfile.ZipFile(asset, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
                 for relative in component['paths']:
+                    managed_path(relative, channel)
                     path = safe_file(root, relative)
                     if not path.exists():
                         raise ValueError('Missing selected path: ' + relative)
