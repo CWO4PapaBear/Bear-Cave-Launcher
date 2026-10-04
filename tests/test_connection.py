@@ -15,6 +15,14 @@ def test_directory():
         shutil.rmtree(root)
 
 class ConnectionTests(unittest.TestCase):
+    def test_existing_launcher_gains_area52_without_replacing_override(self):
+        import json
+        with test_directory() as root:
+            (root/'connection.json').write_text(json.dumps(dict(schema=1,channel='ptr',address='ptr.example.com:3724')))
+            self.assertEqual(connection.load(root,'area52'),'ptr.example.com:3725')
+            (root/'connection-area52.json').write_text(json.dumps(dict(schema=1,channel='area52',address='127.0.0.1:3725')))
+            self.assertEqual(connection.load(root,'area52'),'127.0.0.1:3725')
+
     def test_direct3d_preserves_settings_and_backs_up(self):
         with test_directory() as root:
             (root/'WTF').mkdir();config=root/'WTF/Config.wtf'

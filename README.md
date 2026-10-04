@@ -50,3 +50,5 @@ Local builds can include local/connection-area52.json using tools/build_launcher
 ## Current account-request flow
 
 The active launcher UI opens the Discord invitation in `config/account-discord.json` for account requests. PTR and Area 52 currently share the same community. Account enrollment/password entry is not exposed by the launcher HTTP API. The invitation-service implementation is retained for future deployment; Discord is the current account workflow. The invite configuration is included in packaged launcher builds.
+
+Area 52 defaults to the existing PTR connection host on port 3725 when no explicit Area 52 configuration exists. This allows automatic launcher updates to enable the realm without redistributing deployment settings. Explicit local overrides take priority.

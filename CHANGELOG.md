@@ -1,3 +1,9 @@
+## 0.3.4
+
+- Automatic update adds the Area 52 channel, Discord links, and corrected content-sized window.
+- Existing installations reuse their PTR host on auth port 3725 unless an explicit Area 52 connection override exists.
+- Separate client folders, feeds and executable handling preserve PTR behavior.
+
 ## 0.3.3 local candidate (not promoted)
 
 - Added independent Area 52 updates, client selection and Ascension.exe launch, with a COACore base-client Discord link.
