@@ -9,3 +9,6 @@ local/
 .env*
 connection.json
 !*.example
+
+access.json
+*.bin

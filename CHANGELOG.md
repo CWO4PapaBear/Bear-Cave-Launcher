@@ -1,3 +1,9 @@
+## Unreleased — Area 52 private alpha preparation
+
+- Added a separate Area 52 - Free Pick Alpha Dev channel with independent folder settings; distribution actions remain disabled until its release feed is prepared.
+- Added invitation enrollment and account status integration, enabled only when the Area 52 HTTPS access service is configured. Windows protects the retained request credential with DPAPI. No email is required.
+- PTR updates retain their existing feed and behavior. No launcher binary or client assets are published by this source change.
+
 ## Pending release — automatic PTR connection
 
 - Configure realm files and saved realm overrides automatically after Update and before Play.

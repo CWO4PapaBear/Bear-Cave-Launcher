@@ -40,3 +40,10 @@ python -m unittest discover -s tests -v
 Open `ui/preview.html` in a browser for the design preview.
 
 Automatic PTR realm configuration is applied by configured launcher builds; see [connection setup](docs/PTR-CONNECTION.md). Older launcher executables must be replaced once.
+
+
+## Area 52 private alpha preparation
+
+The Area 52 sidebar channel and separate folder settings are implemented. Its download, repair, recovery and Play actions remain disabled until its client distribution is ready. Existing PTR operations are unchanged. The compatibility UI has not yet gained Area 52 enrollment controls; use the standard Windows UI for this staged feature.
+
+A deployment-only `access.json` (or `local/access.json`) may contain `{"channel":"area52","url":"https://YOUR_HOST"}`. Without that configuration, invitation submission stays disabled. Never place GitHub tokens or database credentials in the launcher. Enrollment credentials are protected with Windows DPAPI before network submission. Private access-service implementation is maintained separately in `CWO4PapaBear/Area52-FreePick-Client`. No public service, new launcher binary or Area 52 release assets have been activated.

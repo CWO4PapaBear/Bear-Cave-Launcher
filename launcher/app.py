@@ -2,7 +2,7 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json, os, secrets, shutil, subprocess, sys, threading
-from . import updater, connection
+from . import updater, connection, access
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -11,32 +11,70 @@ class Application:
         self.directory=config_dir or (Path(os.getenv('LOCALAPPDATA') or Path.home()/'.config')/'BearCaveLauncher')
         self.directory.mkdir(parents=True,exist_ok=True)
         self.config=self.directory/'settings.json'
-        self.client=updater.read_json(self.config).get('ptr_client','') if self.config.exists() else ''
+        settings=updater.read_json(self.config) if self.config.exists() else {}
+        self.channel=settings.get('channel','ptr')
+        if self.channel not in ('ptr','area52'):self.channel='ptr'
+        self.clients={key:settings.get(key+'_client','') for key in ('ptr','area52')}
+        self.client=self.clients[self.channel]
         self.manifest=None;self.busy=False;self.message='Select your dedicated PTR client folder.'
         self.error='';self.changes=[];self.mutex=threading.Lock()
         self.folder_picker=None
 
     def status(self):
         from .selfupdate import VERSION
-        return dict(client=self.client,busy=self.busy,message=self.message,error=self.error,
+        return dict(channel=self.channel,channel_ready=self.channel=='ptr',client=self.client,busy=self.busy,message=self.message,error=self.error,
                     changes=self.changes,version=self.manifest['version'] if self.manifest else None,
-                    launcher_version=VERSION)
+                    launcher_version=VERSION,access_ready=bool(access.service_url(ROOT)))
+
+    def account(self,action,data):
+        with self.mutex:
+            if self.busy:raise ValueError('Wait for the current operation')
+            if self.channel!='area52':raise ValueError('Invitation enrollment is Area 52 only')
+            url=access.service_url(ROOT)
+            if not url:raise ValueError('Account access service is not configured yet')
+            self.busy=True
+        try:
+            client=access.Client(self.directory,url)
+            if action=='status' and not client.path.exists():raise ValueError('No enrollment has been started')
+            return client.request(action,data)
+        finally:
+            self.busy=False
+
+    def change_channel(self,channel):
+        with self.mutex:
+            if self.busy:raise ValueError('Wait for the current operation')
+            if channel not in ('ptr','area52'):raise ValueError('Unknown realm channel')
+            self.channel=channel;self.client=self.clients[channel]
+            self.manifest=None;self.changes=[];self.error=''
+            self.message=('Select your dedicated PTR client folder.' if channel=='ptr' else
+                          'Area 52 private alpha distribution is being prepared. Downloads and play are not enabled yet.')
+            self.save_settings()
+
+    def save_settings(self):
+        self.clients[self.channel]=self.client
+        updater.save_json(self.config,dict(channel=self.channel,**{key+'_client':value for key,value in self.clients.items()}))
 
     def report(self,text): self.message=text
 
     def select(self,value,internal=False):
         if self.busy and not internal: raise ValueError('Wait for the current operation')
-        root=updater.client_root(value)
+        root=updater.client_root(value) if self.channel=='ptr' else Path(value).expanduser().resolve(strict=True)
+        if self.channel=='area52' and (not root.is_dir() or not (root/'Ascension.exe').is_file()):
+            raise ValueError('Select the dedicated Area 52 folder containing Ascension.exe')
+        for channel,folder in self.clients.items():
+            if channel!=self.channel and folder and root==Path(folder).resolve():
+                raise ValueError('Each realm must use a separate client folder')
         marker=root/'.bear-cave-launcher/channel.json'
-        if marker.exists() and updater.read_json(marker).get('channel')!='ptr':
+        if marker.exists() and updater.read_json(marker).get('channel')!=self.channel:
             raise ValueError('That client belongs to another realm.')
         self.client=str(root);self.manifest=None;self.changes=[]
-        updater.save_json(self.config,dict(ptr_client=self.client))
-        self.message='PTR client selected. Check for updates.';self.error=''
+        self.save_settings()
+        self.message='Client folder saved for '+self.channel+'.';self.error=''
 
     def start(self,action):
         with self.mutex:
             if self.busy: raise ValueError('An operation is already running')
+            if self.channel!='ptr' and action!='browse':raise ValueError('Area 52 private alpha distribution is not enabled yet')
             if action not in ('browse','check','update','recover','play'): raise ValueError('Unknown action')
             root=updater.client_root(self.client) if action!='browse' else None
             self.busy=True;self.error='';self.message='Working…'
@@ -111,14 +149,18 @@ def create_server(app,port=0):
             self.respond(200,body,ctype)
         def do_POST(self):
             route=self.route()
-            if route not in ('api/browse','api/select','api/check','api/update','api/recover','api/play'):
+            if route not in ('api/enroll','api/account-status','api/channel','api/browse','api/select','api/check','api/update','api/recover','api/play'):
                 return self.respond(403,dict(error='Invalid launcher action'))
             try:
                 size=int(self.headers.get('Content-Length','0'))
                 if not 0<size<=4096 or self.headers.get('Content-Type')!='application/json':
                     raise ValueError('Invalid request')
                 data=json.loads(self.rfile.read(size))
-                if route=='api/select':app.select(data['path'])
+                if route in ('api/enroll','api/account-status'):
+                    action='enroll' if route=='api/enroll' else 'status'
+                    return self.respond(200,app.account(action,data))
+                if route=='api/channel':app.change_channel(data['channel'])
+                elif route=='api/select':app.select(data['path'])
                 else:app.start(route.split('/')[-1])
                 self.respond(200,app.status())
             except Exception as error:self.respond(400,dict(error=str(error)))
