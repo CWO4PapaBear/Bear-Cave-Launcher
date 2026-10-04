@@ -19,7 +19,7 @@ for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['
  button.addEventListener('click',()=>send(action));footer.appendChild(button);
 }
 const alpha=document.createElement('button');alpha.className='realm';alpha.dataset.channel='area52';
-alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev � COACore client</small>';
+alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev - COACore client</small>';
 document.querySelector('.side-note').before(alpha);
 for(const channel of ['ptr','area52']){
  document.querySelector('[data-channel="'+channel+'"]').addEventListener('click',()=>send('channel',{channel}));

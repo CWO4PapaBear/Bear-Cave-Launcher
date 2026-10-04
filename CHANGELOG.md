@@ -63,3 +63,5 @@ Publish the tested More Minions stable bridge with the original classic controls
 - Launcher height automatically grows to fit channel content and messages, bounded by available screen height; scrolling remains available when the screen cannot fit the content.
 
 - Correct content-height measurement and native window-frame allowance so automatic sizing stops at content rather than filling the screen.
+
+- Replace the broken Area 52 sidebar separator with a plain dash.
