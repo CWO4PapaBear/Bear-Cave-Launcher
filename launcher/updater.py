@@ -60,7 +60,7 @@ def validate_manifest(m,channel='ptr'):
         raise ValueError('Manifest belongs to another channel')
     if channel=='area52' and m.get('schema') not in (1,3):raise ValueError('Area 52 does not use PTR executable repairs')
     if m.get('schema')==3:
-        if channel!='area52' or m.get('minimum_launcher_build')!=305 or m.get('client_fixes'):raise ValueError('Invalid Area 52 baseline requirements')
+        if channel!='area52' or m.get('minimum_launcher_build') not in (305,306) or m.get('client_fixes'):raise ValueError('Invalid Area 52 baseline requirements')
         baseline.validate(m.get('baseline'))
     if m.get('schema') == 2:
         if m.get('client_fixes') != [rune_fix.FIX_ID] or m.get('minimum_launcher_build') != 301:
@@ -88,6 +88,8 @@ def validate_manifest(m,channel='ptr'):
             raise ValueError('Invalid file list')
         for f in c['files']:
             managed_path(f['path'],channel)
+            if f['path'].lower() in ('ascension.ok','data/patch-m.mpq','data/patch-s.mpq') and (m.get('schema')!=3 or m.get('minimum_launcher_build')!=306):
+                raise ValueError('Base-client repairs require launcher 0.3.6')
             if f['path'].lower() in paths: raise ValueError('Duplicate managed file')
             paths.add(f['path'].lower())
             if type(f.get('bytes')) is not int or not 0<=f['bytes']<=4*1024**3 or not valid_digest(f.get('sha256')):

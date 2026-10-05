@@ -1,3 +1,9 @@
+## 0.3.6
+
+- Area 52 updates can repair the reviewed Ascension product manifest and patch-M/patch-S archives, alongside existing overlays.
+- Repairs use the existing verified downloads, backups and rollback transaction. PTR paths and personal settings remain protected.
+- Client repair packages require build 306. The full baseline check still identifies any additional unsupported differences.
+
 ## 0.3.4
 
 - Automatic update adds the Area 52 channel, Discord links, and corrected content-sized window.

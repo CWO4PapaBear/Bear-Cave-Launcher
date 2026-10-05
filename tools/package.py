@@ -20,7 +20,7 @@ def managed_path(value, channel=None):
     low = value.lower()
     addon = low.startswith('interface/addons/') and len(parts) >= 3
     patch = low in ('data/patch-z.mpq', 'data/enus/patch-enus-z.mpq')
-    area52 = channel in (None, 'area52') and low in ('data/patch-b.mpq', 'data/patch-t.mpq', 'data/area-52/patch-d.mpq', 'data/area-52/listarchive')
+    area52 = channel in (None, 'area52') and low in ('ascension.ok', 'data/patch-m.mpq', 'data/patch-s.mpq', 'data/patch-b.mpq', 'data/patch-t.mpq', 'data/area-52/patch-d.mpq', 'data/area-52/listarchive')
     if not (addon or patch or area52):
         raise ValueError('Outside managed addon/patch paths: ' + value)
     if any(p.lower() in ('savedvariables', '.git', 'backups') for p in parts):
