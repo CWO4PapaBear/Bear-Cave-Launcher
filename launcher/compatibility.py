@@ -1,6 +1,6 @@
 """Native controls for Wine testers; uses the ordinary updater without a web engine."""
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 
 from .app import Application, ROOT
 from .selfupdate import VERSION
@@ -40,6 +40,8 @@ class CompatibilityWindow:
         self.error.configure(fg='#ffab99')
         actions = tk.Frame(panel, bg='#071422')
         actions.pack(side='bottom', fill='x', pady=12)
+        self.progress=ttk.Progressbar(panel,maximum=100,mode='determinate')
+        self.progress.pack(side='bottom',fill='x',pady=(0,4))
         self.buttons = {}
         for action, title in [('check', 'Check / Repair'), ('recover', 'Recover'),
                               ('update', 'Update'), ('play', 'Play')]:
@@ -75,6 +77,7 @@ class CompatibilityWindow:
 
     def refresh(self):
         state = self.app.status()
+        self.progress['value']=state.get('progress',0)
         self.status.configure(text=state['message'])
         self.error.configure(text=state['error'])
         for widget in (self.entry, self.browse, self.save):

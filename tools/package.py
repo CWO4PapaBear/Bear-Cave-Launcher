@@ -9,7 +9,7 @@ def sha(path):
             h.update(block)
     return h.hexdigest()
 
-def managed_path(value, channel=None):
+def managed_path(value, channel=None, full=False):
     if not isinstance(value, str) or '\\' in value:
         raise ValueError('Use relative forward-slash paths')
     path = PurePosixPath(value)
@@ -21,14 +21,20 @@ def managed_path(value, channel=None):
     addon = low.startswith('interface/addons/') and len(parts) >= 3
     patch = low in ('data/patch-z.mpq', 'data/enus/patch-enus-z.mpq')
     area52 = channel in (None, 'area52') and low in ('ascension.ok', 'data/patch-m.mpq', 'data/patch-s.mpq', 'data/patch-b.mpq', 'data/patch-t.mpq', 'data/area-52/patch-d.mpq', 'data/area-52/listarchive')
-    if not (addon or patch or area52):
+    complete = full and channel in (None, 'area52') and (
+        low in ('ascension.exe','extensions.dll','discord_game_sdk.dll','divxdecoder.dll','divxtac.dll','mmgr64.exe','wowerror.exe')
+        or (parts[0].lower()=='data' and len(parts) in (2,3) and low.endswith('.mpq'))
+        or (low.startswith('data/content/') and path.suffix.lower() in ('.json','.loc'))
+        or (low.startswith('data/enus/interface/cinematics/') and len(parts)==5 and low.endswith('.avi'))
+        or (low.startswith('interface/glues/') and path.suffix.lower() in ('.blp','.tga','.xml','.lua','.ogg','.wav','.ttf')))
+    if not (addon or patch or area52 or complete):
         raise ValueError('Outside managed addon/patch paths: ' + value)
     if any(p.lower() in ('savedvariables', '.git', 'backups') for p in parts):
         raise ValueError('Private/generated directory: ' + value)
     return path
 
 def safe_file(root, relative):
-    managed_path(relative)
+    managed_path(relative,full=True)
     current = root
     for part in PurePosixPath(relative).parts:
         current = current / part

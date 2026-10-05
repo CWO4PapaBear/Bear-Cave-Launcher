@@ -11,8 +11,16 @@ const browse=document.createElement('button');browse.type='button';browse.classN
 document.querySelector('#client-form button').before(browse);
 browse.addEventListener('click',()=>send('browse'));
 document.querySelector('.side-note').textContent='Each realm uses its own client folder and updates. Keep PTR and Area 52 separate.';
-document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your PTR client. Recover restores an interrupted update. Use Discord to request an account.';
+document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your client. Recover restores an interrupted update. Use Discord to request an account.';
 const footer=document.querySelector('footer');
+const updateProgress=document.createElement('div');
+updateProgress.id='update-progress';updateProgress.setAttribute('role','progressbar');
+updateProgress.setAttribute('aria-label','Client update progress');updateProgress.setAttribute('aria-valuemin','0');updateProgress.setAttribute('aria-valuemax','100');
+updateProgress.innerHTML='<div id="update-progress-fill"></div>';
+footer.prepend(updateProgress);
+const progressStyle=document.createElement('style');
+progressStyle.textContent='footer{position:relative;border-top:0!important}#update-progress{position:absolute;top:0;left:0;right:0;height:6px;background:#192d3c;border-top:1px solid #806131;overflow:hidden}#update-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#a97627,#f1cf75);transition:width .2s linear}#update-progress[data-error="true"] #update-progress-fill{background:#ce7854}';
+document.head.appendChild(progressStyle);
 footer.querySelectorAll('button').forEach(b=>b.remove());
 for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['update','Update PTR'],['play','Play']]){
  const button=document.createElement('button');button.className='action'+(action==='update'?' primary':'');button.textContent=label;button.dataset.action=action;
@@ -28,6 +36,12 @@ const baseClient=document.createElement('button');baseClient.type='button';baseC
 let lastState=null;
 function render(state){
  lastState=state;
+ const percentage=Math.max(0,Math.min(100,Number(state.progress)||0));
+ document.getElementById('update-progress-fill').style.width=percentage+'%';
+ updateProgress.setAttribute('aria-valuenow',String(Math.round(percentage)));
+ updateProgress.setAttribute('aria-valuetext',(state.progress_phase||'Ready')+' '+Math.round(percentage)+'%');
+ updateProgress.title=(state.progress_phase||'Ready')+' — '+Math.round(percentage)+'%';
+ updateProgress.dataset.error=state.error?'true':'false';
  document.getElementById('account-open').disabled=!state.discord_ready;
  document.getElementById('account-open').title=state.discord_ready?'Open Discord in your browser':'Discord invitation is being configured';
  const area52=state.channel==='area52';
@@ -41,7 +55,7 @@ function render(state){
  document.querySelector('label[for="client-path"]').textContent='Full path to the folder containing '+(area52?'Ascension.exe':'Wow.exe');
  document.getElementById('folder').textContent='Use a separate client folder for this realm.';
  document.querySelector('[data-action="update"]').textContent=area52?'Update Area 52':'Update PTR';
- document.querySelector('footer span').textContent='The Bear Cave · Launcher '+(state.launcher_version||'');
+ document.querySelector('footer span').textContent='The Bear Cave · Launcher '+(state.launcher_version||'')+(state.busy?' · '+(state.progress_phase||'Preparing')+' '+Math.floor(percentage)+'%':'');
  document.getElementById('runtime-status').textContent=state.message;
  document.getElementById('runtime-error').textContent=state.error||'';
  const input=document.getElementById('client-path');

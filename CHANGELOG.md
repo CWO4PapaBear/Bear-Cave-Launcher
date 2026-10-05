@@ -1,3 +1,10 @@
+## 0.3.7
+
+- Full Area 52 baseline repair supports runtime files, game archives, required UI and content data through versioned, verified 256 MiB chunks. Completed chunks are reused after interrupted downloads.
+- Extra MPQs are quarantined with verified backups; personal settings and optional addons are preserved. The existing transaction journal handles interrupted installation and rollback.
+- The horizontal bar above the action buttons now fills left to right with download, installation and verification progress. It reaches 100% only after successful completion.
+- Full-client manifests require complete baseline coverage and cannot be used by PTR. Existing PTR ZIP updates remain supported.
+
 ## 0.3.6
 
 - Area 52 updates can repair the reviewed Ascension product manifest and patch-M/patch-S archives, alongside existing overlays.
