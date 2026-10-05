@@ -57,7 +57,7 @@ def stage(component,target,cache,download,report,completed=lambda size:None):
                 download(chunk['url'],target=pending,limit=chunk['bytes'],report=report)
                 if pending.stat().st_size!=chunk['bytes'] or sha(pending)!=chunk['sha256']:raise ValueError('Chunk checksum mismatch')
                 pending.replace(path)
-            else:report('Reusing verified download '+chunk['asset'])
+            else:report('Reusing verified download for '+component['files'][0]['path'])
             with path.open('rb') as source:
                 while block:=source.read(1024**2):
                     output.write(block);digest.update(block);count+=len(block)

@@ -272,13 +272,17 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             if not parts and repaired is None and not extras: return channel+' client is up to date.'
             needed=sum(c['bytes']+sum(f['bytes']+(safe_file(root,f['path']).stat().st_size if safe_file(root,f['path']).is_file() else 0) for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             needed+=sum(safe_file(root,name).stat().st_size for name in extras)
-            if shutil.disk_usage(root).free<needed+128*1024**2: raise RuntimeError('Not enough free space for downloads and backups')
+            free=shutil.disk_usage(root).free
+            if free<needed+128*1024**2: raise RuntimeError(f'Not enough free space for downloads and backups: {(needed+128*1024**2)/1024**3:.1f} GiB required, {free/1024**3:.1f} GiB available')
             tx=uuid.uuid4().hex;base=state/'transactions'/tx;base.mkdir(parents=True)
             stage=base/'stage';stage.mkdir();files=[]
             downloaded=0;download_total=sum(c['bytes'] for c in parts)
             def tracked_download(url,target,limit,report):
                 if download is fetch:
-                    return download(url,target=target,limit=limit,report=report,progress=lambda done,total:progress('Downloading',downloaded+done,download_total))
+                    def advance(done,total):
+                        progress('Downloading',downloaded+done,download_total)
+                        report(f'Downloading client files: {(downloaded+done)/1024**2:.0f} / {download_total/1024**2:.0f} MB')
+                    return download(url,target=target,limit=limit,report=lambda message:None,progress=advance)
                 return download(url,target=target,limit=limit,report=report)
             def chunk_done(size):
                 nonlocal downloaded
