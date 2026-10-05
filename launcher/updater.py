@@ -272,6 +272,7 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             if not parts and repaired is None and not extras: return channel+' client is up to date.'
             needed=sum(c['bytes']+sum(f['bytes']+(safe_file(root,f['path']).stat().st_size if safe_file(root,f['path']).is_file() else 0) for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             needed+=sum(safe_file(root,name).stat().st_size for name in extras)
+            if m.get('schema')==4:needed-=fullclient.prepare_retry(state,parts)
             free=shutil.disk_usage(root).free
             if free<needed+128*1024**2: raise RuntimeError(f'Not enough free space for downloads and backups: {(needed+128*1024**2)/1024**3:.1f} GiB required, {free/1024**3:.1f} GiB available')
             tx=uuid.uuid4().hex;base=state/'transactions'/tx;base.mkdir(parents=True)
@@ -338,6 +339,9 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             save_json(state/'channel.json',dict(channel=channel))
             save_json(state/'installed.json',dict(version=m['version'],transaction=tx))
             (state/'pending.json').unlink()
+            if m.get('schema')==4:
+                try:fullclient.clear_downloads(state)
+                except (OSError,ValueError):report('Update installed; temporary downloads could not be removed.')
             report('Backup retained in '+str(base/'backup'))
             return channel+' updated to '+m['version']+'. Ready to play.'
     except Exception:

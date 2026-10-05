@@ -39,6 +39,7 @@ class FullClientTests(unittest.TestCase):
             updater.install(root,m,channel='area52',download=download,guard=lambda:None,progress=lambda *args:progress.append(args))
             self.assertNotIn(calls[0],resumed)
             self.assertEqual(updater.changed(root,m,'area52'),[])
+            self.assertFalse((root/'.bear-cave-launcher/downloads').exists())
             self.assertEqual((root/'WTF/Config.wtf').read_bytes(),b'personal')
             self.assertEqual(progress[-1],('Installing',4,4))
             self.assertEqual(progress[-5][1],sum(c['bytes'] for c in m['components']))
@@ -106,3 +107,14 @@ class FullClientTests(unittest.TestCase):
             app.report_progress('Downloading',20,20);self.assertEqual(app.progress,75)
             app.report_progress('Installing',4,4);self.assertEqual(app.progress,90)
             app.report_progress('Verifying',10,10);self.assertEqual(app.progress,99)
+
+    def test_retry_space_counts_cached_chunks_and_preserves_backups(self):
+        with test_directory() as root:
+            m,payload=fixture();state=root/'state';cache=state/'downloads';cache.mkdir(parents=True)
+            first=m['components'][0]['chunks'][0];(cache/first['sha256']).write_bytes(payload[first['url']])
+            abandoned=state/'transactions'/('a'*32);(abandoned/'stage').mkdir(parents=True);(abandoned/'stage/temporary').write_bytes(b'data')
+            committed=state/'transactions'/('b'*32);(committed/'backup').mkdir(parents=True);(committed/'backup/original').write_bytes(b'keep')
+            (committed/'files.json').write_text('[]');(committed/'stage').mkdir()
+            self.assertEqual(fullclient.prepare_retry(state,m['components']),first['bytes'])
+            self.assertFalse(abandoned.exists());self.assertFalse((committed/'stage').exists())
+            self.assertEqual((committed/'backup/original').read_bytes(),b'keep')

@@ -1,10 +1,38 @@
 """Area 52 full baseline repair using independently verified resumable chunks."""
-import hashlib,re
+import hashlib,re,shutil
 from package import sha
 from . import baseline
 
 CHUNK_LIMIT=256*1024**2
 TOTAL_LIMIT=100*1024**3
+
+def prepare_retry(state,components):
+    transactions=state/'transactions'
+    if transactions.is_dir():
+        for folder in transactions.iterdir():
+            if not folder.is_dir() or not re.fullmatch('[0-9a-f]{32}',folder.name):continue
+            target=folder/'stage' if (folder/'files.json').exists() else folder
+            resolved=target.resolve()
+            if not resolved.is_relative_to(transactions.resolve()) or resolved==transactions.resolve():raise ValueError('Unsafe staging cleanup path')
+            if target.exists():shutil.rmtree(target)
+    cache=state/'downloads';saved=0;verified={}
+    for component in components:
+        for chunk in component['chunks']:
+            key=(chunk['sha256'],chunk['bytes'])
+            if key not in verified:
+                path=cache/chunk['sha256']
+                verified[key]=path.is_file() and path.stat().st_size==chunk['bytes'] and sha(path)==chunk['sha256']
+            if verified[key]:saved+=chunk['bytes']
+    return saved
+
+def clear_downloads(state):
+    cache=state/'downloads'
+    if not cache.exists():return
+    if cache.resolve()!=state.resolve()/'downloads':raise ValueError('Linked download cache')
+    for path in cache.iterdir():
+        if path.is_symlink():raise ValueError('Linked cached chunk')
+        if path.is_file() and re.fullmatch(r'[0-9a-f]{64}(?:\.partial)?',path.name):path.unlink()
+    if not any(cache.iterdir()):cache.rmdir()
 
 def validate(m,repo):
     if m.get('channel')!='area52' or m.get('minimum_launcher_build')!=307 or m.get('client_fixes'):
