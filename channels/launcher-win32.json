@@ -2,9 +2,9 @@
   "schema": 1,
   "enabled": true,
   "platform": "win32",
-  "version": "0.3.8",
-  "build": 308,
-  "url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/releases/download/launcher-0.3.8/BearCaveLauncher-update-win32.zip",
-  "bytes": 26523807,
-  "sha256": "7944b85b4ee7caac8b74c253203f77265f200eeab087c027642b2c920c6c64dc"
+  "version": "0.3.9",
+  "build": 309,
+  "url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/releases/download/launcher-0.3.9/BearCaveLauncher-update-win32.zip",
+  "bytes": 26525304,
+  "sha256": "e345edb5c7805066798a87c51110c21d7e6e8ae29c0878c7d76d0700a63499eb"
 }
