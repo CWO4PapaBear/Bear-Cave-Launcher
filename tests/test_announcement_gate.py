@@ -16,14 +16,14 @@ class AnnouncementGateTests(unittest.TestCase):
                 announcement.verify_live()
 
     def test_unpromoted_client_blocks_announcement(self):
-        responses = [b'{"enabled":true,"version":"0.3.7"}', b'{"enabled":true,"manifest_url":"old"}']
+        responses = [b'{"enabled":true,"version":"0.3.8"}', b'{"enabled":true,"manifest_url":"old"}']
         with patch.object(announcement.updater, 'fetch', side_effect=responses):
             with self.assertRaisesRegex(RuntimeError, 'not publicly promoted'):
                 announcement.verify_live()
 
     def test_bad_manifest_hash_blocks_announcement(self):
         pointer = dict(enabled=True, manifest_url='https://github.com/CWO4PapaBear/Area52-FreePick-Client/releases/download/area52-0.1.0-alpha.4/manifest.json', manifest_sha256='0' * 64)
-        responses = [b'{"enabled":true,"version":"0.3.7"}', json.dumps(pointer).encode(), b'{}']
+        responses = [b'{"enabled":true,"version":"0.3.8"}', json.dumps(pointer).encode(), b'{}']
         with patch.object(announcement.updater, 'fetch', side_effect=responses):
             with self.assertRaisesRegex(RuntimeError, 'hash differs'):
                 announcement.verify_live()

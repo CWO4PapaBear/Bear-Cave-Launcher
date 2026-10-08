@@ -7,7 +7,7 @@ from announce_ptr import payload
 class AnnouncementTests(unittest.TestCase):
     def test_long_notes_fit_and_mentions_disabled(self):
         p = payload({'tag':'ptr-test','version':'test'}, '@everyone\n' * 2000)
-        self.assertEqual(p['allowed_mentions'], {'parse': []})
+        self.assertEqual(p['allowed_mentions'], {'parse': [], 'roles': ['1551989024833667072']})
         self.assertLessEqual(len(p['embeds'][0]['description']), 4096)
         self.assertIn('full patch notes', p['embeds'][0]['description'])
 

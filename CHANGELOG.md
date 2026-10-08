@@ -1,3 +1,9 @@
+## 0.3.9
+
+- Area 52 Play remembers verified files across game launches and launcher restarts. Unchanged files use size, timestamps and file identity checks; changed files or expected hashes are rehashed.
+- Check/Repair always performs a full checksum scan. Missing/corrupt cache falls back to full verification. Extra archives and interrupted updates still block normal launch until repaired.
+- The first verification remains a full scan. Metadata caching is a performance optimization, not protection against deliberate local tampering or metadata-preserving disk corruption.
+
 ## 0.3.8
 
 - Play now checks the published client, repairs missing or mismatched files, then launches automatically. Check/Repair and Recover remain under troubleshooting in the normal launcher.

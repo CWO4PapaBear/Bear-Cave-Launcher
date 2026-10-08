@@ -143,10 +143,12 @@ class Application:
         self.save_settings()
         self.message='Client folder saved for '+self.channel+'.';self.error=''
 
-    def verify_baseline(self,root):
+    def verify_baseline(self,root,fast=False):
         self.baseline_stamp=None
-        mismatches,stamp=baseline.compare(root,self.manifest['baseline'],self.report,lambda done,total:self.report_progress('Verifying',done,total))
-        self.scan=baseline.Scan(root,self.manifest,mismatches,stamp)
+        if not fast:(self.directory/'area52-file-cache.json').unlink(missing_ok=True)
+        cache=baseline.read_cache(self.directory/'area52-file-cache.json',root) if fast else None
+        mismatches,stamp=baseline.compare(root,self.manifest['baseline'],self.report,lambda done,total:self.report_progress('Verifying',done,total),cache=cache)
+        self.accept_scan(baseline.Scan(root,self.manifest,mismatches,stamp))
         updater.save_json(self.directory/'area52-verification.json',dict(version=self.manifest['version'],mismatches=mismatches))
         if mismatches:
             repaired={f['path'].lower() for c in self.manifest['components'] for f in c['files']}
@@ -167,6 +169,8 @@ class Application:
 
     def accept_scan(self,scan):
         self.scan=scan
+        if self.channel=='area52' and not scan.mismatches:
+            baseline.save_cache(self.directory/'area52-file-cache.json',scan,self.manifest['baseline'])
         self.baseline_stamp=scan.stamp if not scan.mismatches else None
 
     def start(self,action):
@@ -217,13 +221,14 @@ class Application:
                         self.verify_baseline(root)
                 elif action=='recover':
                     self.scan=None;self.baseline_stamp=None
+                    (self.directory/'area52-file-cache.json').unlink(missing_ok=True)
                     self.message=updater.recover(root,report=self.report,channel=self.channel)
                 else:
                     updater.ensure_closed()
                     self.manifest=updater.latest() if self.channel=='ptr' else updater.latest(self.channel)
                     if self.channel=='area52':
                         if not self.valid_scan(root):
-                            self.verify_baseline(root)
+                            self.verify_baseline(root,fast=True)
                         if self.scan.mismatches:
                             self.error='';self.operation='update';self.progress=0
                             self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel,

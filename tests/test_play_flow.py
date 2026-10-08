@@ -82,3 +82,15 @@ class PlayFlowTests(unittest.TestCase):
             with patch('launcher.app.threading.Thread',ImmediateThread),patch('launcher.selfupdate.startup',return_value=False):
                 app.run_launcher_update(lambda:closed.append(True))
             self.assertFalse(app.busy);self.assertFalse(app.launcher_updating);self.assertFalse(closed)
+
+    def test_restart_reuses_cache_but_check_hashes_all(self):
+        import hashlib
+        with test_directory() as root:
+            m,payload=fixture();self.client(root,m,payload)
+            first=Application(root/'settings');first.channel='area52';first.manifest=m
+            first.verify_baseline(root)
+            app=Application(root/'settings');app.channel='area52';app.client=str(root)
+            with patch('launcher.app.threading.Thread',ImmediateThread),patch.object(app,'area52_ready',return_value=True),patch.object(app,'configure_realm'),patch('launcher.app.updater.latest',return_value=m),patch('launcher.app.updater.ensure_closed'),patch('launcher.app.subprocess.Popen'),patch('launcher.baseline.hashlib.file_digest',side_effect=AssertionError('Repeated hash')):
+                app.start('play');self.assertEqual(app.error,'')
+            with patch('launcher.baseline.hashlib.file_digest',wraps=hashlib.file_digest) as digest:
+                app.verify_baseline(root);self.assertEqual(digest.call_count,len(m['baseline']))
