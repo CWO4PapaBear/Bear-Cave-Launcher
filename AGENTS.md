@@ -9,3 +9,5 @@
 - Mock/fixture tests do not prove live-client behavior. Preserve backups and fail closed on mismatched files, unsafe paths or an active game process.
 
 - For WoW login-screen background/logo work, use `.agents/skills/bear-cave-login-art/SKILL.md`; it includes the inspected BLP/GlueXML workflow, exact commands and rollback procedure. This is distinct from launcher UI artwork.
+
+- Every future Discord patch-note announcement must begin with the Bear Cave Test Team role mention `<@&1551989024833667072>`. Explicitly allow only that role in `allowed_mentions`; keep automatic user/everyone mentions disabled. This is the owner's standing preference for all patch notes.

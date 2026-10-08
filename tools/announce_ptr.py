@@ -22,8 +22,8 @@ def payload(manifest, notes):
     return {
         'username': 'The Bear Cave - PTR Updates',
         'avatar_url': 'https://raw.githubusercontent.com/CWO4PapaBear/Bear-Cave-Launcher/main/ui/assets/bear-cave-app-icon.png',
-        'allowed_mentions': {'parse': []},
-        'content': '\U0001f43e **PTR update available**',
+        'allowed_mentions': {'parse': [], 'roles': ['1551989024833667072']},
+        'content': '<@&1551989024833667072> \U0001f43e **PTR update available**',
         'embeds': [{
             'title': 'The Bear Cave PTR - ' + manifest['version'],
             'url': release,

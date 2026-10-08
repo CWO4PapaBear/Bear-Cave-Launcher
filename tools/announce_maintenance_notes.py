@@ -7,7 +7,7 @@ def payload(notes):
     if not notes.strip() or len(notes)>3900:raise ValueError('Invalid note length')
     return dict(username='The Bear Cave - PTR Updates',
         avatar_url='https://raw.githubusercontent.com/CWO4PapaBear/Bear-Cave-Launcher/main/ui/assets/bear-cave-app-icon.png',
-        allowed_mentions={'parse':[]},content='🐾 **PTR maintenance complete**',
+        allowed_mentions={'parse':[], 'roles':['1551989024833667072']},content='<@&1551989024833667072> 🐾 **PTR maintenance complete**',
         embeds=[dict(title='PTR maintenance complete — 0.2.14 / Launcher 0.3.0',
             url='https://github.com/CWO4PapaBear/Bear-Cave-Launcher/blob/main/docs/PTR-MAINTENANCE-2026-09-26.md',
             description=notes.strip(),color=0xD5A546,

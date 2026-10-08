@@ -7,7 +7,7 @@ def payload(notes):
     if not notes.strip() or len(notes)>3900:raise ValueError('Invalid note length')
     return dict(username='The Bear Cave - PTR Updates',
         avatar_url='https://raw.githubusercontent.com/CWO4PapaBear/Bear-Cave-Launcher/main/ui/assets/bear-cave-app-icon.png',
-        allowed_mentions={'parse':[]},content='🐾 **PTR Warrior patch notes**',
+        allowed_mentions={'parse':[], 'roles':['1551989024833667072']},content='<@&1551989024833667072> 🐾 **PTR Warrior patch notes**',
         embeds=[dict(title='Charge and Thunder Clap — PTR server update',
             url='https://github.com/CWO4PapaBear/Bear-Cave-Launcher/blob/main/docs/PTR-WARRIOR-STANCE-NOTES.md',
             description=notes.strip(),color=0xD5A546,
