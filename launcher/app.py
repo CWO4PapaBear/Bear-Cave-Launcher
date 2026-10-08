@@ -22,12 +22,35 @@ class Application:
         self.manifest=None;self.busy=False;self.message='Select a separate client folder for this realm.'
         self.error='';self.changes=[];self.mutex=threading.Lock()
         self.folder_picker=None
+        self.launcher_updating=False
+        self.scan=None
 
     def status(self):
         from .selfupdate import VERSION
         return dict(channel=self.channel,channel_ready=self.channel=='ptr' or self.area52_ready(),client=self.client,busy=self.busy,message=self.message,error=self.error,
-                    changes=self.changes,version=self.manifest['version'] if self.manifest else None,
+                    launcher_updating=self.launcher_updating,changes=self.changes,version=self.manifest['version'] if self.manifest else None,
                     launcher_version=VERSION,discord_ready=bool(self.discord_url()),progress=self.progress,progress_phase=self.progress_phase)
+
+    def prepare_launcher_update(self):
+        self.launcher_updating=True;self.busy=True;self.operation='launcher-update'
+        self.progress=0;self.progress_phase='Checking launcher'
+        self.message='Checking for a launcher update...'
+
+    def run_launcher_update(self, close):
+        from . import selfupdate
+        def worker():
+            restart=False
+            try:
+                restart=selfupdate.startup(self.report,self.report_progress)
+            finally:
+                self.launcher_updating=False;self.busy=False
+                if restart:
+                    close()
+                else:
+                    self.progress=0;self.progress_phase='Ready'
+                    if self.message=='Checking for a launcher update...':
+                        self.message='Launcher ready.'
+        threading.Thread(target=worker,daemon=True).start()
 
     def area52_ready(self):
         try:return bool(connection.load(ROOT,'area52'))
@@ -83,7 +106,7 @@ class Application:
             if self.busy:raise ValueError('Wait for the current operation')
             if channel not in ('ptr','area52'):raise ValueError('Unknown realm channel')
             self.channel=channel;self.client=self.clients[channel]
-            self.manifest=None;self.changes=[];self.error=''
+            self.manifest=None;self.changes=[];self.error='';self.scan=None;self.baseline_stamp=None
             self.progress=0;self.progress_phase='Ready'
             self.message=('Select your dedicated PTR client folder.' if channel=='ptr' else
                           'Select your COACore client folder for Area 52.')
@@ -98,8 +121,10 @@ class Application:
     def report_progress(self,phase,done,total):
         fraction=min(1,max(0,done/total)) if total else 1
         start,end=(0,99)
+        if self.operation=='launcher-update':
+            start,end={'Downloading launcher':(0,80),'Verifying launcher':(80,88),'Checking launcher':(88,96),'Restarting launcher':(96,100)}.get(phase,(0,0))
         if self.operation=='update':
-            start,end={'Downloading':(0,75),'Installing':(75,90),'Verifying':(90,99)}.get(phase,(0,0))
+            start,end={'Checking':(0,5),'Downloading':(0,75),'Installing':(75,90),'Verifying':(90,99)}.get(phase,(0,0))
         self.progress=max(self.progress,start+(end-start)*fraction)
         self.progress_phase=phase
 
@@ -114,13 +139,14 @@ class Application:
         marker=root/'.bear-cave-launcher/channel.json'
         if marker.exists() and updater.read_json(marker).get('channel')!=self.channel:
             raise ValueError('That client belongs to another realm.')
-        self.client=str(root);self.manifest=None;self.changes=[]
+        self.client=str(root);self.manifest=None;self.changes=[];self.scan=None;self.baseline_stamp=None
         self.save_settings()
         self.message='Client folder saved for '+self.channel+'.';self.error=''
 
     def verify_baseline(self,root):
         self.baseline_stamp=None
         mismatches,stamp=baseline.compare(root,self.manifest['baseline'],self.report,lambda done,total:self.report_progress('Verifying',done,total))
+        self.scan=baseline.Scan(root,self.manifest,mismatches,stamp)
         updater.save_json(self.directory/'area52-verification.json',dict(version=self.manifest['version'],mismatches=mismatches))
         if mismatches:
             repaired={f['path'].lower() for c in self.manifest['components'] for f in c['files']}
@@ -135,6 +161,13 @@ class Application:
             self.message='Area 52 base client matches the tested baseline.'
             if self.changes:self.message+=' Install the pending Area 52 overlay update before playing.'
         return mismatches
+
+    def valid_scan(self,root):
+        return self.scan is not None and self.scan.valid(root,self.manifest)
+
+    def accept_scan(self,scan):
+        self.scan=scan
+        self.baseline_stamp=scan.stamp if not scan.mismatches else None
 
     def start(self,action):
         with self.mutex:
@@ -174,33 +207,51 @@ class Application:
                 elif action=='update':
                     if not self.manifest: raise ValueError('Check for updates first')
                     realm=self.realm()
-                    self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel,progress=self.report_progress);self.changes=[]
+                    current=updater.latest() if self.channel=='ptr' else updater.latest(self.channel)
+                    self.manifest=current
+                    self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel,progress=self.report_progress,scan=self.scan,verified=self.accept_scan);self.changes=[]
                     with updater.locked(root,self.channel) as state:
                         self.configure_realm(root,state)
                     self.message+=(' PTR connection configured.' if self.channel=='ptr' else ' Area 52 connection configured.')
-                    if self.channel=='area52' and self.manifest.get('schema') in (3,4):
+                    if self.channel=='area52' and self.manifest.get('schema') in (3,4) and not self.valid_scan(root):
                         self.verify_baseline(root)
-                elif action=='recover': self.message=updater.recover(root,report=self.report,channel=self.channel)
+                elif action=='recover':
+                    self.scan=None;self.baseline_stamp=None
+                    self.message=updater.recover(root,report=self.report,channel=self.channel)
                 else:
+                    updater.ensure_closed()
+                    self.manifest=updater.latest() if self.channel=='ptr' else updater.latest(self.channel)
+                    if self.channel=='area52':
+                        if not self.valid_scan(root):
+                            self.verify_baseline(root)
+                        if self.scan.mismatches:
+                            self.error='';self.operation='update';self.progress=0
+                            self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel,
+                                progress=self.report_progress,scan=self.scan,verified=self.accept_scan)
+                            self.changes=[]
+                            if not self.valid_scan(root):
+                                self.verify_baseline(root)
+                            if self.scan.mismatches:raise ValueError('Client repair did not complete; try Check / Repair.')
+                    else:
+                        self.operation='update'
+                        self.message=updater.install(root,self.manifest,report=self.report,channel=self.channel,progress=self.report_progress)
+                        self.changes=[]
                     with updater.locked(root,self.channel) as state:
-                        if (state/'pending.json').exists(): raise ValueError('Recover interrupted changes before playing')
+                        if (state/'pending.json').exists():raise ValueError('Recover interrupted changes before playing')
                         updater.ensure_closed()
                         self.configure_realm(root,state)
-                        if self.channel=='area52':
-                            if not self.manifest or self.manifest.get('schema') not in (3,4) or self.baseline_stamp is None:
-                                raise ValueError('Run Check / Repair and resolve client mismatches before playing Area 52.')
-                            if baseline.signature(root,self.manifest['baseline'])!=self.baseline_stamp:
-                                self.baseline_stamp=None
-                                raise ValueError('Client files changed. Run Check / Repair again.')
-                            if updater.changed(root,self.manifest,'area52'):
-                                raise ValueError('Install the pending Area 52 update before playing.')
+                        if self.channel=='area52' and not self.valid_scan(root):
+                            raise ValueError('Client files changed after verification. Press Play to check again.')
+                        self.progress_phase='Launching'
                         exe=root/('Ascension.exe' if self.channel=='area52' else 'Wow.exe')
                         command=[str(exe)] if os.name=='nt' else [shutil.which('wine') or 'wine',str(exe)]
                         subprocess.Popen(command,cwd=root)
+                        self.scan=None;self.baseline_stamp=None
                         self.message='Game launched with the '+self.channel+' connection configured.'
             except updater.ChannelUnavailable as error:
                 self.message=str(error)+' Realm connection configured; client verification is unavailable.'
             except Exception as error:
+                self.scan=None;self.baseline_stamp=None
                 self.error=str(error);self.message='Operation stopped. See the message below.'
             finally:
                 if self.error:self.progress_phase='Needs attention'
@@ -247,6 +298,7 @@ def create_server(app,port=0):
                 if not 0<size<=4096 or self.headers.get('Content-Type')!='application/json':
                     raise ValueError('Invalid request')
                 data=json.loads(self.rfile.read(size))
+                if app.launcher_updating:raise ValueError('Wait for the launcher update to finish')
                 if route=='api/base-client':app.open_client_download()
                 elif route=='api/discord':app.open_discord()
                 elif route=='api/channel':app.change_channel(data['channel'])
@@ -259,7 +311,9 @@ def create_server(app,port=0):
 
 def main(smoke_dir=None):
     import webview
-    app=Application(smoke_dir);server,url=create_server(app)
+    app=Application(smoke_dir)
+    if not smoke_dir:app.prepare_launcher_update()
+    server,url=create_server(app)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
         class WindowControls:
@@ -285,6 +339,7 @@ def main(smoke_dir=None):
                                      frameless=True,easy_drag=False,shadow=True,js_api=WindowControls())
         ready=threading.Event();failed=threading.Event();closed=threading.Event()
         window.events.loaded+=lambda:ready.set()
+        if not smoke_dir:window.events.loaded+=lambda:app.run_launcher_update(window.destroy)
         window.events.closed+=lambda:closed.set()
         def startup_watch():
             if os.name == 'nt' and webview.renderer != 'edgechromium':
@@ -303,7 +358,7 @@ def main(smoke_dir=None):
         window.events.closing+=closing
         if smoke_dir:
             def loaded():
-                result=window.evaluate_js("({title:document.title,browse:!!document.getElementById('client-browse'),update:!!document.querySelector('[data-action=update]')})")
+                result=window.evaluate_js("({title:document.title,browse:!!document.getElementById('client-browse'),play:!!document.querySelector('[data-action=play]')})")
                 window.show()
                 import time
                 samples = []
@@ -311,6 +366,11 @@ def main(smoke_dir=None):
                     time.sleep(1)
                     samples.append(window.evaluate_js("({height:innerHeight,available:screen.availHeight,mainOverflow:document.querySelector('main').scrollHeight-document.querySelector('main').clientHeight,navOverflow:document.querySelector('nav').scrollHeight-document.querySelector('nav').clientHeight})"))
                 result['sizing'] = samples
+                app.prepare_launcher_update()
+                app.message='Updating launcher test';app.report_progress('Downloading launcher',50,100)
+                time.sleep(1.2)
+                result['launcher_update'] = window.evaluate_js("({disabled:[...document.querySelectorAll('button')].every(b=>b.disabled),title:document.getElementById('title').textContent,progress:document.getElementById('update-progress').getAttribute('aria-valuenow')})")
+                app.launcher_updating=False;app.busy=False
                 updater.save_json(smoke_dir/'desktop-smoke.json',result)
                 window.destroy()
             window.events.loaded+=loaded

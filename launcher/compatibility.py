@@ -44,7 +44,7 @@ class CompatibilityWindow:
         self.progress.pack(side='bottom',fill='x',pady=(0,4))
         self.buttons = {}
         for action, title in [('check', 'Check / Repair'), ('recover', 'Recover'),
-                              ('update', 'Update'), ('play', 'Play')]:
+                              ('play', 'Play')]:
             button = tk.Button(actions, text=title, padx=14, pady=10,
                                command=lambda a=action: self.start(a))
             button.pack(side='left', padx=(0, 10))
@@ -65,7 +65,7 @@ class CompatibilityWindow:
     def select(self):
         try:
             self.app.select(self.path.get())
-            self.start('check')
+
         except Exception as error:
             self.app.error = str(error)
 
@@ -99,5 +99,7 @@ class CompatibilityWindow:
 def main():
     root = tk.Tk()
     app = Application()
+    app.prepare_launcher_update()
     CompatibilityWindow(root, app)
+    root.after(100, lambda: app.run_launcher_update(lambda: root.after(0, root.destroy)))
     root.mainloop()

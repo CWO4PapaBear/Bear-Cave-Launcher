@@ -11,7 +11,7 @@ const browse=document.createElement('button');browse.type='button';browse.classN
 document.querySelector('#client-form button').before(browse);
 browse.addEventListener('click',()=>send('browse'));
 document.querySelector('.side-note').textContent='Each realm uses its own client folder and updates. Keep PTR and Area 52 separate.';
-document.querySelector('.footnote').textContent='Checks published GitHub updates. Close WoW before installing. Backups are retained inside your client. Recover restores an interrupted update. Use Discord to request an account.';
+document.querySelector('.footnote').textContent='Play checks for updates, repairs the client when needed, and launches. Close WoW before updating. Backups are retained inside your client. Recover restores an interrupted update. Use Discord to request an account.';
 const footer=document.querySelector('footer');
 const updateProgress=document.createElement('div');
 updateProgress.id='update-progress';updateProgress.setAttribute('role','progressbar');
@@ -22,9 +22,12 @@ const progressStyle=document.createElement('style');
 progressStyle.textContent='footer{position:relative;border-top:0!important}#update-progress{position:absolute;top:0;left:0;right:0;height:6px;background:#192d3c;border-top:1px solid #806131;overflow:hidden}#update-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#a97627,#f1cf75);transition:width .2s linear}#update-progress[data-error="true"] #update-progress-fill{background:#ce7854}';
 document.head.appendChild(progressStyle);
 footer.querySelectorAll('button').forEach(b=>b.remove());
-for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['update','Update PTR'],['play','Play']]){
- const button=document.createElement('button');button.className='action'+(action==='update'?' primary':'');button.textContent=label;button.dataset.action=action;
- button.addEventListener('click',()=>send(action));footer.appendChild(button);
+const troubleshooting=document.createElement('details');
+troubleshooting.innerHTML='<summary>Troubleshooting</summary>';
+footer.appendChild(troubleshooting);
+for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['play','Play']]){
+ const button=document.createElement('button');button.className='action'+(action==='play'?' primary':'');button.textContent=label;button.dataset.action=action;
+ button.addEventListener('click',()=>send(action));(action==='play'?footer:troubleshooting).appendChild(button);
 }
 const alpha=document.createElement('button');alpha.className='realm';alpha.dataset.channel='area52';
 alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev - COACore client</small>';
@@ -54,7 +57,7 @@ function render(state){
  panels[1].querySelector('h3').textContent=area52?'Area 52 client folder':'PTR client folder';
  document.querySelector('label[for="client-path"]').textContent='Full path to the folder containing '+(area52?'Ascension.exe':'Wow.exe');
  document.getElementById('folder').textContent='Use a separate client folder for this realm.';
- document.querySelector('[data-action="update"]').textContent=area52?'Update Area 52':'Update PTR';
+
  document.querySelector('footer span').textContent='The Bear Cave · Launcher '+(state.launcher_version||'')+(state.busy?' · '+(state.progress_phase||'Preparing')+' '+Math.floor(percentage)+'%':'');
  document.getElementById('runtime-status').textContent=state.message;
  document.getElementById('runtime-error').textContent=state.error||'';
@@ -64,12 +67,21 @@ function render(state){
   b.disabled=state.busy||!state.channel_ready||!state.client||(b.dataset.action==='update'&&(!state.version||!state.changes.length));
  });
  document.querySelectorAll('#client-form button').forEach(button=>button.disabled=state.busy);
+ document.getElementById('client-path').disabled=state.busy;
+ document.getElementById('base-client-download').disabled=state.busy;
+ document.getElementById('account-open').disabled=state.busy||!state.discord_ready;
+ for(const id of ['window-close','window-minimize'])document.getElementById(id).disabled=!!state.launcher_updating;
+ if(state.launcher_updating){
+  document.querySelectorAll('button').forEach(b=>b.disabled=true);
+  document.getElementById('title').textContent='Updating Bear Cave Launcher';
+  document.getElementById('description').textContent='Please keep this window open. The updated launcher will reopen automatically.';
+ }
 }
 async function send(action,payload={}){
  try{
   const response=await fetch('api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const data=await response.json();if(!response.ok)throw Error(data.error);render(data);
-  if(action==='select'&&data.channel_ready)await send('check');
+
  }catch(error){document.getElementById('runtime-error').textContent=error.message;}
 }
 document.getElementById('client-form').addEventListener('submit',e=>{e.preventDefault();send('select',{path:document.getElementById('client-path').value.trim()});});
@@ -78,7 +90,7 @@ async function poll(){
  try{
   const response=await fetch('api/status');if(!response.ok)throw Error('Launcher session unavailable');
   const data=await response.json();render(data);
-  if(firstPoll){firstPoll=false;if(data.client&&!data.busy&&data.channel_ready)await send('check');}
+  if(firstPoll&&!data.launcher_updating)firstPoll=false;
  }catch(error){
   document.getElementById('runtime-error').textContent='Launcher service disconnected. Reopen the launcher to continue.';
   document.querySelectorAll('[data-action]').forEach(b=>b.disabled=true);
@@ -88,7 +100,7 @@ poll();setInterval(poll,1000);
 
 function connectWindowControls(){
  for(const [id,method] of [['window-minimize','minimize'],['window-close','close']]){
-  const button=document.getElementById(id);button.disabled=false;
+  const button=document.getElementById(id);button.disabled=!!lastState?.launcher_updating;
   button.onclick=()=>window.pywebview.api[method]();
  }
 }

@@ -1,3 +1,9 @@
+## 0.3.8
+
+- Play now checks the published client, repairs missing or mismatched files, then launches automatically. Check/Repair and Recover remain under troubleshooting in the normal launcher.
+- Area 52 reuses same-session baseline checks while the folder, manifest and file metadata remain unchanged. Updated files still receive download/install hash verification; launch, recovery and failures invalidate cached results.
+- Launcher self-updates run after the window opens, lock controls, show download/verification progress, and reopen the updated version. Existing launchers use their old update display behavior when installing this version; the new display applies thereafter.
+
 ## 0.3.7
 
 - Full Area 52 baseline repair supports runtime files, game archives, required UI and content data through versioned, verified 256 MiB chunks. Completed chunks are reused after interrupted downloads.

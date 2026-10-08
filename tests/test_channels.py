@@ -18,10 +18,13 @@ class ChannelTests(unittest.TestCase):
             (client/'Ascension.exe').write_bytes(b'fixture')
             app=Application(root/'settings');app.change_channel('area52');app.select(str(client))
             app.manifest={'schema':3,'baseline':[]};app.baseline_stamp={'extra_archives':()}
+            from types import SimpleNamespace
+            app.scan=SimpleNamespace(mismatches=[])
             with patch('launcher.app.connection.load',return_value='127.0.0.1:3725'), \
                     patch('launcher.app.threading.Thread',ImmediateThread), \
                     patch('launcher.app.updater.ensure_closed'), \
-                    patch('launcher.app.updater.changed',return_value=[]), \
+                    patch('launcher.app.updater.latest',return_value=app.manifest), \
+                    patch.object(app,'valid_scan',return_value=True), \
                     patch('launcher.app.subprocess.Popen') as launch:
                 app.start('play')
             self.assertEqual(app.error,'')

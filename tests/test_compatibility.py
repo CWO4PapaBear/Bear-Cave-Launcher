@@ -12,12 +12,12 @@ class CompatibilityTests(unittest.TestCase):
         window.path = Mock()
         return window
 
-    def test_save_checks_selected_folder(self):
+    def test_save_defers_check_until_play(self):
         window = self.window()
         window.path.get.return_value = 'client'
         window.select()
         window.app.select.assert_called_once_with('client')
-        window.app.start.assert_called_once_with('check')
+        window.app.start.assert_not_called()
 
     def test_invalid_selection_does_not_start_check(self):
         window = self.window()

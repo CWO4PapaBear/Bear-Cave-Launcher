@@ -54,3 +54,12 @@ Local builds can include local/connection-area52.json using tools/build_launcher
 The active launcher UI opens the Discord invitation in `config/account-discord.json` for account requests. PTR and Area 52 currently share the same community. Account enrollment/password entry is not exposed by the launcher HTTP API. The invitation-service implementation is retained for future deployment; Discord is the current account workflow. The invite configuration is included in packaged launcher builds.
 
 Area 52 defaults to the existing PTR connection host on port 3725 when no explicit Area 52 configuration exists. This allows automatic launcher updates to enable the realm without redistributing deployment settings. Explicit local overrides take priority.
+
+
+## Launcher 0.3.8 flow
+
+Choose the realm and client folder, then press **Play**. It retrieves the current channel, checks/repairs the client and launches. Check/Repair and Recover remain under Troubleshooting in the WebView launcher. Area 52 full-baseline verification is reused within the session only while the root, manifest and file metadata match; launching, recovery, failures and folder/channel changes invalidate it. Installed files remain hash-verified. PTR retains its component-level checks.
+
+Self-update checks now start after the window opens. Controls stay disabled during the update, the existing bar displays download/verification progress, and the replacement launcher opens automatically. Versions older than 0.3.8 still use their old silent updater for the transition to 0.3.8.
+
+Verification: 91 automated tests passed (one platform-specific skip); packaged executable self-test passed; desktop smoke verified Play, stable content height with no panel overflow, disabled controls during self-update and 40% displayed progress for the test download. Public update archive extraction/identity checks passed. A real tester upgrade remains user acceptance.

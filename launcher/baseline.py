@@ -60,3 +60,18 @@ def compare(root,records,report=lambda message:None,progress=lambda done,total:N
     if signature(root,records)!=before:raise ValueError('Client changed during verification; close the game and retry')
     progress(len(records),len(records))
     return mismatches,before
+
+
+class Scan:
+    def __init__(self,root,manifest,mismatches,stamp):
+        import json
+        self.root=root.resolve()
+        self.identity=hashlib.sha256(json.dumps(manifest,sort_keys=True).encode()).hexdigest()
+        self.mismatches=[dict(row) for row in mismatches]
+        self.stamp=dict(stamp)
+
+    def valid(self,root,manifest):
+        import json
+        return (root.resolve()==self.root and manifest.get('schema') in (3,4) and
+                hashlib.sha256(json.dumps(manifest,sort_keys=True).encode()).hexdigest()==self.identity and
+                signature(root,manifest['baseline'])==self.stamp)

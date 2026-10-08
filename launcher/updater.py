@@ -259,7 +259,7 @@ def recover(root,guard=ensure_closed,report=lambda message:None,channel='ptr'):
         pending.unlink()
         return 'Previous client files restored.'
 
-def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None,channel='ptr',progress=lambda phase,done,total:None):
+def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None,channel='ptr',progress=lambda phase,done,total:None,scan=None,verified=lambda scan:None):
     validate_manifest(m,channel);guard()
     try:
         with locked(root,channel) as state:
@@ -267,9 +267,18 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             executable = rune_fix.target(root) if rune_fix.FIX_ID in m.get('client_fixes',[]) else None
             original = executable.read_bytes() if executable else None
             repaired = rune_fix.patched(original) if original is not None else None
-            parts=changed(root,m,channel,report)
+            if m.get('schema')==4:
+                if scan is None or not scan.valid(root,m):
+                    mismatches,stamp=baseline.compare(root,m['baseline'],report,lambda done,total:progress('Checking',done,total))
+                    scan=baseline.Scan(root,m,mismatches,stamp)
+                damaged={row['path'].lower() for row in scan.mismatches}
+                parts=[c for c in m['components'] if any(f['path'].lower() in damaged for f in c['files'])]
+            else:
+                parts=changed(root,m,channel,report)
             extras=baseline.signature(root,m['baseline'])['extra_archives'] if m.get('schema')==4 else []
-            if not parts and repaired is None and not extras: return channel+' client is up to date.'
+            if not parts and repaired is None and not extras:
+                if m.get('schema')==4:verified(scan)
+                return channel+' client is up to date.'
             needed=sum(c['bytes']+sum(f['bytes']+(safe_file(root,f['path']).stat().st_size if safe_file(root,f['path']).is_file() else 0) for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             needed+=sum(safe_file(root,name).stat().st_size for name in extras)
             if m.get('schema')==4:needed-=fullclient.prepare_retry(state,parts)
@@ -335,6 +344,15 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
                     report('Installing '+f['path']);os.replace(stored_file(stage,f['path']),target)
                 if (sha(target) if target.is_file() else None)!=f['after']: raise RuntimeError('Installed file verification failed')
                 progress('Installing',index,len(files))
+            if m.get('schema')==4:
+                final_stamp=baseline.signature(root,m['baseline'])
+                replaced={f['path'] for f in files}
+                for path,stamp in scan.stamp.items():
+                    if path!='extra_archives' and path not in replaced and final_stamp.get(path)!=stamp:
+                        raise RuntimeError('Client changed during update: '+path)
+                if final_stamp['extra_archives']:
+                    raise RuntimeError('Unexpected archive appeared during update')
+                completed_scan=baseline.Scan(root,m,[],final_stamp)
             # The pending journal is retained until the full install commits.
             save_json(state/'channel.json',dict(channel=channel))
             save_json(state/'installed.json',dict(version=m['version'],transaction=tx))
@@ -342,6 +360,7 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             if m.get('schema')==4:
                 try:fullclient.clear_downloads(state)
                 except (OSError,ValueError):report('Update installed; temporary downloads could not be removed.')
+            if m.get('schema')==4:verified(completed_scan)
             report('Backup retained in '+str(base/'backup'))
             return channel+' updated to '+m['version']+'. Ready to play.'
     except Exception:

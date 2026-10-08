@@ -3,8 +3,8 @@ from pathlib import Path, PurePosixPath
 import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request,urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.7'
-BUILD=307
+VERSION='0.3.8'
+BUILD=308
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
@@ -57,7 +57,7 @@ def log(message):
     except OSError:pass # Logging must never block startup or trigger a second restart.
 
 
-def startup():
+def startup(report=lambda message:None, progress=lambda phase,done,total:None):
     if not getattr(sys,'frozen',False) or sys.platform!='win32' or '--skip-launcher-update' in sys.argv:return False
     root=Path(sys.executable).resolve().parent;work=None;lock=root.parent/(root.name+'.update-lock')
     try:
@@ -72,8 +72,12 @@ def startup():
         # Exclusive handoff lock prevents concurrent updater workers.
         fd=os.open(lock,os.O_CREAT|os.O_EXCL|os.O_WRONLY);os.close(fd)
         work=root.parent/('bcu-'+uuid.uuid4().hex[:12]);work.mkdir()
-        archive=work/'download.zip';fetch(info['url'],archive,limit=info['bytes'])
+        report('Updating launcher to '+info['version']+'. Please keep this window open.')
+        progress('Downloading launcher',0,info['bytes'])
+        archive=work/'download.zip';fetch(info['url'],archive,limit=info['bytes'],progress=lambda done,total:progress('Downloading launcher',done,total))
+        report('Verifying and unpacking the launcher update...');progress('Verifying launcher',1,1)
         payload=work/'payload';extract(archive,payload,info);preserve_connection(root,payload)
+        report('Checking the new launcher...');progress('Checking launcher',1,1)
         subprocess.run([str(payload/'BearCaveLauncher.exe'),'--self-test'],check=True,timeout=60)
         runner=work/'runner';shutil.copytree(payload,runner)
         job={'root':str(root),'parent_pid':os.getpid(),'compatibility':'--compatibility' in sys.argv}
@@ -83,11 +87,13 @@ def startup():
         while not (work/'worker-ready').exists():
             if time.monotonic()>deadline:raise RuntimeError('Update worker did not start')
             time.sleep(.1)
+        report('Launcher update verified. Restarting into the new version...');progress('Restarting launcher',1,1)
         log('Verified '+info['version']+'; handing off installation')
         return True
     except FileExistsError:
         log('Launcher update already pending; using current installation')
     except Exception as error:
+        report('Launcher update could not complete; current launcher remains available. '+str(error))
         log('Continuing current launcher: '+str(error))
         if work is not None and lock.exists():lock.unlink()
     return False

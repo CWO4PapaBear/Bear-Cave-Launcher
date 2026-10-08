@@ -29,8 +29,6 @@ if __name__ == '__main__':
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:
-            from launcher.selfupdate import startup
-            if startup():sys.exit(0)
             if '--compatibility' in sys.argv:
                 from launcher.compatibility import main as compatibility_main
                 compatibility_main()
