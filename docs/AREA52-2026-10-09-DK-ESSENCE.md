@@ -1,4 +1,4 @@
-# Area 52 — Death Knight Ability Essence Costs
+# Area 52 â€” Death Knight Ability Essence Costs
 
 Level-71+ Death Knight abilities now have reduced Ability Essence costs:
 
