@@ -65,4 +65,11 @@ class SelfUpdateTests(unittest.TestCase):
             p=root/'job.json';p.write_text(json.dumps({'root':str(root/'other'),'parent_pid':123}))
             with self.assertRaises(ValueError):s.validate_job(p)
 
+    def test_forced_check_ignores_restart_skip_and_blocks_offline(self):
+        with patch.object(s.sys,'frozen',True,create=True),patch.object(s.sys,'platform','win32'),patch.object(s.sys,'argv',['launcher','--skip-launcher-update']),patch.object(s,'log'),patch.object(s,'urlopen',side_effect=OSError('offline')) as request:
+            self.assertFalse(s.startup());request.assert_not_called()
+            with self.assertRaisesRegex(RuntimeError,'could not be verified'):
+                s.startup(force=True)
+            request.assert_called_once()
+
 if __name__=='__main__':unittest.main()

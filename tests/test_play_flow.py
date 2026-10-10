@@ -94,3 +94,16 @@ class PlayFlowTests(unittest.TestCase):
                 app.start('play');self.assertEqual(app.error,'')
             with patch('launcher.baseline.hashlib.file_digest',wraps=hashlib.file_digest) as digest:
                 app.verify_baseline(root);self.assertEqual(digest.call_count,len(m['baseline']))
+
+    def test_play_checks_launcher_before_client_and_stops_for_update_or_failure(self):
+        for result in (True, RuntimeError('version unavailable')):
+            with test_directory() as root:
+                m,payload=fixture();self.client(root,m,payload)
+                app=Application(root/'settings');app.channel='area52';app.client=str(root)
+                closed=[];app.close_for_update=lambda:closed.append(True)
+                with patch('launcher.app.threading.Thread',ImmediateThread),patch.object(app,'area52_ready',return_value=True),patch('launcher.selfupdate.startup',side_effect=result if isinstance(result,Exception) else None,return_value=result) as check,patch('launcher.app.updater.latest') as client,patch('launcher.app.subprocess.Popen') as launch:
+                    app.start('play')
+                    check.assert_called_once_with(app.report,app.report_progress,force=True)
+                    client.assert_not_called();launch.assert_not_called()
+                    self.assertEqual(bool(closed),result is True)
+                    self.assertFalse(app.busy);self.assertFalse(app.launcher_updating)

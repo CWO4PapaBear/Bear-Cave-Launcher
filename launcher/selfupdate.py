@@ -57,8 +57,8 @@ def log(message):
     except OSError:pass # Logging must never block startup or trigger a second restart.
 
 
-def startup(report=lambda message:None, progress=lambda phase,done,total:None):
-    if not getattr(sys,'frozen',False) or sys.platform!='win32' or '--skip-launcher-update' in sys.argv:return False
+def startup(report=lambda message:None, progress=lambda phase,done,total:None, *, force=False):
+    if not getattr(sys,'frozen',False) or sys.platform!='win32' or ('--skip-launcher-update' in sys.argv and not force):return False
     root=Path(sys.executable).resolve().parent;work=None;lock=root.parent/(root.name+'.update-lock')
     try:
         request=Request(URL,headers={'Cache-Control':'no-cache','User-Agent':'BearCaveLauncher/'+VERSION})
@@ -91,11 +91,13 @@ def startup(report=lambda message:None, progress=lambda phase,done,total:None):
         log('Verified '+info['version']+'; handing off installation')
         return True
     except FileExistsError:
+        if force:raise RuntimeError('Launcher update already pending. Reopen the launcher when it finishes.')
         log('Launcher update already pending; using current installation')
     except Exception as error:
         report('Launcher update could not complete; current launcher remains available. '+str(error))
         log('Continuing current launcher: '+str(error))
         if work is not None and lock.exists():lock.unlink()
+        if force:raise RuntimeError('Launcher version could not be verified or updated. Please try Play again. '+str(error)) from error
     return False
 
 def validate_job(path):

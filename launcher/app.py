@@ -23,6 +23,7 @@ class Application:
         self.error='';self.changes=[];self.mutex=threading.Lock()
         self.folder_picker=None
         self.launcher_updating=False
+        self.close_for_update=None
         self.scan=None
 
     def status(self):
@@ -37,6 +38,7 @@ class Application:
         self.message='Checking for a launcher update...'
 
     def run_launcher_update(self, close):
+        self.close_for_update=close
         from . import selfupdate
         def worker():
             restart=False
@@ -224,6 +226,16 @@ class Application:
                     (self.directory/'area52-file-cache.json').unlink(missing_ok=True)
                     self.message=updater.recover(root,report=self.report,channel=self.channel)
                 else:
+                    from . import selfupdate
+                    self.prepare_launcher_update()
+                    try:
+                        restart=selfupdate.startup(self.report,self.report_progress,force=True)
+                    finally:
+                        self.launcher_updating=False
+                    if restart:
+                        if self.close_for_update:self.close_for_update()
+                        return
+                    self.operation='play';self.progress=0;self.progress_phase='Checking client'
                     updater.ensure_closed()
                     self.manifest=updater.latest() if self.channel=='ptr' else updater.latest(self.channel)
                     if self.channel=='area52':

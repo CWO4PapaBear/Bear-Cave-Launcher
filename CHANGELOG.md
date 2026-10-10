@@ -1,3 +1,7 @@
+## Pending launcher release
+
+- Play now checks the launcher version before checking or repairing client files. An older launcher updates visibly and reopens first. A failed Play-time launcher check stops launch so testers can retry. The existing startup update check remains enabled.
+
 ## 0.3.9
 
 - Area 52 Play remembers verified files across game launches and launcher restarts. Unchanged files use size, timestamps and file identity checks; changed files or expected hashes are rehashed.
