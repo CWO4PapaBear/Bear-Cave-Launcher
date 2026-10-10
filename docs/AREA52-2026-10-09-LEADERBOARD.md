@@ -5,6 +5,6 @@
 - Use `/a52leaderboard` to return to page one. Previous, Next, and Refresh controls are available.
 - Certification credit is tracked by account, including earlier attributed submissions. Only the first accepted certification of an entry earns credit.
 - To certify a VERIFIED Mystic Enchant, use `/a52certme <spell ID>` and confirm the testing checklist. Accepted certification updates its status for everyone.
-- Two linked six-target AoE training-dummy formations are available around Stormwind's main entrance in the Valley of Heroes. The dynamic targets scale to the tester, and linked targets share a testing session. **This Stormwind setup is temporary; placements and layouts may change based on testing.**
+- Single-target dummies and two linked six-target AoE training-dummy formations are available around Stormwind's main entrance in the Valley of Heroes. The dynamic targets scale to the tester, and linked targets share a testing session. **This Stormwind setup is temporary; placements and layouts may change based on testing.**
 
 **Close the game and reopen the Bear Cave Launcher, then press Play to receive the update.**

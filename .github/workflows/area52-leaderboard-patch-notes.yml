@@ -1,6 +1,11 @@
 name: Area 52 leaderboard patch notes
 on:
   workflow_dispatch:
+    inputs:
+      edit_message:
+        description: Existing webhook message ID to update instead of posting again
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -17,4 +22,5 @@ jobs:
       - name: Announce verified Area 52 leaderboard
         env:
           DISCORD_PATCH_NOTES_WEBHOOK: ${{ secrets.DISCORD_PATCH_NOTES_WEBHOOK }}
+          DISCORD_EDIT_MESSAGE_ID: ${{ inputs.edit_message }}
         run: python tools/announce_area52_leaderboard.py

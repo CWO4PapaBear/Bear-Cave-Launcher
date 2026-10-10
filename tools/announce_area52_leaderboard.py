@@ -18,8 +18,11 @@ def main():
         raise RuntimeError('Leaderboard icon is not promoted; no announcement')
     webhook=os.environ.get('DISCORD_PATCH_NOTES_WEBHOOK','').strip()
     if not re.fullmatch(r'https://discord\.com/api/webhooks/[0-9]+/[A-Za-z0-9_-]+',webhook):raise RuntimeError('Patch notes webhook unavailable')
+    edit_id=os.environ.get('DISCORD_EDIT_MESSAGE_ID','').strip()
+    if edit_id and not re.fullmatch(r'[0-9]+',edit_id):raise RuntimeError('Invalid message ID')
     try:
-        request=Request(webhook+'?wait=true',data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','User-Agent':'BearCavePublisher/1.0'},method='POST')
+        url=webhook+'/messages/'+edit_id if edit_id else webhook+'?wait=true'
+        request=Request(url,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','User-Agent':'BearCavePublisher/1.0'},method='PATCH' if edit_id else 'POST')
         with urlopen(request,timeout=30) as response:message=json.loads(response.read())
         if not message.get('id'):raise RuntimeError()
     except Exception:raise RuntimeError('Discord delivery unconfirmed; inspect channel before retrying.') from None
