@@ -23,4 +23,3 @@ def main():
     except Exception:raise RuntimeError('Discord delivery unconfirmed; inspect channel before retrying.') from None
     print('Discord confirmed Area 52 patch notes; message ID: '+str(message['id']))
 if __name__=='__main__':main()
-
