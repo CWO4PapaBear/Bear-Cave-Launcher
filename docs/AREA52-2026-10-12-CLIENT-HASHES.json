@@ -1,0 +1,6 @@
+{
+  "Data/patch-B.MPQ": "14c5cf3b7c9f0f99e1bc73c92586616d8afaca099f3115fca68a87f9d440ba25",
+  "Data/area-52/patch-D.MPQ": "6597b476899fa7651cc2b9e3b8b374166b3380db769923f526c79c9560b4f0ee",
+  "Interface/AddOns/Area52MysticRules/TesterCertification.lua": "372dfa80c636fc88f6ef65828937d82ee914b94e03068f1575e73de32e72edb7",
+  "Interface/AddOns/Area52MysticRules/GrantedAbilityCatalog.lua": "f94841645e81fbf4f7f57fcdae8381ef798ac5b548fb98a1ab938b950d4bff29"
+}
