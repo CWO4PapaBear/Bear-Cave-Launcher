@@ -1,0 +1,31 @@
+name: Area 52 Worldforged and Hotspots patch notes
+on:
+  workflow_dispatch:
+    inputs:
+      verify_message_id:
+        description: 'Read-only verification of an existing message; leaves blank to publish'
+        required: false
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: ptr-discord-patch-notes
+  cancel-in-progress: false
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Announce verified Area 52 package
+        env:
+          DISCORD_PATCH_NOTES_WEBHOOK: ${{ secrets.DISCORD_PATCH_NOTES_WEBHOOK }}
+          VERIFY_MESSAGE_ID: ${{ inputs.verify_message_id }}
+        run: |
+          if [ -n "$VERIFY_MESSAGE_ID" ]; then
+            python tools/announce_area52_worldforged_hotspots.py --verify-message "$VERIFY_MESSAGE_ID"
+          else
+            python tools/announce_area52_worldforged_hotspots.py
+          fi
