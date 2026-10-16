@@ -93,6 +93,8 @@ def main():
     if args.dry_run:
         print(json.dumps(data, ensure_ascii=False, indent=2))
         return
+    if not args.verify_message:
+        raise RuntimeError('Announcement already delivered by run 38851187542; supply its message ID for read-only verification. Do not repost.')
     verify_public_release()
     url = webhook()
     with urlopen(Request(url, headers={'User-Agent': 'BearCavePublisher/1.0'}), timeout=30) as response:
@@ -105,7 +107,24 @@ def main():
         message = read_message(url, args.verify_message)
         if message.get("id") != args.verify_message or not has_image(message):
             raise RuntimeError("Discord readback did not contain the expected message and image")
-        print(json.dumps({"message_id": message["id"], "url": message_url(message), "verified": True}))
+        if message.get('content') != data['content'] or message.get('embeds', [{}])[0].get('description') != data['embeds'][0]['description']:
+            raise RuntimeError('Posted text differs from approved notes')
+        images = [item.get('url') for item in message.get('attachments', []) if item.get('filename') == IMAGE.name]
+        images += [item.get('image', {}).get('url') for item in message.get('embeds', []) if item.get('image')]
+        matched = False
+        for image_url in images:
+            parsed = urlsplit(image_url)
+            if parsed.scheme != 'https' or parsed.hostname not in ('cdn.discordapp.com', 'media.discordapp.net'):
+                continue
+            with urlopen(Request(image_url, headers={'User-Agent': 'BearCavePublisher/1.0'}), timeout=30) as response:
+                matched = hashlib.sha256(response.read()).hexdigest() == sha(IMAGE)
+            if matched:
+                break
+        if not matched:
+            raise RuntimeError('Discord-hosted image bytes do not match the uploaded progress PNG')
+        receipt = {'message_id': message['id'], 'channel_id': message.get('channel_id'), 'url': message_url(message), 'readback_verified': True, 'image_sha256': sha(IMAGE), 'notes_sha256': sha(NOTES), 'package_id': 'mage-talent-targeting-correction-20261015'}
+        RECEIPT.write_text(json.dumps(receipt, indent=2) + '\n')
+        print(json.dumps(receipt))
         return
     if RECEIPT.exists():
         raise RuntimeError("A Discord receipt already exists; verify it rather than posting again")
@@ -153,6 +172,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
