@@ -83,8 +83,11 @@ def deliver(config, root, api, webhook, now=None):
     request = Request(webhook + '/messages/' + receipt['message_id'], headers={'User-Agent': 'BearCavePublisher/1.0'})
     with urlopen(request, timeout=30) as response:
         message = json.loads(response.read())
-    if message.get('content') != data['content'] or message.get('embeds', [{}])[0].get('description') != notes:
-        raise RuntimeError('Discord message text readback differs')
+    actual_notes = message.get('embeds', [{}])[0].get('description', '')
+    if message.get('content') != data['content'] or actual_notes.strip() != notes.strip():
+        raise RuntimeError('Discord message text readback differs: ' + repr({
+            'expected_content': data['content'], 'actual_content': message.get('content'),
+            'expected_description': notes, 'actual_description': actual_notes}))
     if first:
         verify_image(message, receipt['image_sha256'])
     receipt['status'] = 'complete'
