@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-19",
+  "timezone": "America/Los_Angeles",
+  "generated_at": "2026-10-19T15:29:02.298131-07:00",
+  "deployed_packages": [
+    "area52-charge-recharge-20261019"
+  ],
+  "snapshot_kind": "deployed",
+  "counting_rule": "Unique advancement/mystic catalog entries; VERIFIED and CERTIFIED are mutually exclusive; Needs Investigation, Structurally Connected Unverified and Confirmed Defect map to NOT VERIFIED; unknown labels fail.",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 183,
+      "CERTIFIED": 277,
+      "NOT VERIFIED": 209,
+      "verified_percent": 27.4,
+      "certified_percent": 41.4,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -14,
+        "CERTIFIED": 14
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 403,
+      "CERTIFIED": 63,
+      "NOT VERIFIED": 249,
+      "verified_percent": 56.4,
+      "certified_percent": 8.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -3,
+        "CERTIFIED": 3
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1675,
+      "CERTIFIED": 36,
+      "NOT VERIFIED": 2111,
+      "verified_percent": 43.8,
+      "certified_percent": 0.9,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "tooltip_correction_changed_status_totals": false,
+  "source_hashes": {
+    "status": "c3734d9bce9721e03472c69f58b3be1c4e20f406e0531ef32ae9e8f1f11cf8da",
+    "certification": "ae1de2d133556de4b08d350df2620a43f3a88257bf2feae693adc42125b38486",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "tester_database": "5c2338ecd34041b69d12d99f744ffc1fea31f0c9bfb7e4310562712dfe34a7cc",
+    "previous_published_snapshot": "98b6dac0c066f5cee25ae9fdf93bee5deb47f1cbb6e14fce981548151c9223f3"
+  }
+}
