@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-25",
+  "generated_at": "2026-10-25T05:59:24.420049-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 105,
+      "CERTIFIED": 360,
+      "NOT VERIFIED": 204,
+      "verified_percent": 15.7,
+      "certified_percent": 53.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 1,
+        "CERTIFIED": 1
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 404,
+      "CERTIFIED": 69,
+      "NOT VERIFIED": 242,
+      "verified_percent": 56.5,
+      "certified_percent": 9.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 7,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1680,
+      "CERTIFIED": 38,
+      "NOT VERIFIED": 2104,
+      "verified_percent": 44.0,
+      "certified_percent": 1.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 1
+      }
+    }
+  },
+  "counting_rule": "Unique (kind,id) catalog entries; mutually exclusive states; authoritative certification takes precedence.",
+  "snapshot_kind": "deployed",
+  "deployed_packages": [
+    "area52-holy-stormwind-20261025"
+  ],
+  "source_hashes": {
+    "test-access-status.json": "53e153109472ffac112f2dd78a2bfeccc7aab05de257983681a6a8f7513145dd",
+    "certification-ledger.json": "4f723a1843196cffa3f9479e19e81093317c44c8557905a7aa32b7bf92b708b3",
+    "classification.json": "3d7b843cdaea01965bf808a4373dbb2b64ab188796a1ec91900ca226313c21b2",
+    "tester_database": "9c7a554652dd4f162fda68a28ac3d69d50fe730635765fc7f2f9845f484cc008"
+  }
+}
