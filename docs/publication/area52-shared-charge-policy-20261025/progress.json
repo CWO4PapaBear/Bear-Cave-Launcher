@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-25",
+  "generated_at": "2026-10-25T08:38:21.546842-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 105,
+      "CERTIFIED": 360,
+      "NOT VERIFIED": 204,
+      "verified_percent": 15.7,
+      "certified_percent": 53.8,
+      "delta": null
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 404,
+      "CERTIFIED": 69,
+      "NOT VERIFIED": 242,
+      "verified_percent": 56.5,
+      "certified_percent": 9.7,
+      "delta": null
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1680,
+      "CERTIFIED": 38,
+      "NOT VERIFIED": 2104,
+      "verified_percent": 44.0,
+      "certified_percent": 1.0,
+      "delta": null
+    }
+  },
+  "counting_rule": "Unique (kind,id) catalog entries; mutually exclusive states; authoritative certification takes precedence.",
+  "snapshot_kind": "deployed",
+  "deployed_packages": [
+    "area52-shared-charge-policy-20261025"
+  ],
+  "source_hashes": {
+    "test-access-status.json": "53e153109472ffac112f2dd78a2bfeccc7aab05de257983681a6a8f7513145dd",
+    "certification-ledger.json": "4f723a1843196cffa3f9479e19e81093317c44c8557905a7aa32b7bf92b708b3",
+    "classification.json": "30072c258271ea439b5fb26143cd39eb97ac68bac725e40435b5e95edf3d1d01",
+    "tester_database": "9c7a554652dd4f162fda68a28ac3d69d50fe730635765fc7f2f9845f484cc008"
+  }
+}
