@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-25",
+  "generated_at": "2026-10-25T21:46:28.689775-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 100,
+      "CERTIFIED": 365,
+      "NOT VERIFIED": 204,
+      "verified_percent": 14.9,
+      "certified_percent": 54.6,
+      "delta": null
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 403,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 242,
+      "verified_percent": 56.4,
+      "certified_percent": 9.8,
+      "delta": null
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1680,
+      "CERTIFIED": 39,
+      "NOT VERIFIED": 2103,
+      "verified_percent": 44.0,
+      "certified_percent": 1.0,
+      "delta": null
+    }
+  },
+  "counting_rule": "Unique (kind,id) catalog entries; mutually exclusive states; authoritative certification takes precedence.",
+  "snapshot_kind": "deployed",
+  "deployed_packages": [
+    "area52-deathbringer-20261025"
+  ],
+  "source_hashes": {
+    "test-access-status.json": "7f0bba1824ed4b680221ed133e2e0227bf8d7c336e0f98c94123198baae7e80a",
+    "certification-ledger.json": "c31666afd7e486cf045f5deccedf41c9fdaef81da956cf2a6c3e4e278184e1cb",
+    "classification.json": "30072c258271ea439b5fb26143cd39eb97ac68bac725e40435b5e95edf3d1d01",
+    "tester_database": "5b62e8229f395c0a90fbd2a8a1a905669ba80c9e75e6840e3fff2e90556381d2"
+  }
+}
