@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-28",
+  "generated_at": "2026-10-28T10:05:38.760810-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 101,
+      "CERTIFIED": 366,
+      "NOT VERIFIED": 202,
+      "verified_percent": 15.1,
+      "certified_percent": 54.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -1,
+        "CERTIFIED": 1
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 403,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 242,
+      "verified_percent": 56.4,
+      "certified_percent": 9.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1679,
+      "CERTIFIED": 42,
+      "NOT VERIFIED": 2101,
+      "verified_percent": 43.9,
+      "certified_percent": 1.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 1,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-cryotherapy-crash-20261028"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "da34584157f0761088c6d172a5385f15b59f6337866042e2dcf9e448f97ebb50",
+    "certification": "dab1c5bd8fba4b1e6a9da9691696379d14f6d5474c045a4fe272f0ecc02ab107",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "4886d9c438fbd20797501afbe458e9beb0dce24611a42187c326d1c0d25706b8",
+    "tester_database": "3caae22fb267bc91af2c7fa9b2e9393e247ae102beac2d7583e57960b747c8f5"
+  }
+}
