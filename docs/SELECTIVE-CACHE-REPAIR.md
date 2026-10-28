@@ -20,7 +20,6 @@ full launcher unittest discovery with PYTHONPATH=tools;tests. This does not prov
 in-game targeting after the server refresh. No installed client was modified by
 this launcher preparation and no game was launched.
 
-Release remains pending: assign the next launcher version/build, build and qualify
-the executable through the normal release workflow, then publish only when the
-owner authorizes it. This source change does not itself deliver fixes to testers.
+Launcher 0.3.10 / build 310 is prepared separately; see LAUNCHER-0.3.10.md.
+Publication remains pending owner authorization. This source change does not itself deliver fixes to testers.
 The independent upstream cache utility remains in PR #9857.

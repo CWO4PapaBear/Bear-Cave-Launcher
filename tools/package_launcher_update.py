@@ -5,7 +5,11 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from launcher.selfupdate import VERSION,BUILD,REPOSITORY,validate,extract
 
 def prepare():
-    source=ROOT/'dist/launcher/BearCaveLauncher';out=ROOT/'dist'/('launcher-'+VERSION)
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--source',type=Path,default=ROOT/'dist/launcher/BearCaveLauncher')
+    parser.add_argument('--output',type=Path,default=ROOT/'dist'/('launcher-'+VERSION))
+    args=parser.parse_args()
+    source=args.source;out=args.output
     out.mkdir(exist_ok=False)
     metadata=json.loads((source/'launcher-version.json').read_text());assert metadata==dict(version=VERSION,build=BUILD)
     archive=out/'BearCaveLauncher-update-win32.zip'

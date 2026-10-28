@@ -3,8 +3,8 @@ from pathlib import Path, PurePosixPath
 import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request,urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.9'
-BUILD=309
+VERSION='0.3.10'
+BUILD=310
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2

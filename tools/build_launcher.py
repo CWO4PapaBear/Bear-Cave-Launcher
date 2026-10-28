@@ -3,6 +3,8 @@ from pathlib import Path
 import subprocess,sys,shutil,json
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
+output = Path(sys.argv[sys.argv.index('--output')+1]).resolve() if '--output' in sys.argv else root/'dist'
+output.mkdir(parents=True,exist_ok=True)
 from launcher import connection
 # Deployment-only file: never commit the real address to source history.
 connection_file=root/'connection.json'
@@ -18,14 +20,14 @@ if '--area52-local' in sys.argv:
 subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir',('--console' if '--diagnostic' in sys.argv else '--windowed'),
                 '--icon',str(root/'ui/assets/bear-cave-app-icon.ico'),'--name','BearCaveLauncher','--paths',str(root/'tools'),
                 '--add-data',str(root/'ui')+':ui',
-                '--add-data',str(root/'config/account-discord.json')+':config',*connection_args,'--distpath',str(root/'dist/launcher'),
-                '--workpath',str(root/'local/build'),'--specpath',str(root/'local'),str(root/'Launch.py')],cwd=root,check=True)
-folder=root/'dist/launcher/BearCaveLauncher'
+                '--add-data',str(root/'config/account-discord.json')+':config',*connection_args,'--distpath',str(output/'launcher'),
+                '--workpath',str(output/'build'),'--specpath',str(output),str(root/'Launch.py')],cwd=root,check=True)
+folder=output/'launcher/BearCaveLauncher'
 exe=folder/('BearCaveLauncher.exe'if sys.platform=='win32'else'BearCaveLauncher')
 subprocess.run([str(exe),'--self-test'],check=True,timeout=60)
 if sys.platform=='win32':
     (folder/'Start Compatibility Mode.cmd').write_text('@echo off\nstart "" "%~dp0BearCaveLauncher.exe" --compatibility\n',encoding='ascii')
 from launcher.selfupdate import VERSION,BUILD
 (folder/'launcher-version.json').write_text(json.dumps({'version':VERSION,'build':BUILD}))
-archive=shutil.make_archive(str(root/'dist'/('BearCaveLauncher-'+sys.platform)),'zip',root_dir=folder.parent,base_dir=folder.name)
+archive=shutil.make_archive(str(output/('BearCaveLauncher-'+sys.platform)),'zip',root_dir=folder.parent,base_dir=folder.name)
 print('Built launcher bundle:',archive)

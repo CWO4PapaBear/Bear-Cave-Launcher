@@ -26,6 +26,8 @@ if __name__ == '__main__':
             load(ROOT)
             from launcher.selftest import connection_check
             connection_check()
+        from launcher.selftest import cache_check
+        cache_check()
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:

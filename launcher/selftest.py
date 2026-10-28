@@ -30,3 +30,30 @@ def connection_check():
         updater.latest,updater.changed,updater.ensure_closed=original
         assert work.resolve().parent==base and work.name.startswith('bear-launcher-selftest-')
         shutil.rmtree(work)
+
+
+def cache_check():
+    """Exercise the bundled repair only on disposable synthetic cache data."""
+    import struct
+    from . import cache_repair
+    def row(entry, flags, kind):
+        body=b'name\0\0\0\0\0\0'+struct.pack('<II',flags,kind)
+        return struct.pack('<II',entry,len(body))+body
+    header=b'BOMW'+struct.pack('<I',12340)+bytes(16)
+    keep=row(17157,512,4);bad=row(22313,0,8)
+    before=header+bad+keep+bytes(8)
+    with tempfile.TemporaryDirectory(prefix='bear-cache-selftest-') as directory:
+        root=Path(directory);cache=root/'Cache/WDB/enUS/Area 52 - Free-Pick/creaturecache.wdb'
+        cache.parent.mkdir(parents=True);cache.write_bytes(before)
+        # The guard is replaced only for this non-game fixture and restored below.
+        guard=updater.ensure_closed
+        try:
+            updater.ensure_closed=lambda:None
+            assert cache_repair.repair(root,'ptr')==0
+            assert cache.read_bytes()==before
+            assert cache_repair.repair(root,'area52')==1
+            assert cache.read_bytes()==header+keep+bytes(8)
+            assert next(cache.parent.glob('*.backup-*')).read_bytes()==before
+            assert cache_repair.repair(root,'area52')==0
+        finally:
+            updater.ensure_closed=guard
