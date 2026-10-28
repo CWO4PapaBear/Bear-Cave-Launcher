@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-22",
+  "generated_at": "2026-10-22T12:05:12.703556-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 111,
+      "CERTIFIED": 352,
+      "NOT VERIFIED": 206,
+      "verified_percent": 16.6,
+      "certified_percent": 52.6,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -11,
+        "CERTIFIED": 11
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 397,
+      "CERTIFIED": 69,
+      "NOT VERIFIED": 249,
+      "verified_percent": 55.5,
+      "certified_percent": 9.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -1,
+        "CERTIFIED": 1
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1677,
+      "CERTIFIED": 37,
+      "NOT VERIFIED": 2108,
+      "verified_percent": 43.9,
+      "certified_percent": 1.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": -1,
+        "CERTIFIED": 1
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-warchest-five-rewards-20261022"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "ac028b3bc3a0a1cc41f9a5e6cccf2320cfe7e015f18e146057b71ef236184586",
+    "certification": "966b68e5d40878876d0ab22db221ae8424a8e9885e2af52521a69eba0009cf70",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "db159454b0721305c4e4d99875bf4e7d8cc30571314625bc290b45c759579ca5",
+    "tester_database": "1e1e981977d8f26e67fcf50165669a003feae2e647a0e468bc2728cfb7b5b625"
+  }
+}

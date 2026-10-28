@@ -1,0 +1,14 @@
+# Area 52 — Epic Druid Mystic Enchants, pet persistence, Improved Kick and Portal Mastery
+
+- **Portal Mastery:** portal trainers now recognize learned Portal Mastery on Area 52 instead of refusing classless characters as non-Mages. Each trainer retains its own portal/teleport destinations, prices and minimum levels. Portal Mastery unlocks training; it does not automatically grant every destination. Other game modes remain unchanged.
+- **Improved Kick capstone:** successful Kick interrupts at rank2 now grant Quick Footwork's energy and temporary melee attack-speed bonus. Failed interrupts, rank1 and other interrupt abilities do not grant it; duplicate reward callbacks are prevented. Existing reward values and verification labels are unchanged.
+- **Summoned pets:** unlearning Summon Imp, Summon Voidwalker or another persistent pet's summon ability dismisses it immediately. Saved pets cannot return at login without a qualifying summon ability. Alternate ranks and legitimate grants remain supported.
+- **Call Pet restoration:** after unlearning a pet-family call ability, its pet stays dismissed on login. Beast, Demon, Undead, Elemental and Dragonkin pets require a currently learned call for their own family. Saved pets remain available after legitimate relearning. Other summon types are unchanged.
+- **Druid of Rot: Call Fungarians:** Force of Nature transforms while the enchant is selected and the original spell is learned. Three Fungarians attack and emit Cloud of Rot using the summoner's level, Spell Power and Attack Power. Learning/removing Force of Nature immediately updates its replacement.
+- **Evergreen:** direct Regrowth and Healing Touch refresh your own Lifebloom across all three ranks, preserving stacks. They do not refresh another caster's Lifebloom.
+- **Everliving:** effective direct and periodic Nature healing builds up to 15 stacks, improving your next Swiftmend by 3% per stack. Complete overhealing adds no stack. At 15 stacks Swiftmend preserves its charge and the target's Rejuvenation/Regrowth. Old stacks are consumed once; a new stack from the resulting effective heal survives.
+- Swiftmend uses its client-defined two charges with a 15-second recharge. Existing Warrior Charge handling remains intact.
+- These three Epic Mystic Enchants move to **VERIFIED** after deployment. This is engineering Verification; live testers still own Certification. Existing Certified records are preserved.
+- Matching tooltip labels and helper certification links are included in launcher distribution. Close the game and update through the launcher after publication. No new addon or DLL change.
+
+Scoped source changes are published as a frozen patch against the qualified deployed source, on a feature branch. No gameplay/status changes are merged into main. Offline native build/unit, focused lifecycle/proc/charge checks, production-schema SQL rollback guards and client/publication retry checks passed.
