@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json, os, secrets, shutil, subprocess, sys, threading, webbrowser
 from urllib.parse import urlsplit
-from . import updater, connection, access, baseline
+from . import updater, connection, access, baseline, cache_repair
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -259,6 +259,8 @@ class Application:
                         self.configure_realm(root,state)
                         if self.channel=='area52' and not self.valid_scan(root):
                             raise ValueError('Client files changed after verification. Press Play to check again.')
+                        cache_repair.repair(root,self.channel,self.report)
+                        updater.ensure_closed()
                         self.progress_phase='Launching'
                         exe=root/('Ascension.exe' if self.channel=='area52' else 'Wow.exe')
                         command=[str(exe)] if os.name=='nt' else [shutil.which('wine') or 'wine',str(exe)]

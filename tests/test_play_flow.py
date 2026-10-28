@@ -107,3 +107,18 @@ class PlayFlowTests(unittest.TestCase):
                     client.assert_not_called();launch.assert_not_called()
                     self.assertEqual(bool(closed),result is True)
                     self.assertFalse(app.busy);self.assertFalse(app.launcher_updating)
+
+    def test_selective_cache_repair_precedes_launch_and_failure_blocks_play(self):
+        for failure in (False, True):
+            with test_directory() as root:
+                m,payload=fixture();self.client(root,m,payload)
+                app=Application(root/'settings');app.channel='area52';app.client=str(root)
+                events=[]
+                def repair(*args):
+                    events.append('repair')
+                    self.assertEqual(args[1],'area52')
+                    if failure:raise ValueError('Invalid cache')
+                with patch('launcher.app.threading.Thread',ImmediateThread),patch.object(app,'area52_ready',return_value=True),patch.object(app,'configure_realm'),patch('launcher.app.updater.latest',return_value=m),patch('launcher.app.updater.ensure_closed'),patch('launcher.app.cache_repair.repair',side_effect=repair),patch('launcher.app.subprocess.Popen',side_effect=lambda *a,**k:events.append('launch')):
+                    app.start('play')
+                self.assertEqual(events,['repair'] if failure else ['repair','launch'])
+                self.assertEqual(bool(app.error),failure)
