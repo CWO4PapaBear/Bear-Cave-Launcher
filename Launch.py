@@ -28,6 +28,12 @@ if __name__ == '__main__':
             connection_check()
         from launcher.selftest import cache_check
         cache_check()
+        if (ROOT/'endpoint-migrations.json').exists():
+            import json
+            from launcher.connection import route
+            for entry in json.loads((ROOT/'endpoint-migrations.json').read_text())['routes']:
+                assert route(ROOT,entry['channel'],entry['before'])==entry['after']
+                assert route(ROOT,entry['channel'],'127.0.0.1:3725')=='127.0.0.1:3725'
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:

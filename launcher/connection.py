@@ -13,6 +13,22 @@ def address(value):
     return value
 
 
+def route(root,channel,value):
+    value=address(value)
+    migrations=root/'endpoint-migrations.json'
+    if not migrations.is_file():return value
+    data=json.loads(migrations.read_text(encoding='utf-8'))
+    if data.get('schema')!=1 or not isinstance(data.get('routes'),list):raise ValueError('Invalid endpoint migrations')
+    matches=[]
+    for entry in data['routes']:
+        if set(entry)!= {'channel','before','after'} or entry['channel']!='area52':raise ValueError('Invalid endpoint migration')
+        before=address(entry['before']);after=address(entry['after'])
+        if before.partition(':')[2]!='3725' or after.partition(':')[2]!='3725':raise ValueError('Invalid Area 52 auth port')
+        if entry['channel']==channel and before==value:matches.append(after)
+    if len(matches)>1:raise ValueError('Ambiguous endpoint migration')
+    return matches[0] if matches else value
+
+
 def load(root,channel='ptr'):
     if channel not in ('ptr','area52'):raise ValueError('Unknown connection channel')
     name='connection.json' if channel=='ptr' else 'connection-area52.json'
@@ -21,12 +37,12 @@ def load(root,channel='ptr'):
     if not path.is_file() and channel=='area52':
         # Area 52 shares the configured PTR host, with its own auth port.
         # Explicit Area 52 settings above retain priority for local testing.
-        return address(load(root,'ptr').split(':',1)[0]+':3725')
+        return route(root,channel,load(root,'ptr').split(':',1)[0]+':3725')
     if not path.is_file():
         raise ValueError('This launcher package has no PTR connection settings. Obtain the configured launcher from the server owner.')
     data=json.loads(path.read_text(encoding='utf-8'))
     if data.get('channel')!=channel or data.get('schema')!=1:raise ValueError('Invalid PTR connection settings')
-    return address(data.get('address'))
+    return route(root,channel,data.get('address'))
 
 def safe(root,relative):
     target=root

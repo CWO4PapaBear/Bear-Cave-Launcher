@@ -10,9 +10,14 @@ from launcher import connection
 connection_file=root/'connection.json'
 if not connection_file.exists():connection_file=root/'local/connection.json'
 connection_args=[]
+if '--endpoint-migrations' in sys.argv:
+    migration_file=Path(sys.argv[sys.argv.index('--endpoint-migrations')+1]).resolve()
+    connection.route(migration_file.parent,'area52','example.invalid:3725')
+    if migration_file.name!='endpoint-migrations.json':raise ValueError('Unexpected endpoint migration filename')
+    connection_args+=['--add-data',str(migration_file)+':.']
 if '--unconfigured' not in sys.argv:
     connection.load(root)
-    connection_args=['--add-data',str(connection_file)+':.']
+    connection_args+=['--add-data',str(connection_file)+':.']
 area52_file=root/'local/connection-area52.json'
 if '--area52-local' in sys.argv:
     connection.load(root,'area52')
