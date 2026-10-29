@@ -40,12 +40,17 @@ def run():
     assert previous==DESCRIPTION or 'Engineering validation' in previous,'Unexpected prior text; no edit'
     Path('discord-before.json').write_text(json.dumps(old,indent=2))
     embeds[index]['description']=DESCRIPTION
-    if previous!=DESCRIPTION:
-        request('PATCH',{'embeds':embeds,'allowed_mentions':{'parse':[],'roles':['1551989024833667072']}})
+    title='Area 52 Patch Notes - Dungeon Bots'
+    content='<@&1551989024833667072> **'+title+'**'
+    embeds[index]['title']=title
+    embeds[index]['image']={'url':'attachment://making-progress.png'}
+    assert len(old.get('attachments',[]))==1 and old['attachments'][0]['id']=='1565394708128333824'
+    request('PATCH',{'content':content,'embeds':embeds,'attachments':[{'id':old['attachments'][0]['id'],'filename':'making-progress.png'}],'allowed_mentions':{'parse':[],'roles':['1551989024833667072']}})
     new=request()
     Path('discord-after.json').write_text(json.dumps(new,indent=2))
-    assert new['content']==old['content'] and new['embeds'][index]['description']==DESCRIPTION
-    assert [(a['id'],a.get('size')) for a in new.get('attachments',[])]==[(a['id'],a.get('size')) for a in old.get('attachments',[])]
+    assert new['content']==content and new['embeds'][index]['title']==title and new['embeds'][index]['description']==DESCRIPTION
+    assert len(new['embeds'])==1
+    assert all(a['id']=='1565394708128333824' for a in new.get('attachments',[]))
     for e in new['embeds']:
         image=e.get('image',{}).get('url')
         if image:
