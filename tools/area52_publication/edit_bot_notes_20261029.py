@@ -1,6 +1,7 @@
 import hashlib,json,os,re
 from pathlib import Path
 from urllib.request import Request,urlopen
+from urllib.parse import urlparse
 
 MESSAGE='1565394708291788932'
 CHANNEL='1551651626719248514'
@@ -42,10 +43,16 @@ def run():
     if previous!=DESCRIPTION:
         request('PATCH',{'embeds':embeds,'allowed_mentions':{'parse':[],'roles':['1551989024833667072']}})
     new=request()
+    Path('discord-after.json').write_text(json.dumps(new,indent=2))
     assert new['content']==old['content'] and new['embeds'][index]['description']==DESCRIPTION
     assert [(a['id'],a.get('size')) for a in new.get('attachments',[])]==[(a['id'],a.get('size')) for a in old.get('attachments',[])]
-    assert [e.get('image',{}).get('url') for e in new['embeds']]==[e.get('image',{}).get('url') for e in old['embeds']]
-    Path('discord-after.json').write_text(json.dumps(new,indent=2))
+    for e in new['embeds']:
+        image=e.get('image',{}).get('url')
+        if image:
+            assert urlparse(image).scheme=='https' and urlparse(image).hostname in ('cdn.discordapp.com','media.discordapp.net')
+            with urlopen(Request(image,headers={'User-Agent':'BearCavePublisher/1.0'}),timeout=30) as response:
+                assert hashlib.sha256(response.read()).hexdigest()=='e90bf16dd49e40162101350fb35271b22d2ebe3690c8cd3f3a4a36bb33b9652a'
+    assert sum(bool(e.get('image',{}).get('url')) for e in new['embeds'])==1
     Path('edit-receipt.json').write_text(json.dumps({'status':'verified','message_id':MESSAGE,'channel_id':CHANNEL,'description_sha256':hashlib.sha256(DESCRIPTION.encode()).hexdigest(),'url':f'https://discord.com/channels/1312920749866090628/{CHANNEL}/{MESSAGE}','attachment_identity_preserved':True},indent=2))
     print('Existing Discord message edited and read back; attachment retained; no new message sent')
 
