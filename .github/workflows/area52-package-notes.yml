@@ -1,35 +1,34 @@
 name: Area 52 package patch notes
-run-name: Area52 publication ${{ inputs.package_id }}
+run-name: Edit existing Area52 bot patch notes
 on:
   workflow_dispatch:
     inputs:
       package_id:
-        description: Activated package ID
         required: true
         type: string
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: area52-daily-patch-notes
   cancel-in-progress: false
 jobs:
-  announce:
+  edit:
+    if: inputs.package_id == 'area52-playerbots-startup-recovery-20261029'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Publish or reconcile the existing message
+      - name: Edit and read back existing message
         env:
-          GH_TOKEN: ${{ github.token }}
           DISCORD_PATCH_NOTES_WEBHOOK: ${{ secrets.DISCORD_PATCH_NOTES_WEBHOOK }}
-          PACKAGE_ID: ${{ inputs.package_id }}
-        run: python tools/area52_publication/announce_package.py "$PACKAGE_ID"
-      - name: Preserve receipt even when readback fails
+        run: python tools/area52_publication/edit_bot_notes_20261029.py
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: area52-publication-receipt
-          path: discord-receipt.json
-          if-no-files-found: ignore
+          name: discord-edit-receipt
+          path: |
+            discord-before.json
+            discord-after.json
+            edit-receipt.json
