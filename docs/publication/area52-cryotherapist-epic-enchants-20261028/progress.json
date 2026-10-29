@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-28",
+  "generated_at": "2026-10-28T19:21:16.685579-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 101,
+      "CERTIFIED": 366,
+      "NOT VERIFIED": 202,
+      "verified_percent": 15.1,
+      "certified_percent": 54.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 404,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 241,
+      "verified_percent": 56.5,
+      "certified_percent": 9.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 1690,
+      "CERTIFIED": 42,
+      "NOT VERIFIED": 2090,
+      "verified_percent": 44.2,
+      "certified_percent": 1.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 3,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-cryotherapist-epic-enchants-20261028"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "a34aee8cf70915fb633bcb47d9a7fbe5aeae16807ce31b84f7f4f76deec3a7c9",
+    "certification": "ce396970e55edb6c10c46227eaed6a24bbe476d6a7b32d5587b124ef94a44e0f",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "b3112578c3fd9fd5d0ab4b7e0104c1254c4ac39fc58b1c0e04bd8e58190aa1cc",
+    "tester_database": "3caae22fb267bc91af2c7fa9b2e9393e247ae102beac2d7583e57960b747c8f5"
+  }
+}

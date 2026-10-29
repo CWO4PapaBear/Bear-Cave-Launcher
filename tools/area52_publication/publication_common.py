@@ -36,7 +36,19 @@ class GitHub:
 
     def file(self, repo, path, ref='main'):
         value = self.api(f'repos/{repo}/contents/{path}?ref={ref}', missing=True)
-        return (base64.b64decode(value['content']), value['sha']) if value else (None, None)
+        if not value:
+            return None, None
+        revision = value['sha']
+        size = value['size'] if 'size' in value else None
+        if value.get('encoding') == 'none':
+            value = self.api(f'repos/{repo}/git/blobs/{revision}')
+        if value.get('encoding', 'base64') != 'base64':
+            raise RuntimeError('Unsupported GitHub file encoding')
+        content = base64.b64decode(''.join(value['content'].split()), validate=True)
+        digest = hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest()
+        if digest != revision or (size is not None and len(content) != size):
+            raise RuntimeError('GitHub file integrity verification failed')
+        return content, revision
 
     def put(self, repo, path, content, message, branch='main'):
         old, revision = self.file(repo, path, branch)
