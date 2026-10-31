@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-10-30",
+  "generated_at": "2026-10-30T21:04:15.898604-07:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 101,
+      "CERTIFIED": 366,
+      "NOT VERIFIED": 202,
+      "verified_percent": 15.1,
+      "certified_percent": 54.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 404,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 241,
+      "verified_percent": 56.5,
+      "certified_percent": 9.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2677,
+      "CERTIFIED": 43,
+      "NOT VERIFIED": 1102,
+      "verified_percent": 70.0,
+      "certified_percent": 1.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-bot-idle-build-buttons-20261030"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "4d00e25e7544b25d8f936133917670817d1faa3ccd176b4e4d769ca82ab98bfa",
+    "certification": "51a9d918abda2d9aafaf3d232dd108d34fc0322a5907714ddc6b0ec31caf940f",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "5e9d19ad6233dae935f58bf768ecd6b51f3b808e3eaf4f369c42a1f496702ba7",
+    "tester_database": "2b4cbd4609476158ae3942b150c7d2d7b690d330a7cfb949be1c80c51481d34f"
+  }
+}
