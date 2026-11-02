@@ -3,6 +3,18 @@ from test_connection import test_directory
 from launcher import connection
 
 class EndpointTests(unittest.TestCase):
+    def test_multiple_retired_addresses_go_directly_to_current(self):
+        with test_directory() as root:
+            routes=[dict(channel='area52',before=host+':3725',after='current.example:3725') for host in ('first.example','second.example')]
+            (root/'endpoint-migrations.json').write_text(json.dumps(dict(schema=1,routes=routes)))
+            for host in ('first.example','second.example'):
+                (root/'connection.json').write_text(json.dumps(dict(schema=1,channel='ptr',address=host)))
+                self.assertEqual(connection.load(root,'area52'),'current.example:3725')
+                self.assertEqual(connection.load(root,'ptr'),host)
+            for value in ('127.0.0.1:3726','127.0.0.1:3725','custom.example:3725'):
+                (root/'connection-area52.json').write_text(json.dumps(dict(schema=1,channel='area52',address=value)))
+                self.assertEqual(connection.load(root,'area52'),value)
+
     def test_preserved_old_settings_resolve_only_area52(self):
         with test_directory() as root:
             config=json.dumps(dict(schema=1,channel='ptr',address='old.example'))
