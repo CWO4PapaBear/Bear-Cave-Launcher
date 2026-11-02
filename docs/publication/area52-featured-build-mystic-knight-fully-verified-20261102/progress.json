@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-02",
+  "generated_at": "2026-11-02T08:28:13.886048-08:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 105,
+      "CERTIFIED": 366,
+      "NOT VERIFIED": 198,
+      "verified_percent": 15.7,
+      "certified_percent": 54.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 4,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 404,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 241,
+      "verified_percent": 56.5,
+      "certified_percent": 9.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2681,
+      "CERTIFIED": 43,
+      "NOT VERIFIED": 1098,
+      "verified_percent": 70.1,
+      "certified_percent": 1.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 4,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-featured-build-mystic-knight-fully-verified-20261102"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "26e5a4cd558e52fb196bef7597990bb6512b2c4e6b12cbcbb05213c0a0ac2e63",
+    "certification": "6ebce922ae65d547481209c3dc17fe25e34e72df209e33949487fbf669a774c2",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "dfc9de9a0dbfb1ee92c1c20601b9a60911e7d5704e2641313f1a389b5c927520",
+    "tester_database": "2b4cbd4609476158ae3942b150c7d2d7b690d330a7cfb949be1c80c51481d34f"
+  }
+}
