@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-04",
+  "generated_at": "2026-11-04T18:24:30.189045-08:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 114,
+      "CERTIFIED": 368,
+      "NOT VERIFIED": 187,
+      "verified_percent": 17.0,
+      "certified_percent": 55.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 411,
+      "CERTIFIED": 70,
+      "NOT VERIFIED": 234,
+      "verified_percent": 57.5,
+      "certified_percent": 9.8,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2681,
+      "CERTIFIED": 45,
+      "NOT VERIFIED": 1096,
+      "verified_percent": 70.1,
+      "certified_percent": 1.2,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-celestial-vanity-20261104"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "0d3647ec2f701ef45ef0c17da7e2d10848be7a9e0c76b7aa1a30dbc4fea7ef72",
+    "certification": "a7bae7ebe4cbb30e633816669b247d2d686d34ebd0dd40a1d45265da237f6398",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "d371d923dd043a56aeb083339f094026fd2094269e2a4b93c6f118ed157ef20a",
+    "tester_database": "5eff0c7c8a797c2193c7820d01b6a6128bd312e6e74181894117b9275997b4dc"
+  }
+}
