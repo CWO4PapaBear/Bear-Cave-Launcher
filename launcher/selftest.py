@@ -41,7 +41,7 @@ def cache_check():
         return struct.pack('<II',entry,len(body))+body
     header=b'BOMW'+struct.pack('<I',12340)+bytes(16)
     keep=row(17157,512,4);bad=row(22313,0,8)
-    before=header+bad+keep+bytes(8)
+    before=header+bad+row(15648,0,8)+row(15271,0,8)+keep+bytes(8)
     with tempfile.TemporaryDirectory(prefix='bear-cache-selftest-') as directory:
         root=Path(directory);cache=root/'Cache/WDB/enUS/Area 52 - Free-Pick/creaturecache.wdb'
         cache.parent.mkdir(parents=True);cache.write_bytes(before)
@@ -51,7 +51,7 @@ def cache_check():
             updater.ensure_closed=lambda:None
             assert cache_repair.repair(root,'ptr')==0
             assert cache.read_bytes()==before
-            assert cache_repair.repair(root,'area52')==1
+            assert cache_repair.repair(root,'area52')==3
             assert cache.read_bytes()==header+keep+bytes(8)
             assert next(cache.parent.glob('*.backup-*')).read_bytes()==before
             assert cache_repair.repair(root,'area52')==0

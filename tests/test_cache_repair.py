@@ -22,11 +22,11 @@ class CacheRepairTests(unittest.TestCase):
 
     def test_selective_preservation_backup_and_retry(self):
         with test_directory() as root, patch.object(repair.updater,'ensure_closed'):
-            before=data(row(12),row(22313),row(1002),row(17157,512,4))
+            before=data(row(1),row(22313),row(15271),row(15294),row(15635),row(15648),row(4294967294),row(17157,512,4))
             cache=self.cache(root,before)
             other=self.cache(root,before,'Other Realm')
-            self.assertEqual(repair.repair(root,'area52'),1)
-            self.assertEqual(cache.read_bytes(),data(row(12),row(1002),row(17157,512,4)))
+            self.assertEqual(repair.repair(root,'area52'),5)
+            self.assertEqual(cache.read_bytes(),data(row(1),row(4294967294),row(17157,512,4)))
             backups=list(cache.parent.glob('*.backup-*'))
             self.assertEqual(len(backups),1);self.assertEqual(backups[0].read_bytes(),before)
             self.assertEqual(other.read_bytes(),before)
@@ -87,10 +87,10 @@ class CacheRepairTests(unittest.TestCase):
         with test_directory() as root, patch.object(repair.updater,'ensure_closed'):
             cache=self.cache(root,data(row(22313)),'Area-52')
             second=root/'Cache/WDB/deDE/Area 52 - Free-Pick/creaturecache.wdb'
-            second.parent.mkdir(parents=True);second.write_bytes(data(row(22313),row(7)))
+            second.parent.mkdir(parents=True);second.write_bytes(data(row(22313),row(385)))
             self.assertEqual(repair.repair(root,'area52'),2)
             self.assertEqual(cache.read_bytes(),data())
-            self.assertEqual(second.read_bytes(),data(row(7)))
+            self.assertEqual(second.read_bytes(),data(row(385)))
 
     def test_readback_failure_retains_backup(self):
         with test_directory() as root, patch.object(repair.updater,'ensure_closed'), patch.object(repair.os,'replace'):

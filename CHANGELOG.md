@@ -1,3 +1,7 @@
+## 0.3.13 — Area 52 creature targeting
+
+The launcher checks your realm cache against the Area 52 creature catalog and refreshes stale Critter entries before play. It backs up each affected cache and preserves genuine critters and other creature records.
+
 ## Pending launcher release
 
 - Play now checks the launcher version before checking or repairing client files. An older launcher updates visibly and reopens first. A failed Play-time launcher check stops launch so testers can retry. The existing startup update check remains enabled.
