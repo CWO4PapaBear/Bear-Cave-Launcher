@@ -2,7 +2,8 @@
 from pathlib import Path
 from contextlib import contextmanager
 import csv, hashlib, io, json, os, re, shutil, stat, subprocess, sys, uuid, zipfile
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from .transport import urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 from package import managed_path, safe_file, sha

@@ -1,3 +1,7 @@
+## 0.3.14 — Windows update checks
+
+When Windows reports a missing local file during an HTTPS update request, the launcher retries through the Windows system curl client. Play continues after the version check succeeds. Update errors now identify the step that failed.
+
 ## 0.3.13 — Area 52 creature targeting
 
 The launcher checks your realm cache against the Area 52 creature catalog and refreshes stale Critter entries before play. It backs up each affected cache and preserves genuine critters and other creature records.

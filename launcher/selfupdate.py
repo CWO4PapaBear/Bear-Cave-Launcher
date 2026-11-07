@@ -1,10 +1,11 @@
 """Verified Windows launcher updates, independent of game patch channels."""
 from pathlib import Path, PurePosixPath
 import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
-from urllib.request import Request,urlopen
+from urllib.request import Request
+from .transport import urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.13'
-BUILD=313
+VERSION='0.3.14'
+BUILD=314
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
@@ -60,25 +61,32 @@ def log(message):
 def startup(report=lambda message:None, progress=lambda phase,done,total:None, *, force=False):
     if not getattr(sys,'frozen',False) or sys.platform!='win32' or ('--skip-launcher-update' in sys.argv and not force):return False
     root=Path(sys.executable).resolve().parent;work=None;lock=root.parent/(root.name+'.update-lock')
+    stage='read launcher channel'
     try:
         request=Request(URL,headers={'Cache-Control':'no-cache','User-Agent':'BearCaveLauncher/'+VERSION})
         with urlopen(request,timeout=5)as response:
             raw=response.read(65537)
             if len(raw)>65536:raise ValueError('Launcher channel too large')
+        stage='validate launcher channel'
         data=json.loads(raw)
         if data.get('enabled') is not True:return False
         info=validate(data)
         if info['build']<=BUILD:return False
         # Exclusive handoff lock prevents concurrent updater workers.
+        stage='stage launcher update'
         fd=os.open(lock,os.O_CREAT|os.O_EXCL|os.O_WRONLY);os.close(fd)
         work=root.parent/('bcu-'+uuid.uuid4().hex[:12]);work.mkdir()
         report('Updating launcher to '+info['version']+'. Please keep this window open.')
         progress('Downloading launcher',0,info['bytes'])
+        stage='download launcher archive'
         archive=work/'download.zip';fetch(info['url'],archive,limit=info['bytes'],progress=lambda done,total:progress('Downloading launcher',done,total))
         report('Verifying and unpacking the launcher update...');progress('Verifying launcher',1,1)
+        stage='verify and extract launcher archive'
         payload=work/'payload';extract(archive,payload,info);preserve_connection(root,payload)
         report('Checking the new launcher...');progress('Checking launcher',1,1)
+        stage='test staged launcher'
         subprocess.run([str(payload/'BearCaveLauncher.exe'),'--self-test'],check=True,timeout=60)
+        stage='start launcher update worker'
         runner=work/'runner';shutil.copytree(payload,runner)
         job={'root':str(root),'parent_pid':os.getpid(),'compatibility':'--compatibility' in sys.argv}
         (work/'job.json').write_text(json.dumps(job))
@@ -95,9 +103,9 @@ def startup(report=lambda message:None, progress=lambda phase,done,total:None, *
         log('Launcher update already pending; using current installation')
     except Exception as error:
         report('Launcher update could not complete; current launcher remains available. '+str(error))
-        log('Continuing current launcher: '+str(error))
+        log(f'Launcher {VERSION} ({sys.executable}) failed to {stage}: {type(error).__name__}: {error}')
         if work is not None and lock.exists():lock.unlink()
-        if force:raise RuntimeError('Launcher version could not be verified or updated. Please try Play again. '+str(error)) from error
+        if force:raise RuntimeError(f'Launcher version could not be verified or updated during {stage}. {error}') from error
     return False
 
 def validate_job(path):
