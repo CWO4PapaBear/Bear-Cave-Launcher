@@ -4,8 +4,8 @@ import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request
 from .transport import urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.14'
-BUILD=314
+VERSION='0.3.15'
+BUILD=315
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
@@ -59,8 +59,16 @@ def log(message):
 
 
 def startup(report=lambda message:None, progress=lambda phase,done,total:None, *, force=False):
-    if not getattr(sys,'frozen',False) or sys.platform!='win32' or ('--skip-launcher-update' in sys.argv and not force):return False
+    if not getattr(sys,'frozen',False) or sys.platform!='win32':return False
     root=Path(sys.executable).resolve().parent;work=None;lock=root.parent/(root.name+'.update-lock')
+    if not force:
+        from .backups import collect
+        if '--skip-launcher-update' in sys.argv:
+            deadline=time.monotonic()+5
+            while lock.exists() and time.monotonic()<deadline:time.sleep(.1)
+        try:collect(root,log)
+        except (OSError,ValueError) as error:log(f'Launcher backup maintenance deferred: {error}')
+    if '--skip-launcher-update' in sys.argv and not force:return False
     stage='read launcher channel'
     try:
         request=Request(URL,headers={'Cache-Control':'no-cache','User-Agent':'BearCaveLauncher/'+VERSION})
@@ -119,10 +127,21 @@ def validate_job(path):
 def swap(work,root,check,restart):
     backup=work/'previous';payload=work/'payload'
     if backup.exists() or not (payload/'BearCaveLauncher.exe').is_file():raise ValueError('Invalid update state')
+    carried=[]
     root.rename(backup)
     try:
-        payload.rename(root);check(root);restart(root)
+        payload.rename(root)
+        for name in ('.bear-cave-launcher','Backups'):
+            source=backup/name
+            if source.is_symlink() or (source.exists() and (not source.is_dir() or source.is_junction())):
+                raise ValueError('Invalid persistent launcher directory: '+name)
+            if source.exists():
+                source.rename(root/name)
+                carried.append(name)
+        check(root);restart(root)
     except BaseException:
+        for name in reversed(carried):
+            (root/name).rename(backup/name)
         if root.exists():root.rename(work/'failed')
         backup.rename(root)
         raise
@@ -147,7 +166,7 @@ def apply(path):
             if job['compatibility']:command.append('--compatibility')
             subprocess.Popen(command,cwd=target)
         swap(work,root,check,restart)
-        log('Launcher updated; previous installation retained at '+str(work/'previous'))
+        log('Launcher updated; restarted launcher will retain the last two versions in '+str(root/'Backups'))
     except Exception as error:
         log('Launcher update failed; previous version retained: '+str(error))
         if (root/'BearCaveLauncher.exe').exists():

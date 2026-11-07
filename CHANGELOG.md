@@ -1,3 +1,9 @@
+## 0.3.15 — Launcher backups
+
+Successful updates keep the two newest previous installations in the launcher's Backups folder. The launcher also collects completed backups left by older updaters for the same installation.
+
+Client update journals, downloads and recovery files now live under the launcher's .bear-cave-launcher folder. Each client has its own records. Existing records migrate when the launcher opens with a configured client or when a client is selected.
+
 ## 0.3.14 — Windows update checks
 
 When Windows reports a missing local file during an HTTPS update request, the launcher retries through the Windows system curl client. Play continues after the version check succeeds. Update errors now identify the step that failed.

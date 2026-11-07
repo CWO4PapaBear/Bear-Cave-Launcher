@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import csv, hashlib, io, json, os, re, shutil, stat, subprocess, sys, uuid, zipfile
 from urllib.request import Request
 from .transport import urlopen
+from .storage import migrate, state_path, replace_client_file
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 from package import managed_path, safe_file, sha
@@ -155,10 +156,10 @@ def client_root(value,channel='ptr'):
 
 def state_dir(root,channel='ptr'):
     repository(channel)
-    path=root/'.bear-cave-launcher'
+    path=migrate(root)
     if path.is_symlink() or (hasattr(path,'is_junction') and path.is_junction()):
         raise ValueError('Linked launcher state is not allowed')
-    path.mkdir(exist_ok=True)
+    path.mkdir(parents=True,exist_ok=True)
     # Never follow a substituted local state file/directory during recovery.
     for item in path.rglob('*'):
         if item.is_symlink() or (hasattr(item,'is_junction') and item.is_junction()):
@@ -251,7 +252,7 @@ def recover(root,guard=ensure_closed,report=lambda message:None,channel='ptr'):
             else:
                 backup=stored_file(base/'backup',f['path'])
                 if sha(backup)!=f['before']: raise ValueError('Backup checksum mismatch')
-                temp=base/'restore.tmp';shutil.copy2(backup,temp);os.replace(temp,target)
+                temp=base/'restore.tmp';shutil.copy2(backup,temp);replace_client_file(temp,target,f['before'])
             report('Restored '+f['path'])
         if journal.get('previous_install') is not None:
             save_json(state/'installed.json',journal['previous_install'])
@@ -283,8 +284,14 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             needed=sum(c['bytes']+sum(f['bytes']+(safe_file(root,f['path']).stat().st_size if safe_file(root,f['path']).is_file() else 0) for f in c['files']) for c in parts)+(len(repaired)*2 if repaired else 0)
             needed+=sum(safe_file(root,name).stat().st_size for name in extras)
             if m.get('schema')==4:needed-=fullclient.prepare_retry(state,parts)
-            free=shutil.disk_usage(root).free
+            free=shutil.disk_usage(state).free
             if free<needed+128*1024**2: raise RuntimeError(f'Not enough free space for downloads and backups: {(needed+128*1024**2)/1024**3:.1f} GiB required, {free/1024**3:.1f} GiB available')
+            if state.stat().st_dev != root.stat().st_dev:
+                sizes=[(f['bytes'],safe_file(root,f['path'])) for part in parts for f in part['files']]
+                growth=sum(max(0,size-(path.stat().st_size if path.is_file() else 0)) for size,path in sizes)
+                largest=max([size for size,_ in sizes]+[len(repaired) if repaired else 0])
+                if shutil.disk_usage(root).free < growth+largest+128*1024**2:
+                    raise RuntimeError('Not enough free space on the game client drive for the update')
             tx=uuid.uuid4().hex;base=state/'transactions'/tx;base.mkdir(parents=True)
             stage=base/'stage';stage.mkdir();files=[]
             downloaded=0;download_total=sum(c['bytes'] for c in parts)
@@ -342,7 +349,7 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
                 if f['after'] is None:
                     report('Quarantining extra archive '+f['path']);target.unlink()
                 else:
-                    report('Installing '+f['path']);os.replace(stored_file(stage,f['path']),target)
+                    report('Installing '+f['path']);replace_client_file(stored_file(stage,f['path']),target,f['after'])
                 if (sha(target) if target.is_file() else None)!=f['after']: raise RuntimeError('Installed file verification failed')
                 progress('Installing',index,len(files))
             if m.get('schema')==4:
@@ -366,7 +373,7 @@ def install(root,m,download=fetch,guard=ensure_closed,report=lambda message:None
             return channel+' updated to '+m['version']+'. Ready to play.'
     except Exception:
         # Leave pending journal for explicit recovery if WoW started meanwhile.
-        pending=root/'.bear-cave-launcher/pending.json'
+        pending=state_path(root)/'pending.json'
         if pending.exists():
             try: recover(root,guard,report,channel)
             except Exception as recovery: report('Recovery required: '+str(recovery))

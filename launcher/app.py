@@ -44,6 +44,13 @@ class Application:
             restart=False
             try:
                 restart=selfupdate.startup(self.report,self.report_progress)
+                if not restart:
+                    try:
+                        for folder in set(self.clients.values()):
+                            if folder and Path(folder).is_dir():
+                                updater.migrate(Path(folder).resolve())
+                    except (OSError, ValueError) as error:
+                        self.error='Client update records could not be moved: '+str(error)
             finally:
                 self.launcher_updating=False;self.busy=False
                 if restart:
@@ -138,7 +145,7 @@ class Application:
         for channel,folder in self.clients.items():
             if channel!=self.channel and folder and root==Path(folder).resolve():
                 raise ValueError('Each realm must use a separate client folder')
-        marker=root/'.bear-cave-launcher/channel.json'
+        marker=updater.migrate(root)/'channel.json'
         if marker.exists() and updater.read_json(marker).get('channel')!=self.channel:
             raise ValueError('That client belongs to another realm.')
         self.client=str(root);self.manifest=None;self.changes=[];self.scan=None;self.baseline_stamp=None

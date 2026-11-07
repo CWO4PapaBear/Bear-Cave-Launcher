@@ -25,7 +25,7 @@ class Updater(unittest.TestCase):
         self.install()
         self.assertEqual((self.client/'WTF/private.txt').read_text(),'private')
         self.assertEqual(updater.changed(self.client,self.manifest),[])
-        backups=list((self.client/'.bear-cave-launcher/transactions').glob('*/backup/*'))
+        backups=list((updater.state_path(self.client)/'transactions').glob('*/backup/*'))
         self.assertEqual(backups[0].read_bytes(),original)
         self.assertIn('up to date',self.install())
     def test_active_game_blocks_all_installation(self):
@@ -45,7 +45,7 @@ class Updater(unittest.TestCase):
         with self.assertRaises(ValueError):updater.validate_manifest(manifest)
         with self.assertRaises(ValueError):updater.validate_manifest(self.manifest,'area52')
         updater.install(self.client,manifest,download=self.download,guard=self.guard,channel='area52')
-        self.assertEqual(updater.read_json(self.client/'.bear-cave-launcher/channel.json')['channel'],'area52')
+        self.assertEqual(updater.read_json(updater.state_path(self.client)/'channel.json')['channel'],'area52')
         self.assertEqual(updater.changed(self.client,manifest,'area52'),[])
         with self.assertRaises(ValueError):updater.state_dir(self.client,'ptr')
     def test_corrupt_archive_never_touches_client(self):
@@ -62,7 +62,7 @@ class Updater(unittest.TestCase):
         with self.assertRaises(OSError):self.install(report=report)
         self.assertEqual((self.client/'Interface/AddOns/HeroFreePick/HeroFreePick.lua').read_text(),'print("test")')
         self.assertFalse((self.client/'Interface/AddOns/HeroFreePick/New.lua').exists())
-        self.assertFalse((self.client/'.bear-cave-launcher/pending.json').exists())
+        self.assertFalse((updater.state_path(self.client)/'pending.json').exists())
     def test_interruption_recovery(self):
         count=0
         def stop(message):
@@ -71,7 +71,7 @@ class Updater(unittest.TestCase):
                 count+=1
                 if count==2:raise KeyboardInterrupt()
         with self.assertRaises(KeyboardInterrupt):self.install(report=stop)
-        self.assertTrue((self.client/'.bear-cave-launcher/pending.json').exists())
+        self.assertTrue((updater.state_path(self.client)/'pending.json').exists())
         updater.recover(self.client,guard=self.guard)
         self.assertEqual((self.client/'Interface/AddOns/HeroFreePick/HeroFreePick.lua').read_text(),'print("test")')
     def test_wrong_realm_and_zip_traversal_rejected(self):
