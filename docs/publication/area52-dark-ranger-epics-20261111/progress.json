@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-11",
+  "generated_at": "2026-11-11T17:50:33.022147-08:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 118,
+      "CERTIFIED": 368,
+      "NOT VERIFIED": 183,
+      "verified_percent": 17.6,
+      "certified_percent": 55.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 409,
+      "CERTIFIED": 72,
+      "NOT VERIFIED": 234,
+      "verified_percent": 57.2,
+      "certified_percent": 10.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2671,
+      "CERTIFIED": 59,
+      "NOT VERIFIED": 1092,
+      "verified_percent": 69.9,
+      "certified_percent": 1.5,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 3,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-dark-ranger-epics-20261111"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "b8ca07e27a08e98896e05400cae5c021b0ce7a3bc43acefc9e9e941a743c3137",
+    "certification": "440d5e3faef90b934e20450a236f2d548bf778ac90304e3dd36b8e9de247740d",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "a62dc6b60af6a9265ce440cdb2f39bb87a5d835688dbe0664a555477a19bc595",
+    "tester_database": "7daf1f11c50fafbb515214f5f0052bd1f04326835b12e5fbd0bbc1d0ff2780d1"
+  }
+}
