@@ -4,8 +4,8 @@ import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request
 from .transport import urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.16'
-BUILD=316
+VERSION='0.3.17'
+BUILD=317
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
@@ -136,7 +136,14 @@ def swap(work,root,check,restart):
             if source.is_symlink() or (source.exists() and (not source.is_dir() or source.is_junction())):
                 raise ValueError('Invalid persistent launcher directory: '+name)
             if source.exists():
-                source.rename(root/name)
+                destination = root/name
+                if destination.exists() or destination.is_symlink():
+                    from .backups import plain_tree
+                    plain_tree(destination)
+                    if not destination.is_dir():
+                        raise ValueError('Invalid staged launcher directory: '+name)
+                    destination.rename(work/('staged-'+name))
+                source.rename(destination)
                 carried.append(name)
         check(root);restart(root)
     except BaseException:

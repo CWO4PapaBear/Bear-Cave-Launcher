@@ -1,7 +1,8 @@
 """Packaged connection smoke test using synthetic files only; no network/game launch."""
 from pathlib import Path
 import shutil,tempfile,time,uuid
-from . import app,connection,updater
+from . import app,connection,updater,storage
+from unittest.mock import patch
 
 def connection_check():
     base=Path(tempfile.gettempdir()).resolve()
@@ -17,19 +18,23 @@ def connection_check():
         updater.latest=lambda:{'version':'self-test'}
         updater.changed=lambda root,manifest,channel='ptr':[]
         updater.ensure_closed=lambda:None # Only our non-executable fixture is accessed.
-        application=app.Application(work/'settings');application.select(str(client));application.start('check')
-        deadline=time.monotonic()+15
-        while application.busy and time.monotonic()<deadline:time.sleep(.05)
-        assert not application.busy and not application.error,application.error
-        host=connection.load(app.ROOT)
-        assert all(('SET realmList "'+host+'"') in path.read_text() for path in paths)
-        assert (client/'WTF/private.txt').read_text()=='preserved'
-        if connection.native_windows():assert 'SET gxApi "D3D9"' in paths[-1].read_text()
-        assert application.changes==[] and 'PTR connection configured.' in application.message
+        with patch.object(storage,'launcher_home',return_value=work/'fixture-launcher'):
+            _check_client(work,client,paths)
     finally:
         updater.latest,updater.changed,updater.ensure_closed=original
         assert work.resolve().parent==base and work.name.startswith('bear-launcher-selftest-')
         shutil.rmtree(work)
+
+def _check_client(work,client,paths):
+    application=app.Application(work/'settings');application.select(str(client));application.start('check')
+    deadline=time.monotonic()+15
+    while application.busy and time.monotonic()<deadline:time.sleep(.05)
+    assert not application.busy and not application.error,application.error
+    host=connection.load(app.ROOT)
+    assert all(('SET realmList "'+host+'"') in path.read_text() for path in paths)
+    assert (client/'WTF/private.txt').read_text()=='preserved'
+    if connection.native_windows():assert 'SET gxApi "D3D9"' in paths[-1].read_text()
+    assert application.changes==[] and 'PTR connection configured.' in application.message
 
 
 def cache_check():

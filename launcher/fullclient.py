@@ -36,7 +36,10 @@ def clear_downloads(state):
 
 def validate(m,repo):
     minimum = m.get('minimum_launcher_build')
-    if m.get('channel')!='area52' or minimum not in (307,316) or m.get('client_fixes'):
+    from .selfupdate import BUILD, VERSION
+    if type(minimum) is int and minimum > BUILD:
+        raise ValueError(f'This Area 52 update requires launcher build {minimum} or newer. Installed: {VERSION} (build {BUILD}). Update the launcher and try Play again.')
+    if m.get('channel')!='area52' or type(minimum) is not int or minimum not in (307,316,317) or m.get('client_fixes'):
         raise ValueError('Unsupported full client repair manifest')
     version=m.get('version','')
     if not isinstance(version,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}',version) or m.get('tag')!='area52-'+version:
@@ -69,7 +72,7 @@ def validate(m,repo):
             if url != prefix + asset:
                 release_root = f'https://github.com/{repo}/releases/download/area52-'
                 pattern = re.escape(release_root) + r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}/' + re.escape(asset)
-                if minimum != 316 or not re.fullmatch(pattern, url):
+                if minimum < 316 or not re.fullmatch(pattern, url):
                     raise ValueError('Invalid chunk URL')
             if type(chunk.get('bytes')) is not int or not 0<chunk['bytes']<=CHUNK_LIMIT:raise ValueError('Invalid chunk size')
             if not isinstance(chunk.get('sha256'),str) or not re.fullmatch('[0-9a-f]{64}',chunk['sha256']):raise ValueError('Invalid chunk checksum')
