@@ -27,7 +27,7 @@ class GitHub:
         if data is not None:
             args += ['--input', '-']
         result = subprocess.run(args, input=json.dumps(data) if data is not None else None,
-                                text=True, capture_output=True, timeout=120)
+                                text=True, encoding='utf-8', capture_output=True, timeout=120)
         if result.returncode:
             if missing and 'HTTP 404' in result.stderr:
                 return None
