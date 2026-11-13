@@ -19,6 +19,22 @@ def fixture():
     return manifest,payload
 
 class FullClientTests(unittest.TestCase):
+    def test_cross_release_chunks(self):
+        m, _ = fixture()
+        chunk = m['components'][0]['chunks'][0]
+        old = chunk['url'].replace('area52-full-test', 'area52-previous')
+        chunk['url'] = old
+        repo = 'CWO4PapaBear/Area52-FreePick-Client'
+        with self.assertRaises(ValueError):
+            fullclient.validate(m, repo)
+        m['minimum_launcher_build'] = 316
+        fullclient.validate(m, repo)
+        for unsafe in (old.replace(repo, 'other/repo'), old + '?x', old.replace('area52-previous', '..'),
+                       old.replace(chunk['asset'], 'other.bin')):
+            chunk['url'] = unsafe
+            with self.assertRaises(ValueError):
+                fullclient.validate(m, repo)
+
     def client(self,root,m):
         for row in m['baseline']:
             p=root/row['path'];p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'old')

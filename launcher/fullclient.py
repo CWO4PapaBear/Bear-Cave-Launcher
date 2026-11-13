@@ -35,8 +35,9 @@ def clear_downloads(state):
     if not any(cache.iterdir()):cache.rmdir()
 
 def validate(m,repo):
-    if m.get('channel')!='area52' or m.get('minimum_launcher_build')!=307 or m.get('client_fixes'):
-        raise ValueError('Full client repair requires launcher 0.3.7')
+    minimum = m.get('minimum_launcher_build')
+    if m.get('channel')!='area52' or minimum not in (307,316) or m.get('client_fixes'):
+        raise ValueError('Unsupported full client repair manifest')
     version=m.get('version','')
     if not isinstance(version,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}',version) or m.get('tag')!='area52-'+version:
         raise ValueError('Invalid full client release identity')
@@ -62,7 +63,14 @@ def validate(m,repo):
         count=0
         for index,chunk in enumerate(chunks):
             asset=f'{cid}-{index:03d}.bin'
-            if chunk.get('asset')!=asset or chunk.get('url')!=prefix+asset:raise ValueError('Invalid chunk URL')
+            url = chunk.get('url')
+            if chunk.get('asset') != asset or not isinstance(url, str):
+                raise ValueError('Invalid chunk URL')
+            if url != prefix + asset:
+                release_root = f'https://github.com/{repo}/releases/download/area52-'
+                pattern = re.escape(release_root) + r'[A-Za-z0-9][A-Za-z0-9._-]{0,70}/' + re.escape(asset)
+                if minimum != 316 or not re.fullmatch(pattern, url):
+                    raise ValueError('Invalid chunk URL')
             if type(chunk.get('bytes')) is not int or not 0<chunk['bytes']<=CHUNK_LIMIT:raise ValueError('Invalid chunk size')
             if not isinstance(chunk.get('sha256'),str) or not re.fullmatch('[0-9a-f]{64}',chunk['sha256']):raise ValueError('Invalid chunk checksum')
             count+=chunk['bytes']
