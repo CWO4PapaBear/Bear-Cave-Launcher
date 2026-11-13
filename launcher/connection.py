@@ -37,6 +37,15 @@ def load(root,channel='ptr'):
     if not path.is_file() and channel=='area52':
         # Area 52 shares the configured PTR host, with its own auth port.
         # Explicit Area 52 settings above retain priority for local testing.
+        if not any((root / relative).exists() for relative in ('connection.json','local/connection.json')):
+            catalog = root / 'endpoint-migrations.json'
+            if catalog.is_file():
+                default = json.loads(catalog.read_text(encoding='utf-8')).get('area52_default')
+                if default is not None:
+                    endpoint = address(default)
+                    if endpoint.partition(':')[2] != '3725':
+                        raise ValueError('Invalid default Area 52 auth port')
+                    return route(root, channel, endpoint)
         return route(root,channel,load(root,'ptr').split(':',1)[0]+':3725')
     if not path.is_file():
         raise ValueError('This launcher package has no PTR connection settings. Obtain the configured launcher from the server owner.')

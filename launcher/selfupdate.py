@@ -4,8 +4,8 @@ import hashlib,json,os,re,shutil,stat,subprocess,sys,time,uuid,zipfile
 from urllib.request import Request
 from .transport import urlopen
 from .updater import fetch,REPOSITORY
-VERSION='0.3.17'
-BUILD=317
+VERSION='0.3.18'
+BUILD=318
 URL=f'https://raw.githubusercontent.com/{REPOSITORY}/main/channels/launcher-win32.json'
 MAX_ZIP=200*1024**2
 MAX_UNPACKED=800*1024**2
