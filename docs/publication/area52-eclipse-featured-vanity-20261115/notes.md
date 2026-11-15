@@ -1,0 +1,1 @@
+Druid of the Eclipse's nine Mystic Enchants are Verified. Saved Featured Build equipment updates the Wardrobe set, Character Creation preview, and reward catalog. The mount picker recognizes matching Vanity mounts and enforces ground and flying slots.
