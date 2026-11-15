@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-15",
+  "generated_at": "2026-11-15T09:14:59.892012-08:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 132,
+      "CERTIFIED": 368,
+      "NOT VERIFIED": 169,
+      "verified_percent": 19.7,
+      "certified_percent": 55.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 419,
+      "CERTIFIED": 72,
+      "NOT VERIFIED": 224,
+      "verified_percent": 58.6,
+      "certified_percent": 10.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2676,
+      "CERTIFIED": 59,
+      "NOT VERIFIED": 1087,
+      "verified_percent": 70.0,
+      "certified_percent": 1.5,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-wardrobe-incarnation-previews-20261115"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "2433b7267df516073e76453fc83516da8c9d16d48942bd4a48c74feba10b113f",
+    "certification": "b501a16843ca6d484835035287c1b1909be4659f8233b2442070f86040c3b6c7",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "8ab15d8bc35de5bbf9e74afecbd82675154e8e485e93aecdef46d8c0d6adaf44",
+    "tester_database": "7daf1f11c50fafbb515214f5f0052bd1f04326835b12e5fbd0bbc1d0ff2780d1"
+  }
+}
