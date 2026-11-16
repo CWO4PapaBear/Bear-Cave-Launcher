@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-15",
+  "generated_at": "2026-11-15T20:27:27.601935-08:00",
+  "timezone": "America/Los_Angeles",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 132,
+      "CERTIFIED": 368,
+      "NOT VERIFIED": 169,
+      "verified_percent": 19.7,
+      "certified_percent": 55.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 419,
+      "CERTIFIED": 72,
+      "NOT VERIFIED": 224,
+      "verified_percent": 58.6,
+      "certified_percent": 10.1,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2683,
+      "CERTIFIED": 59,
+      "NOT VERIFIED": 1080,
+      "verified_percent": 70.2,
+      "certified_percent": 1.5,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "counting_rule": "Unique catalog entries; Verified and Certified are mutually exclusive; tester certification takes precedence.",
+  "deployed_packages": [
+    "area52-creature-spawn-restoration-20261115"
+  ],
+  "snapshot_kind": "deployed",
+  "source_hashes": {
+    "status": "af0a377ff85517629c799466e79bbc1d4d8fc3259dc1cf62dcd75982f0c81030",
+    "certification": "b812d91ff0f3646c5c7404ecfb8412022837cb5e6124626cbf10622d61b1622e",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_published_snapshot": "68ebb8e5eec125c43326b3c79157a66efe35d2f10cdcc930689103e94239dd1d",
+    "tester_database": "7daf1f11c50fafbb515214f5f0052bd1f04326835b12e5fbd0bbc1d0ff2780d1"
+  }
+}
