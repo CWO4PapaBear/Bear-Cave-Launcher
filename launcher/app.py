@@ -15,6 +15,8 @@ class Application:
         self.progress=0;self.progress_phase='Ready';self.operation=None
         self.config=self.directory/'settings.json'
         settings=updater.read_json(self.config) if self.config.exists() else {}
+        self.environment=settings.get('environment','cloud')
+        if self.environment not in ('cloud','development'):self.environment='cloud'
         self.channel=settings.get('channel','ptr')
         if self.channel not in ('ptr','area52'):self.channel='ptr'
         self.clients={key:settings.get(key+'_client','') for key in ('ptr','area52')}
@@ -25,10 +27,12 @@ class Application:
         self.launcher_updating=False
         self.close_for_update=None
         self.scan=None
+        from .realm_status import Monitor
+        self.realm_monitor=Monitor(ROOT)
 
     def status(self):
         from .selfupdate import VERSION
-        return dict(channel=self.channel,channel_ready=self.channel=='ptr' or self.area52_ready(),client=self.client,busy=self.busy,message=self.message,error=self.error,
+        return dict(realm_status=self.realm_monitor.read(self.environment),environment=self.environment,channel=self.channel,channel_ready=self.channel=='ptr' or self.area52_ready(),client=self.client,busy=self.busy,message=self.message,error=self.error,
                     launcher_updating=self.launcher_updating,changes=self.changes,version=self.manifest['version'] if self.manifest else None,
                     launcher_version=VERSION,discord_ready=bool(self.discord_url()),progress=self.progress,progress_phase=self.progress_phase)
 
@@ -44,6 +48,13 @@ class Application:
             restart=False
             try:
                 restart=selfupdate.startup(self.report,self.report_progress)
+                if not restart:
+                    try:
+                        for folder in set(self.clients.values()):
+                            if folder and Path(folder).is_dir():
+                                updater.migrate(Path(folder).resolve())
+                    except (OSError, ValueError) as error:
+                        self.error='Client update records could not be moved: '+str(error)
             finally:
                 self.launcher_updating=False;self.busy=False
                 if restart:
@@ -55,11 +66,23 @@ class Application:
         threading.Thread(target=worker,daemon=True).start()
 
     def area52_ready(self):
-        try:return bool(connection.load(ROOT,'area52'))
+        try:return bool(self.realm())
         except ValueError:return False
 
     def realm(self):
-        return connection.load(ROOT) if self.channel=='ptr' else connection.load(ROOT,'area52')
+        return connection.load(ROOT) if self.channel=='ptr' else ('129.121.172.245:3727' if self.environment=='cloud' else '127.0.0.1:3727')
+
+    def change_environment(self, value):
+        with self.mutex:
+            if self.busy:raise ValueError('Wait for the current operation')
+            if value not in ('cloud', 'development'):raise ValueError('Unknown server environment')
+            previous = self.environment
+            self.environment = value
+            try:self.save_settings()
+            except Exception:
+                self.environment = previous
+                raise
+            self.message = ('Cloud' if value == 'cloud' else 'Development') + ' selected. The connection is applied before launch.'
 
     def configure_realm(self,root,state):
         if self.channel=='ptr':connection.configure(root,state,self.realm(),updater.ensure_closed)
@@ -81,7 +104,7 @@ class Application:
 
     def open_client_download(self):
         if self.channel!='area52':raise ValueError('Base-client link is Area 52 only')
-        if not webbrowser.open('https://discord.gg/RAkxswQ7Gx',new=2):raise RuntimeError('Could not open your browser')
+        if not webbrowser.open('https://coa-development.org/#realm',new=2):raise RuntimeError('Could not open your browser')
 
     def open_discord(self):
         url=self.discord_url()
@@ -116,7 +139,7 @@ class Application:
 
     def save_settings(self):
         self.clients[self.channel]=self.client
-        updater.save_json(self.config,dict(channel=self.channel,**{key+'_client':value for key,value in self.clients.items()}))
+        updater.save_json(self.config,dict(environment=self.environment,channel=self.channel,**{key+'_client':value for key,value in self.clients.items()}))
 
     def report(self,text): self.message=text
 
@@ -138,7 +161,7 @@ class Application:
         for channel,folder in self.clients.items():
             if channel!=self.channel and folder and root==Path(folder).resolve():
                 raise ValueError('Each realm must use a separate client folder')
-        marker=root/'.bear-cave-launcher/channel.json'
+        marker=updater.migrate(root)/'channel.json'
         if marker.exists() and updater.read_json(marker).get('channel')!=self.channel:
             raise ValueError('That client belongs to another realm.')
         self.client=str(root);self.manifest=None;self.changes=[];self.scan=None;self.baseline_stamp=None
@@ -310,7 +333,7 @@ def create_server(app,port=0):
             self.respond(200,body,ctype)
         def do_POST(self):
             route=self.route()
-            if route not in ('api/base-client','api/discord','api/channel','api/browse','api/select','api/check','api/update','api/recover','api/play'):
+            if route not in ('api/environment','api/base-client','api/discord','api/channel','api/browse','api/select','api/check','api/update','api/recover','api/play'):
                 return self.respond(403,dict(error='Invalid launcher action'))
             try:
                 size=int(self.headers.get('Content-Length','0'))
@@ -318,7 +341,8 @@ def create_server(app,port=0):
                     raise ValueError('Invalid request')
                 data=json.loads(self.rfile.read(size))
                 if app.launcher_updating:raise ValueError('Wait for the launcher update to finish')
-                if route=='api/base-client':app.open_client_download()
+                if route=='api/environment':app.change_environment(data['environment'])
+                elif route=='api/base-client':app.open_client_download()
                 elif route=='api/discord':app.open_discord()
                 elif route=='api/channel':app.change_channel(data['channel'])
                 elif route=='api/select':app.select(data['path'])
@@ -331,6 +355,8 @@ def create_server(app,port=0):
 def main(smoke_dir=None):
     import webview
     app=Application(smoke_dir)
+    if smoke_dir:
+        app.realm_monitor.read=lambda environment: {"state":"online","players":4}
     if not smoke_dir:app.prepare_launcher_update()
     server,url=create_server(app)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
@@ -378,6 +404,11 @@ def main(smoke_dir=None):
         if smoke_dir:
             def loaded():
                 result=window.evaluate_js("({title:document.title,browse:!!document.getElementById('client-browse'),play:!!document.querySelector('[data-action=play]')})")
+                app.channel='area52'
+                window.evaluate_js('render('+json.dumps(app.status())+')')
+                result['realm_label']=window.evaluate_js("document.querySelector('[data-channel=area52] strong').textContent")
+                result['realm_status']=window.evaluate_js("document.getElementById('realm-live-text').textContent")
+                result['client_button']=window.evaluate_js("document.getElementById('base-client-download').textContent")
                 window.show()
                 import time
                 samples = []

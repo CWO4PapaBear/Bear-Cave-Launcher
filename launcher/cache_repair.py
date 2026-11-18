@@ -4,6 +4,7 @@ from pathlib import Path
 import struct
 import tempfile
 from . import updater
+from .creature_catalog import NON_CRITTERS
 
 
 def parse_cache(data):
@@ -96,11 +97,11 @@ def repair(root, channel, report=lambda message: None):
                 continue
             before = cache.read_bytes()
             header, rows, tail = parse_cache(before)
-            target = next((record for entry, record in rows if entry == 22313), None)
-            # Unknown/current metadata is not evidence of this specific defect.
-            if target is None or metadata(target) != (0, 8):
+            remaining = [(entry, record) for entry, record in rows
+                         if entry not in NON_CRITTERS or metadata(record) != (0, 8)]
+            removed = len(rows) - len(remaining)
+            if not removed:
                 continue
-            remaining = [(entry, record) for entry, record in rows if entry != 22313]
             after = header + b''.join(record for _, record in remaining) + tail
             if parse_cache(after) != (header, remaining, tail):
                 raise ValueError('Cache preservation check failed')
@@ -108,7 +109,7 @@ def repair(root, channel, report=lambda message: None):
                 safe_path(root, cache)
                 updater.ensure_closed()
             apply(cache, before, after, guard)
-            repaired += 1
+            repaired += removed
     if repaired:
-        report('Repaired Rumbling Earth-Heart targeting cache; other creature records preserved.')
+        report(f'Refreshed {repaired} stale Area 52 creature targeting records.')
     return repaired

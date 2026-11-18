@@ -1,7 +1,8 @@
 """Packaged connection smoke test using synthetic files only; no network/game launch."""
 from pathlib import Path
 import shutil,tempfile,time,uuid
-from . import app,connection,updater
+from . import app,connection,updater,storage
+from unittest.mock import patch
 
 def connection_check():
     base=Path(tempfile.gettempdir()).resolve()
@@ -17,19 +18,23 @@ def connection_check():
         updater.latest=lambda:{'version':'self-test'}
         updater.changed=lambda root,manifest,channel='ptr':[]
         updater.ensure_closed=lambda:None # Only our non-executable fixture is accessed.
-        application=app.Application(work/'settings');application.select(str(client));application.start('check')
-        deadline=time.monotonic()+15
-        while application.busy and time.monotonic()<deadline:time.sleep(.05)
-        assert not application.busy and not application.error,application.error
-        host=connection.load(app.ROOT)
-        assert all(('SET realmList "'+host+'"') in path.read_text() for path in paths)
-        assert (client/'WTF/private.txt').read_text()=='preserved'
-        if connection.native_windows():assert 'SET gxApi "D3D9"' in paths[-1].read_text()
-        assert application.changes==[] and 'PTR connection configured.' in application.message
+        with patch.object(storage,'launcher_home',return_value=work/'fixture-launcher'):
+            _check_client(work,client,paths)
     finally:
         updater.latest,updater.changed,updater.ensure_closed=original
         assert work.resolve().parent==base and work.name.startswith('bear-launcher-selftest-')
         shutil.rmtree(work)
+
+def _check_client(work,client,paths):
+    application=app.Application(work/'settings');application.select(str(client));application.start('check')
+    deadline=time.monotonic()+15
+    while application.busy and time.monotonic()<deadline:time.sleep(.05)
+    assert not application.busy and not application.error,application.error
+    host=connection.load(app.ROOT)
+    assert all(('SET realmList "'+host+'"') in path.read_text() for path in paths)
+    assert (client/'WTF/private.txt').read_text()=='preserved'
+    if connection.native_windows():assert 'SET gxApi "D3D9"' in paths[-1].read_text()
+    assert application.changes==[] and 'PTR connection configured.' in application.message
 
 
 def cache_check():
@@ -41,7 +46,7 @@ def cache_check():
         return struct.pack('<II',entry,len(body))+body
     header=b'BOMW'+struct.pack('<I',12340)+bytes(16)
     keep=row(17157,512,4);bad=row(22313,0,8)
-    before=header+bad+keep+bytes(8)
+    before=header+bad+row(15648,0,8)+row(15271,0,8)+keep+bytes(8)
     with tempfile.TemporaryDirectory(prefix='bear-cache-selftest-') as directory:
         root=Path(directory);cache=root/'Cache/WDB/enUS/Area 52 - Free-Pick/creaturecache.wdb'
         cache.parent.mkdir(parents=True);cache.write_bytes(before)
@@ -51,7 +56,7 @@ def cache_check():
             updater.ensure_closed=lambda:None
             assert cache_repair.repair(root,'ptr')==0
             assert cache.read_bytes()==before
-            assert cache_repair.repair(root,'area52')==1
+            assert cache_repair.repair(root,'area52')==3
             assert cache.read_bytes()==header+keep+bytes(8)
             assert next(cache.parent.glob('*.backup-*')).read_bytes()==before
             assert cache_repair.repair(root,'area52')==0

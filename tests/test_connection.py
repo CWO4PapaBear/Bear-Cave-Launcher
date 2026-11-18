@@ -1,4 +1,5 @@
 from pathlib import Path
+import tempfile
 import unittest,sys,uuid,shutil
 from contextlib import contextmanager
 from unittest.mock import patch
@@ -9,7 +10,9 @@ from launcher import connection
 def test_directory():
     base=Path(__file__).resolve().parents[1]/'local/test-runs';base.mkdir(parents=True,exist_ok=True)
     root=base/uuid.uuid4().hex;root.mkdir()
-    try:yield root
+    try:
+        with tempfile.TemporaryDirectory() as folder, patch('launcher.storage.launcher_home',return_value=Path(folder).resolve()):
+            yield root
     finally:
         assert root.resolve().parent==base.resolve()
         shutil.rmtree(root)

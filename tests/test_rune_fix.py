@@ -21,7 +21,7 @@ class RuneRepair(Updater):
         self.assertIn('rune-recovery-client-fix',[x['id'] for x in updater.pending_changes(self.client,self.manifest)])
         self.install()
         self.assertEqual((self.client/'Wow.exe').read_bytes(),self.fixed)
-        backups=list((self.client/'.bear-cave-launcher/transactions').glob('*/backup/*'))
+        backups=list((updater.state_path(self.client)/'transactions').glob('*/backup/*'))
         self.assertIn(self.original,[p.read_bytes() for p in backups])
         self.assertEqual(updater.pending_changes(self.client,self.manifest),[])
         self.assertIn('up to date',self.install())

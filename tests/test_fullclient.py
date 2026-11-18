@@ -19,6 +19,22 @@ def fixture():
     return manifest,payload
 
 class FullClientTests(unittest.TestCase):
+    def test_cross_release_chunks(self):
+        m, _ = fixture()
+        chunk = m['components'][0]['chunks'][0]
+        old = chunk['url'].replace('area52-full-test', 'area52-previous')
+        chunk['url'] = old
+        repo = 'CWO4PapaBear/Area52-FreePick-Client'
+        with self.assertRaises(ValueError):
+            fullclient.validate(m, repo)
+        m['minimum_launcher_build'] = 316
+        fullclient.validate(m, repo)
+        for unsafe in (old.replace(repo, 'other/repo'), old + '?x', old.replace('area52-previous', '..'),
+                       old.replace(chunk['asset'], 'other.bin')):
+            chunk['url'] = unsafe
+            with self.assertRaises(ValueError):
+                fullclient.validate(m, repo)
+
     def client(self,root,m):
         for row in m['baseline']:
             p=root/row['path'];p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'old')
@@ -33,13 +49,13 @@ class FullClientTests(unittest.TestCase):
                 target.write_bytes(payload[url])
             with self.assertRaises(OSError):updater.install(root,m,channel='area52',download=interrupted,guard=lambda:None)
             self.assertEqual((root/'Ascension.exe').read_bytes(),b'old')
-            self.assertFalse((root/'.bear-cave-launcher/pending.json').exists())
+            self.assertFalse((updater.state_path(root)/'pending.json').exists())
             resumed=[];progress=[]
             def download(url,target,**kw):resumed.append(url);target.write_bytes(payload[url])
             updater.install(root,m,channel='area52',download=download,guard=lambda:None,progress=lambda *args:progress.append(args))
             self.assertNotIn(calls[0],resumed)
             self.assertEqual(updater.changed(root,m,'area52'),[])
-            self.assertFalse((root/'.bear-cave-launcher/downloads').exists())
+            self.assertFalse((updater.state_path(root)/'downloads').exists())
             self.assertEqual((root/'WTF/Config.wtf').read_bytes(),b'personal')
             self.assertEqual(progress[-1],('Installing',4,4))
             self.assertEqual(progress[-5][1],sum(c['bytes'] for c in m['components']))
@@ -58,7 +74,7 @@ class FullClientTests(unittest.TestCase):
                 if message=='Installing Extensions.dll':raise OSError('locked file')
             with self.assertRaises(OSError):updater.install(root,m,channel='area52',download=lambda url,target,**kw:target.write_bytes(payload[url]),guard=lambda:None,report=report)
             for f in m['baseline']:self.assertEqual((root/f['path']).read_bytes(),b'old')
-            self.assertFalse((root/'.bear-cave-launcher/pending.json').exists())
+            self.assertFalse((updater.state_path(root)/'pending.json').exists())
 
     def test_incomplete_unsafe_and_cross_realm_manifests(self):
         m,_=fixture()
@@ -91,7 +107,7 @@ class FullClientTests(unittest.TestCase):
             self.assertEqual((root/'Ascension.exe').read_bytes(),b'old')
             updater.install(root,m,channel='area52',download=lambda url,target,**kw:target.write_bytes(payload[url]),guard=lambda:None)
             self.assertFalse((root/'Data/extra-a.MPQ').exists())
-            backups=list((root/'.bear-cave-launcher/transactions').glob('*/backup/*'))
+            backups=list((updater.state_path(root)/'transactions').glob('*/backup/*'))
             self.assertTrue(any(p.read_bytes()==b'custom' for p in backups))
 
     def test_files_above_four_gib_are_representable(self):

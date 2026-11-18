@@ -8,6 +8,13 @@ if __name__ == '__main__':
     elif '--desktop-smoke-test' in sys.argv:
         from pathlib import Path
         main(Path(sys.argv[sys.argv.index('--desktop-smoke-test')+1]).resolve())
+    elif '--status-self-test' in sys.argv:
+        from pathlib import Path
+        import json
+        from launcher.app import ROOT
+        from launcher.realm_status import Monitor
+        monitor=Monitor(ROOT);monitor.refresh('cloud')
+        Path(sys.argv[sys.argv.index('--status-self-test')+1]).write_text(json.dumps(monitor.read('cloud')))
     elif '--self-test' in sys.argv:
         import webview
         import tkinter as tk
@@ -28,6 +35,12 @@ if __name__ == '__main__':
             connection_check()
         from launcher.selftest import cache_check
         cache_check()
+        if (ROOT/'endpoint-migrations.json').exists():
+            import json
+            from launcher.connection import route
+            for entry in json.loads((ROOT/'endpoint-migrations.json').read_text())['routes']:
+                assert route(ROOT,entry['channel'],entry['before'])==entry['after']
+                assert route(ROOT,entry['channel'],'127.0.0.1:3725')=='127.0.0.1:3725'
         print('LAUNCHER BUNDLE OK: '+REPOSITORY)
     else:
         try:

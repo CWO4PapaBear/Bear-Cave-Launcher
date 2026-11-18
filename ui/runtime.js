@@ -25,20 +25,36 @@ footer.querySelectorAll('button').forEach(b=>b.remove());
 const troubleshooting=document.createElement('details');
 troubleshooting.innerHTML='<summary>Troubleshooting</summary>';
 footer.appendChild(troubleshooting);
+const environmentLabel=document.createElement('label');
+environmentLabel.textContent='Server environment ';
+const environmentSelect=document.createElement('select');
+environmentSelect.setAttribute('aria-label','Server environment');
+environmentSelect.innerHTML='<option value="cloud">Cloud</option><option value="development">Development (local)</option>';
+environmentSelect.style.cssText='background:#091929;color:#efd08b;padding:8px;margin:8px;border:1px solid #786035';
+environmentLabel.appendChild(environmentSelect);troubleshooting.appendChild(environmentLabel);
+environmentSelect.addEventListener('change',()=>send('environment',{environment:environmentSelect.value}));
 for(const [action,label] of [['check','Check / Repair'],['recover','Recover'],['play','Play']]){
  const button=document.createElement('button');button.className='action'+(action==='play'?' primary':'');button.textContent=label;button.dataset.action=action;
  button.addEventListener('click',()=>send(action));(action==='play'?footer:troubleshooting).appendChild(button);
 }
 const alpha=document.createElement('button');alpha.className='realm';alpha.dataset.channel='area52';
-alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Dev</strong><small>Alpha Dev - COACore client</small>';
+alpha.innerHTML='<strong>Area 52 - Free Pick Alpha Test</strong><small id="realm-live" role="status"><span id="realm-light" aria-hidden="true"></span><span id="realm-live-text">Checking…</span></small>';
 document.querySelector('.side-note').before(alpha);
 for(const channel of ['ptr','area52']){
  document.querySelector('[data-channel="'+channel+'"]').addEventListener('click',()=>send('channel',{channel}));
 }
-const baseClient=document.createElement('button');baseClient.type='button';baseClient.className='action';baseClient.id='base-client-download';baseClient.textContent='Get COACore Client on Discord';baseClient.hidden=true;panels[1].appendChild(baseClient);baseClient.addEventListener('click',()=>send('base-client'));
+const baseClient=document.createElement('button');baseClient.type='button';baseClient.className='action';baseClient.id='base-client-download';baseClient.textContent='Get COACore Client';baseClient.hidden=true;panels[1].appendChild(baseClient);baseClient.addEventListener('click',()=>send('base-client'));
 let lastState=null;
 function render(state){
  lastState=state;
+ const live=state.realm_status||{state:'unknown'};
+ const online=live.state==='online';
+ document.getElementById('realm-light').style.cssText='display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:'+(online?'#54d77a':live.state==='offline'?'#f05c5c':'#c7a751')+';box-shadow:0 0 6px currentColor';
+ document.getElementById('realm-live-text').textContent=online?'Online - '+(Number.isInteger(live.players)?live.players+' Players Online':'Player count unavailable'):live.state==='offline'?'Offline':'Status unavailable';
+
+ environmentSelect.value=state.environment;
+ environmentSelect.disabled=state.busy;
+ environmentLabel.hidden=state.channel!=='area52';
  const percentage=Math.max(0,Math.min(100,Number(state.progress)||0));
  document.getElementById('update-progress-fill').style.width=percentage+'%';
  updateProgress.setAttribute('aria-valuenow',String(Math.round(percentage)));
@@ -51,7 +67,7 @@ function render(state){
  document.getElementById('base-client-download').hidden=!area52;
  document.querySelectorAll('[data-channel]').forEach(b=>{b.classList.toggle('selected',b.dataset.channel===state.channel);b.disabled=state.busy||b.dataset.channel==='main';});
  document.getElementById('badge').textContent=area52?'PRIVATE ALPHA':'PUBLIC TEST REALM';
- document.getElementById('title').textContent=area52?'Area 52 - Free Pick Alpha Dev':'Help shape the next adventure.';
+ document.getElementById('title').textContent=area52?'Area 52 - Free Pick Alpha Test':'Help shape the next adventure.';
  document.getElementById('description').textContent=area52?'Test Season 9 Free Pick progression, builds, and the shared world.':'Explore new abilities, companions and character builds.';
  panels[0].querySelector('h3').textContent=area52?'Area 52 updates':'PTR updates';
  panels[1].querySelector('h3').textContent=area52?'Area 52 client folder':'PTR client folder';

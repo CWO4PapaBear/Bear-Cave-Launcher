@@ -29,7 +29,7 @@ class ChannelTests(unittest.TestCase):
                 app.start('play')
             self.assertEqual(app.error,'')
             self.assertEqual(launch.call_args.args[0][-1],str(client/'Ascension.exe'))
-            self.assertIn('127.0.0.1:3725',(client/'realmlist.wtf').read_text())
+            self.assertIn('129.121.172.245:3727',(client/'realmlist.wtf').read_text())
             self.assertFalse((client/'WTF/Config.wtf').exists())
     def test_discord_opens_shared_invite_for_each_channel(self):
         with test_directory() as directory:
