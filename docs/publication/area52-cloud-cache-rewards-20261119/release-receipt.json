@@ -1,0 +1,14 @@
+{
+  "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+  "branch": "fix/area52-cache-cloud-20261119",
+  "commit": "88198c6735f18610bd5dd8efa4c1a77bbd3df9c8",
+  "base": "c3904b6a",
+  "server_sha256": "4b7234443ce5d9cd7b20360ed27b06fc4c8c3496e05d8894e6ae183a3971bbe4",
+  "callboard": "Accepted combined cache repairs; preserve pending rewards and player state",
+  "native_checks": {
+    "build": "passed",
+    "unit": "passed",
+    "pre_gameplay_startup": "passed"
+  },
+  "client_feed_commit": "2143d594f1f4daedde80a24e485645cc19b0e0b2"
+}

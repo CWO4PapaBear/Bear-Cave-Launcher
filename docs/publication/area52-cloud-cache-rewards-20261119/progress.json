@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "reporting_date": "2026-11-19",
+  "generated_at": "2026-11-19T13:49:09.645729-08:00",
+  "timezone": "America/Los_Angeles",
+  "snapshot_kind": "deployed",
+  "deployed_packages": [
+    "area52-cloud-cache-rewards-20261119"
+  ],
+  "counting_rule": "Unique catalog entries; tester certification takes precedence; Verified and Certified mutually exclusive.",
+  "categories": {
+    "Abilities": {
+      "Total": 669,
+      "VERIFIED": 133,
+      "CERTIFIED": 368,
+      "NOT VERIFIED": 168,
+      "verified_percent": 19.9,
+      "certified_percent": 55.0,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Talents": {
+      "Total": 715,
+      "VERIFIED": 422,
+      "CERTIFIED": 73,
+      "NOT VERIFIED": 220,
+      "verified_percent": 59.0,
+      "certified_percent": 10.2,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    },
+    "Mystic Enchants": {
+      "Total": 3822,
+      "VERIFIED": 2681,
+      "CERTIFIED": 65,
+      "NOT VERIFIED": 1076,
+      "verified_percent": 70.1,
+      "certified_percent": 1.7,
+      "delta": {
+        "Total": 0,
+        "VERIFIED": 0,
+        "CERTIFIED": 0
+      }
+    }
+  },
+  "source_hashes": {
+    "status": "dff23e2e70125f0d7ad0493ccb0be5a7fd1597148382f9629f8aa1dcab67bc0d",
+    "tester_certifications": "48d7fff7099a5acadc6b3337af99a76e59217be9b8a9daf2a3933daa54013242",
+    "classification_audit": "9b6dc2351febca3018ff3a9fe94f19370342ef59b31f9578cf5094ef68b15433",
+    "previous_snapshot": "70360dfb879b3d0d296a6d6cbf2a99768509d1a78fd20a20686793e3e3dfc719"
+  }
+}
