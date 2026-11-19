@@ -1,0 +1,14 @@
+{
+  "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+  "branch": "release/area52-cloud-defias-20261119",
+  "commit": "5e36843cb9968b6d3993f6adf7791ea82d81b7d7",
+  "base": "e27a8899f3280e9e0bc8492f722bbb4a1a1fcef9",
+  "server_sha256": "60ea258901c7ed820a3e044a56f8f9d4fa5d7e1841062027280cfc27705d757f",
+  "callboard": "Excluded; preserve Cloud baseline",
+  "native_checks": {
+    "build": "passed",
+    "unit": "passed",
+    "pre_gameplay_startup": "passed"
+  },
+  "client_feed_commit": "f198a3aff84ac72e70b0f520db01647ffe81ed49"
+}
