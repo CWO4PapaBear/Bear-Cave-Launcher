@@ -1,0 +1,15 @@
+{
+  "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+  "branch": "fix/area52-development-bundle-20261124",
+  "commit": "c40b867cdebd2fb328e9f95624088cd4e556ac8d",
+  "base": "4c0e3508807244ba33500c9dbb416dac4d950f13",
+  "server_sha256": "f1c6a25b17a0ae1a204ef9d7c1fe41dae3bed1d5ec629bf60207ef14a4fcfb43",
+  "scope": "Reviewed Development repair bundle; preserve existing Cloud caches and player state",
+  "pr": "https://github.com/CWO4PapaBear/azerothcore-wotlk-coa/pull/120",
+  "native_checks": {
+    "build": "passed",
+    "unit": "passed",
+    "authenticated_runtime_readback": "passed"
+  },
+  "client_feed_commit": "baf136f36937dc4afffe8508fe99f29ca116c62f"
+}
