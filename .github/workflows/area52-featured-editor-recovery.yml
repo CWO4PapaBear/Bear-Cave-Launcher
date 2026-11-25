@@ -26,5 +26,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: featured-editor-recovery-receipt
-          path: discord-receipt.json
+          path: |
+            discord-receipt.json
+            recovery-journals/
           if-no-files-found: ignore

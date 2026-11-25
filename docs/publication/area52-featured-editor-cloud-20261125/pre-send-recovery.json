@@ -10,5 +10,6 @@
     "image_sha256": "ee6218642f5e3387080f0d0984ee5ec913b8a0bb729ae2177b2f075c5d209b7e"
   },
   "failed_run": 45651671904,
-  "reason": "Workflow log shows uncaught GitHub error reserving daily progress at announce_package.py line 63; execution did not reach Discord POST at line 79. Original intent preserved. One-time recovery guard prevents replay."
+  "second_failed_run": 45652081321,
+  "reason": "Original workflow failed reserving daily progress before Discord POST. First recovery failed reserving its guard before calling deliver. Both complete failure logs were reviewed. No Discord send was reached. Original intent preserved; journaled Git-data writes replace failing Contents PUT calls. One-time r2 guard prevents replay."
 }
