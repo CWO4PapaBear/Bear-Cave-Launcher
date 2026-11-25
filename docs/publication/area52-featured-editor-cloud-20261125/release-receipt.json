@@ -1,0 +1,15 @@
+{
+  "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+  "branch": "fix/area52-featured-editor-cloud-20261125",
+  "commit": "f6aa9ecb40552071dab2df5926e5bbfe64695bfe",
+  "base": "46d0ea766d14b550fe9f854999af692d15fd2d55",
+  "server_sha256": "4a568f7419dedb5132a87aa30ea51db67c01d77f4fb57db7d56f0b31b35c4e7a",
+  "scope": "Featured Build editor, saved summaries and portable catalogs; preserve player state",
+  "pr": "https://github.com/CWO4PapaBear/azerothcore-wotlk-coa/pull/121",
+  "native_checks": {
+    "build": "passed",
+    "unit": "passed",
+    "authenticated_runtime_readback": "passed"
+  },
+  "client_feed_commit": "e0809799bbde3c861ae50f6b0e692270f99e8aed"
+}
