@@ -1,0 +1,14 @@
+{
+  "receipt": {
+    "status": "intent",
+    "package_id": "area52-featured-editor-cloud-20261125",
+    "reporting_date": "2026-11-25",
+    "includes_progress": true,
+    "channel_id": "1551651626719248514",
+    "guild_id": "1312920749866090628",
+    "content_sha256": "8b634046f70a6f7115873caf13d1d60a63fbfc110563bc6daa3d5d4b63beec6f",
+    "image_sha256": "ee6218642f5e3387080f0d0984ee5ec913b8a0bb729ae2177b2f075c5d209b7e"
+  },
+  "failed_run": 45651671904,
+  "reason": "Workflow log shows uncaught GitHub error reserving daily progress at announce_package.py line 63; execution did not reach Discord POST at line 79. Original intent preserved. One-time recovery guard prevents replay."
+}
