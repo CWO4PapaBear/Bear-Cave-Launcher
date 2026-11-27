@@ -1,0 +1,31 @@
+{
+  "delivery": {
+    "development": {
+      "package": "area52-dragon-warrior-verified-development-20261126",
+      "status": "complete",
+      "binary_sha256": "c7c8582e04e302878b266a182638ce001b898638c0ff4e26132738926a15b38c",
+      "status_sha256": "2ad87b68af9027fc1d7d32eb3023e7406e029a0921b133565906d8ce63ee27ff"
+    },
+    "cloud": {
+      "package": "area52-dragon-warrior-verified-cloud-20261126",
+      "status": "complete",
+      "binary_sha256": "168297be0475dd779a2b019fda3430f4482b753603f9790186b5e9485a09b488",
+      "status_sha256": "da567fa684527a12c1af5f950f2fbf5dc14af89a70b6b214d5ae07ba8abd7c92"
+    },
+    "publication": {
+      "package": "area52-dragon-warrior-fully-verified-20261126",
+      "assets_verified": true,
+      "feed_commit": "e2e0e47c8182537ea7c1aac5d0d98e3fbab28d9c",
+      "status": "complete"
+    },
+    "catalog_handoff": "verified; no pending publication",
+    "source_integration": "isolated source and frozen provenance retained; server source not pushed or merged",
+    "discord": "not posted"
+  },
+  "source": {
+    "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+    "branch": "fix/dragon-warrior-verification-20261126",
+    "commit": "ee6a72c9d9542abd7b0685b5909a04876ef51018",
+    "status": "verified"
+  }
+}

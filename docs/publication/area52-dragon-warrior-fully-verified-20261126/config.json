@@ -1,0 +1,11 @@
+{
+  "id": "area52-dragon-warrior-fully-verified-20261126",
+  "title": "Featured Build - Dragon Warrior - Fully Verified",
+  "notes_repo": "CWO4PapaBear/Bear-Cave-Launcher",
+  "discord_channel": "1551651626719248514",
+  "notes_url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/blob/main/docs/publication/area52-dragon-warrior-fully-verified-20261126/notes.md",
+  "server_sha256": "168297be0475dd779a2b019fda3430f4482b753603f9790186b5e9485a09b488",
+  "client_feed_commit": "e2e0e47c8182537ea7c1aac5d0d98e3fbab28d9c",
+  "source_commit": "ee6a72c9d9542abd7b0685b5909a04876ef51018",
+  "source_pr": "https://github.com/CWO4PapaBear/azerothcore-wotlk-coa/pull/123"
+}
