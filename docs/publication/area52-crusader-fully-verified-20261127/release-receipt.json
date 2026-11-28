@@ -1,0 +1,39 @@
+{
+  "development": {
+    "package": "area52-crusader-verified-development-20261127",
+    "status": "complete",
+    "binary_sha256": "68def453e2ee0299817bcbe82bbe7bb44ad6fb98f026485751dd6a91c0e1ff93",
+    "status_sha256": "55a5b27ade9d4d5aec6ec79c6938c6b49392e83604426a8d1039219f7c38e24c"
+  },
+  "cloud": {
+    "package": "area52-crusader-verified-cloud-20261127",
+    "status": "complete",
+    "binary_sha256": "a91fe45ee537256dcf440e4a6033012137a90fff780387e797beecac4ee259ac",
+    "status_sha256": "943acdfc84b0a89b6e182ab944be7685e609f49e46200202b5d95534967e2b33"
+  },
+  "source_integration": {
+    "repo": "CWO4PapaBear/azerothcore-wotlk-coa",
+    "branch": "release/crusader-fully-verified-20261127",
+    "commit": "e54627f2367540b7512a810c7bc7ceeb5fdc4717",
+    "status": "verified",
+    "pr": "https://github.com/CWO4PapaBear/azerothcore-wotlk-coa/pull/125",
+    "mergeable": true,
+    "merged": false,
+    "github_checks": "none reported",
+    "preserves_deployed_pr": 123
+  },
+  "client_tooling": {
+    "repo": "CWO4PapaBear/Area52-FreePick-Client",
+    "commit": "452f3695896045aa0eb9186f2723b7861ef3f46a",
+    "pr": "https://github.com/CWO4PapaBear/Area52-FreePick-Client/pull/4",
+    "status": "verified",
+    "merged": false
+  },
+  "publication": {
+    "status": "pending_authorization",
+    "assets_uploaded": false,
+    "feed_promoted": false
+  },
+  "discord": "prepared",
+  "catalog_handoff": "worker suspended; new baseline not adopted"
+}

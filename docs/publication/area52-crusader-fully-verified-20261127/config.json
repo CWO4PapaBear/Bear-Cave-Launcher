@@ -1,0 +1,11 @@
+{
+  "id": "area52-crusader-fully-verified-20261127",
+  "title": "Featured Build - Crusader - Fully Verified",
+  "notes_repo": "CWO4PapaBear/Bear-Cave-Launcher",
+  "discord_channel": "1551651626719248514",
+  "notes_url": "https://github.com/CWO4PapaBear/Bear-Cave-Launcher/blob/main/docs/publication/area52-crusader-fully-verified-20261127/notes.md",
+  "server_sha256": "a91fe45ee537256dcf440e4a6033012137a90fff780387e797beecac4ee259ac",
+  "client_feed_commit": null,
+  "source_commit": "e54627f2367540b7512a810c7bc7ceeb5fdc4717",
+  "source_pr": "https://github.com/CWO4PapaBear/azerothcore-wotlk-coa/pull/125"
+}
